@@ -39,6 +39,7 @@ def to_frame(soup, dictionary):
     -------
     * Dataframe object with dict index -> column names. No unique index in df.
     """
+    
     tags = soup.findAll('r')
     for key in dictionary.keys():
         for tag in tags:
