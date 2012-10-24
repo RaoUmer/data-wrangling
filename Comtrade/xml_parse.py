@@ -1,10 +1,3 @@
-from bs4 import BeautifulSoup
-
-# def comtrade_parse(url):
-#     '''
-#     
-#     '''
-
 def get_names(tag):
     """
     Use to extract the column names from a element.Tag;
@@ -23,4 +16,3 @@ def get_names(tag):
     names = []
     for i in range(len(tag.findChildren())):
         return names.append(tag.findChildren()[i].name)
-    

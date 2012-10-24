@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import pandas as pd
-# from xml_parse import get_names
+from xml_parse import get_names
 
 soup = BeautifulSoup(open('Comtrade.xml'), 'xml')
 tag = soup.r
@@ -20,4 +20,3 @@ for key in dictionary.keys():
         dictionary[key].append(tag.find(key).string)
 
 df = pd.DataFrame(dictionary)
-    
