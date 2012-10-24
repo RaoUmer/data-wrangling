@@ -2,13 +2,11 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import lxml
 import urllib2
-from xml_parse import get_names
+from xml_parse import get_names, to_frame
 
 soup = BeautifulSoup(open('Comtrade.xml'), 'lxml')
 tag = soup.r
 
-# Refactor this to separate module.
-# names = get_names(tag)
 names = []
 dictionary = get_names(tag, names)
 tags = soup.findAll('r')
