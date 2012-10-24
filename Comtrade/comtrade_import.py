@@ -9,13 +9,7 @@ tag = soup.r
 
 names = []
 dictionary = get_names(tag, names)
-tags = soup.findAll('r')
-
-for key in dictionary.keys():
-    for tag in tags:
-        dictionary[key].append(tag.find(key).string)
-
-df = pd.DataFrame(dictionary)
+df = to_frame(soup, dictionary)
 
 ############ From the Web ############
 
