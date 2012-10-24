@@ -28,7 +28,7 @@ def get_names(tag, names):
 
 def to_frame(soup, dictionary):
     """
-    Next step in the data processing.
+    Use to convert an xml file (in soup form) to a pandas dataFrame.
     
     Parameters
     ----------
