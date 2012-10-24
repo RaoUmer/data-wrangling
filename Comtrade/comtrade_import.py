@@ -10,11 +10,7 @@ tag = soup.r
 # Refactor this to separate module.
 # names = get_names(tag)
 names = []
-for i in range(len(tag.findChildren())):
-names.append(tag.findChildren()[i].name)
-values = [list([]) for _ in range(len(names))]
-dictionary = dict(zip(names, values))
-
+dictionary = get_names(tag, names)
 tags = soup.findAll('r')
 
 for key in dictionary.keys():
@@ -24,10 +20,6 @@ for key in dictionary.keys():
 df = pd.DataFrame(dictionary)
 
 ############ From the Web ############
-
-# url = 'http://comtrade.un.org/ws/get.aspx?px=H1&r=381&y=2003,2002&cc=TOTAL&p=0&comp=false'
-# file = lxml.html.parse(url)
-# # or? html = urllib2.urlopen(url)
 
 xml = 'http://comtrade.un.org/ws/'
 xmlpath = 'get.aspx?cc=TOTAL&px=H2&r=372&y=2006&comp=false&code='
