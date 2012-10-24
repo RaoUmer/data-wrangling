@@ -13,22 +13,6 @@ names.append(tag.findChildren()[i].name)
 values = [list([]) for _ in range(len(names))]
 dictionary = zip(names, values)
 
-# dict = {
-#     'pfCode' : pfCode,
-#     'yr' : yr,
-#     'rgCode' : rgCode,
-#     'rtCode' : rtCode,
-#     'ptCode' : ptCode,
-#     'cmdCode' : cmdCode,
-#     'cmdID' : cmdID,
-#     'qtCode' : qtCode,
-#     'TradeQuantity' : TradeQuantity,
-#     'NetWeight' : NetWeight,
-#     'TradeValue' : TradeValue,
-#     'estCode' : estCode,
-#     'htCode' : htCode,
-# }
-
 tags = soup.findAll('r')
 
 for key in dictionary.keys():
