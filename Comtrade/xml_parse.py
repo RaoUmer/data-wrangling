@@ -1,3 +1,5 @@
+import pandas as pd
+
 def get_names(tag, names):
     """
     Use to extract the column names from a element.Tag;
@@ -43,4 +45,4 @@ def to_frame(soup, dictionary):
             dictionary[key].append(tag.find(key).string)
 
     df = pd.DataFrame(dictionary)
-    
+    return df
