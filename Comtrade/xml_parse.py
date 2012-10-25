@@ -35,11 +35,11 @@ def to_frame(soup, dictionary):
     Parameters
     ----------
     * soup : A BeautifulSoup object, parsed as xml, either from web or local.
-    * dictionary : A dict with index from columns and empty lists to be filled.
+    * dictionary : A dict with index from columns and empty lists to be filled
     
     Returns
     -------
-    * Dataframe object with dict index -> column names. No unique index in df.
+    * Dataframe object with dict index -> column names. No unique index in df
     """
     
     tags = soup.findAll('r')
@@ -74,7 +74,7 @@ def to_unicode(df, encoding):
 
 
 
-def comtrade_import(params):
+def comtrade_import(**keywords):
     """
     Interface to Comtrade.
 
@@ -84,7 +84,7 @@ def comtrade_import(params):
     * px - Commodity Classifications - HS, H0-H3, ST, S1-S4, BE
     * r - Reporting Countries - UN Comtrade Country Codes or Country Groups
     * y - Years - 4 digits year
-    * cc - Commodity Codes - Commodity Codes, with wild cards or Commodity Groups
+    * cc - Commodity Codes - Commodity Codes, with wild cards or Groups
     * p - Partner Countries - UN Comtrade Country Codes or Country Groups
     * rg - Trade Flow - Number 1 to 4
     * so - Sort Order - See Below
@@ -107,7 +107,8 @@ def comtrade_import(params):
     * Pandas dataFrame
     * optionally as a csv?
 
-    Based off: http://unstats.un.org/unsd/tradekb/Knowledgebase/Access-Points-and-Parameters-for-Web-Services
+    Based off: http://unstats.un.org/unsd/tradekb/Knowledgebase/
+    Access-Points-and-Parameters-for-Web-Services
     Sorting:
     so= pre-defined sort order ; possible values
         "1" Year;Flow;Rep;Comm;Ptnr;
@@ -137,7 +138,8 @@ def comtrade_import(params):
         "1001" TradeVal;
         "9999" --None--
 
-        For an example, so=13 will order the result by year, flow, reporter, commodity and value
+        For an example, so=13 will order the result by year, flow, reporter,
+        commodity and value
 
         Filter Trade value, use tv1 and tv2
         tv1=comparison sign:
@@ -147,12 +149,15 @@ def comtrade_import(params):
         3"Less Than
         tv2= comparison value in US$
 
-        For an example, tv1=0&tv2=1000000000 will filter the result for trade value >= 1 billion US$
+        For an example, tv1=0&tv2=1000000000 will filter the result for
+        trade value >= 1 billion US$
 
         Aggregation option
-        qt=n or qt=y. If qt set to n, the system will keep the quantity differences during the on-fly commodity aggregation.
+        qt=n or qt=y. If qt set to n, the system will keep the quantity
+        differences during the on-fly commodity aggregation.
 
     """
+    # TODO: Add **name keyword arguments
 
     soup = BeautifulSoup(urllib2.urlopen(params), 'lxml')
     tag = soup.r
@@ -162,3 +167,12 @@ def comtrade_import(params):
     return df
 
 
+# def f(**keywords):
+#     """
+#     Expects a list of strings.
+#     """
+#     xmlpath = 
+# 
+#     keys = sorted(keywords.keys())
+#     for kw in keys:
+#         print kw, ":", keywords[kw]
