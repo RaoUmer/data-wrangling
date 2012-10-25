@@ -47,3 +47,35 @@ def to_frame(soup, dictionary):
 
     df = pd.DataFrame(dictionary)
     return df
+
+def to_unicode(df, encoding):
+    """
+    Use to change encoding on dataFrame elements.
+
+    Parameters
+    ----------
+    * df : a pandas dataFrame
+    * encoding : A string. e.g. 'utf-8'
+    Returns
+    -------
+    * df' : a pandas dataFrame encoded as type encoding.
+
+    Need the try/except for the None types.
+    """
+
+    for column in df.columns:
+        for row in range(len(df)):
+            try:
+                df[column][row] = df[column][row].encode(encoding)
+            except:
+                pass
+
+
+
+# def comtrade_import():
+#     """
+    
+#     """
+
+
+
