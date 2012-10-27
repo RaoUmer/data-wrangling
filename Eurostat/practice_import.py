@@ -1,6 +1,6 @@
 from __future__ import division
 
-import numpy as np
+
 import pandas as pd
 
 df = pd.read_csv(
@@ -12,12 +12,14 @@ This dataFrame will be multi-indexed with quaters on the outer index
 and countries on the inner index. The data in this case is exports
 non-seasonally-adjusted, percentage of GDP.
 """
-
 df = df.drop(['UNIT', 'INDIC_NA', 'S_ADJ'], axis=1)
 df = df.rename(columns={'Value': 'Exports'})
 
+"""
+The below is older code, keeping around for examples.
+
 exports_pcgdp_nsa = df[['GEO', 'TIME', 'Value']]
-df.GEO[4] = 'Germany'
+
 
 geo = df['GEO'].unique()
 for country in geo:
@@ -35,3 +37,4 @@ df = df.rename(columns={
     'Germany (including  former GDR from 1991)': 'Germany'})
 
 subset = ['Belgium', 'Germany', 'Spain', 'France']
+"""
