@@ -2,31 +2,33 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import urllib2
 
+
 def get_names(tag, names):
     """
     Use to extract the column names from a element.Tag;
-    
+
     Parameters
     ----------
-    
+
     * tag : an element.Tag (e.g. from BeautifulSoup)
     * names : a list (probably empty; I was having trouble when names
     was not a param, I think since it was declared locally and thus not
     returned in the last line.  Maybe...
-    
+
     Returns
     -------
-    
+
     * dictionary : a dict containing the columns to be used for a DataFrame
     and initialized empty lists.
     """
-    
+
     for i in range(len(tag.findChildren())):
         names.append(tag.findChildren()[i].name)
-    
+
     values = [list([]) for _ in range(len(names))]
     dictionary = dict(zip(names, values))
     return dictionary
+
 
 def to_frame(soup, dictionary):
     """

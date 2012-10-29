@@ -10,10 +10,36 @@ df = pd.read_csv(
 """
 This dataFrame will be multi-indexed with quaters on the outer index
 and countries on the inner index. The data in this case is exports
-non-seasonally-adjusted, percentage of GDP.
+non-seasonally-adjusted, percentage of GDPself.
+
+Column taxonomy
+    type
+        x: exports
+        m: imports
+        g: gdp
+    seasonality:
+        sa: seasonally adjusted
+        nsa: non-seasonally adjusted
+    measure:
+        m: millions of euros
+        p: percentage of gdp
+    deflator:
+        c: chained
+        n: none/current
+
 """
 df = df.drop(['UNIT', 'INDIC_NA', 'S_ADJ'], axis=1)
 df = df.rename(columns={'Value': 'Exports'})
+
+
+"""
+Some useful helpers:
+    Selecting part of data (for plotting)
+    subset = [subset = ['Austria', 'Belgium', 'France', 'Greece', 'Ireland', 'Spain']
+    ind = ['Exports']* len(subset)
+    unstacked = df.unstack('GEO')[zip(ind, subset)]
+    unstacked.plot()
+"""
 
 """
 The below is older code, keeping around for examples.
