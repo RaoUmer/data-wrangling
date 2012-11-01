@@ -7,6 +7,8 @@ df = pd.read_csv(
     '/Volumes/HDD/Users/tom/DataStorage/Eurostat/namq_gdp_c/namq_gdp_c_1_Data.csv',
     index_col=[1, 0], parse_dates=True, na_values=':', thousands=',')
 
+# Could probaably also have used pd.pivot
+
 """
 This dataFrame will be multi-indexed with quaters on the outer index
 and countries on the inner index. The data in this case is exports
