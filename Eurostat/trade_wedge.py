@@ -1,6 +1,7 @@
 from __future__ import division
 
 import pandas as pd
+import numpy as np
 from time_parsers import year_quarter
 
 """
@@ -66,5 +67,26 @@ frames = [gdp_c, gdp_n, imports_c, imports_n, demand_c, demand_n]
 
 e1 = 1.5
 e2 = 6
+
+
+# Trade Wedge
+"""
+All in log changes.
+hat{y^f} = e * (hat{P} - hat{p^f}) + hat{(C + I)}
+"""
+
+d = np.log(demand_c.ix['2009-6-01'].Value) - np.log(demand_c.ix['2008-6-01'].Value)
+P = np.log(gdp_c.ix['2009-6-01'].Value) - np.log(gdp_c.ix['2008-6-01'].Value)
+p = np.log(imports_c.ix['2009-6-01'].Value) - np.log(imports_c.ix['2008-6-01'].Value)
+
+
+def trade_wedge(q1, q2, e=e1):
+    imp_delta = np.log(imports_c.ix[q2].Value) - np.log(imports_c.ix[q1].Value)
+    gdp_def_delta = gdp_n.ix[q2].Value / gdp_c.ix[q2].Value - gdp_n.ix[q1].Value / gdp_c.ix[q1].Value
+    imp_def_delta = imports_n.ix[q2].Value / imports_c.ix[q2].Value - imports_n.ix[q1].Value / imports_c.ix[q1].Value
+    demand_delta = np.log(demand_c.ix[q2].Value) - np.log(demand_c.ix[q1].Value)
+    wedge = e * (gdp_def_delta - imp_def_delta) + demand_delta -  imp_delta 
+
+    return wedge
 
 # gdp_c.xs('Austria', level=1)['Value'].plot()
