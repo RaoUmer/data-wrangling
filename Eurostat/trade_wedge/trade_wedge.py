@@ -20,7 +20,7 @@ GDP
     1_2&rankName4=INDICATORS_1_2_-1_2&rankName5=UNIT_1_2_-1_2&rankName6=GEO_1_2_0_1&pprRK=FIRST&pprSO
     =PROTOCOL&ppcRK=FIRST&ppcSO=ASC&sortC=ASC_-1_FIRST&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&
     footnes=false&empty=false&wai=false&time_mode=NONE&lang=EN&cfo=%23%23%23%2C%23%23%23.%23%23%23
-    
+
     Nominal: "GEO","TIME","S_ADJ","UNIT","INDIC_NA","Value","Flag and Footnotes"
     http://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-055786_QID_-7BCFD5FF_UID_-3F171EB0&layout=GEO,L,X,0;TIME,C,Y,0;S_ADJ,L,Z,0;UNIT,L,Z,1;INDIC_NA,L,Z,2;INDICATORS,C,Z,3;&zSelection=DS-055786INDICATORS,OBS_FLAG;DS-055786S_ADJ,NSA;DS-055786UNIT,MIO_EUR;DS-055786INDIC_NA,B1GM;&rankName1=INDIC-NA_1_2_-1_2&rankName2=S-ADJ_1_2_-1_2&rankName3=INDICATORS_1_2_-1_2&rankName4=UNIT_1_2_-1_2&rankName5=GEO_1_2_0_0&rankName6=TIME_1_0_0_1&sortR=ASC_-1_FIRST&pprRK=FIRST&pprSO=ASC&ppcRK=FIRST&ppcSO=PROTOCOL&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=NONE&lang=EN&cfo=%23%23%23%2C%23%23%23.%23%23%23
 
@@ -81,15 +81,26 @@ def trade_wedge(q1, q2, e=e1):
     All in log changes.
     hat{y^f} = e * (hat{P} - hat{p^f}) + hat{(C + I)}
 
-
+    hat: (log) change
+    y^f : (real) demand for imports
+    e : elasticity of substitution
+    P : GDP deflator (not log?)
+    p^f : import price deflator (not log?)
+    C + I : Domestic final demand (real consumption + real investment)
 
     Suggested values for e = {3, 6}
     """
 
     imp_delta = np.log(imports_c.ix[q2].Value) - np.log(imports_c.ix[q1].Value)
-    gdp_def_delta = gdp_n.ix[q2].Value / gdp_c.ix[q2].Value - gdp_n.ix[q1].Value / gdp_c.ix[q1].Value
-    imp_def_delta = imports_n.ix[q2].Value / imports_c.ix[q2].Value - imports_n.ix[q1].Value / imports_c.ix[q1].Value
+
+    gdp_def_delta = np.log((gdp_n.ix[q2].Value / gdp_c.ix[q2].Value) * 100) - np.log((
+        gdp_n.ix[q1].Value / gdp_c.ix[q1].Value) * 100)
+
+    imp_def_delta = np.log((imports_n.ix[q2].Value / imports_c.ix[q2].Value) * 100) - np.log((
+        imports_n.ix[q1].Value / imports_c.ix[q1].Value) * 100)
+
     demand_delta = np.log(demand_c.ix[q2].Value) - np.log(demand_c.ix[q1].Value)
-    wedge = e * (gdp_def_delta - imp_def_delta) + demand_delta - imp_delta
+
+    wedge = imp_delta - e * (gdp_def_delta - imp_def_delta) + demand_delta
 
     return wedge
