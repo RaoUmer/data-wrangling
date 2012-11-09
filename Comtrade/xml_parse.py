@@ -92,7 +92,7 @@ def comtrade_import(**keywords):
     * so - Sort Order - See Below
     * tv1 - Comparison Sign - See Below
     * tv2 - Comparison Value - See Below
-    * qt - Aggregation Value - y or n
+    * qt - Aggregation TradeValalue - y or n
     * lowT - Start Date / Time - Date format YYYY-MM-DD
     * HighT - End Date / Time - Date format YYYY-MM-DD
     * comp - Data Compression - True or False
@@ -103,6 +103,8 @@ def comtrade_import(**keywords):
     * async - Asynchronous Web Call - True or False
     * coded - Authorization Code - Use for off-site web services acces.
     
+    http://comtrade.un.org/db/dqBasicQueryResults.aspx?cc=TOTAL&px=H6&r=372&y=2006
+
     Returns
     -------
 
