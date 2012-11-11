@@ -44,14 +44,14 @@ country_code = {
 
 keys = sorted(country_code.keys())
 
-for leaf in yearly.keys():
-    for key in keys:
-        try:
-            yearly[leaf + key] = yearly[leaf].xs(key, level='DECLARANT')
-            print 'done with %s, %s' % (leaf, key)
-        except:
-            print 'Trouble with %s, %s' % (leaf, key)
-    print 'All done with %s' % leaf
+# for leaf in yearly.keys():
+#     for key in keys:
+#         try:
+#             yearly[leaf + key] = yearly[leaf].xs(key, level='DECLARANT')
+#             print 'done with %s, %s' % (leaf, key)
+#         except:
+#             print 'Trouble with %s, %s' % (leaf, key)
+#     print 'All done with %s' % leaf
 
 """
 Notes on how that went:
@@ -65,4 +65,42 @@ Failers also on:
     Trouble with y2008, 002
     Trouble with y2009, 002
 
+2007 001, 002, and 003 should have worked.
+    I may have messed them up with ctrl-c's.
+
+'002' : Belg.-Lux may just be zeros.
+On to prices:
+    Idiot.  Series don't have .xs.
 """
+todo = [
+    'y2007001'
+    'y2007003'
+]
+# Very hackish with the -5: slice to get the prices.
+
+for leaf in yearly.keys():
+    for key in keys:
+        if leaf + key in todo:
+            try:
+                yearly[leaf + '_' + key] = yearly[leaf].xs(key, level='DECLARANT')
+                print 'done with %s, %s' % (leaf, key)
+            except:
+                print 'Trouble with %s, %s' % (leaf, key)
+        else:
+            pass
+    print 'All done with %s' % leaf
+
+for leaf in yearly.keys():
+    for key in keys:
+        if leaf[-5:] == 'price':
+            try:
+                yearly[leaf + '_' + key] = pd.DataFrame(leaf).xs(
+                    '001', level='DECLARANT')
+                print 'done with %s, %s' % (leaf, key)
+            except:
+                print 'Trouble with %s, %s' % (leaf, key)
+        else:
+            pass
+    print 'All done with %s' % leaf
+
+yearly.close()
