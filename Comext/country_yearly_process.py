@@ -52,3 +52,17 @@ for leaf in yearly.keys():
         except:
             print 'Trouble with %s, %s' % (leaf, key)
     print 'All done with %s' % leaf
+
+"""
+Notes on how that went:
+Failers on all the prices.
+Failers also on:
+    Trouble with y2007, 001
+    Trouble with y2007, 002
+    Trouble with y2007, 003
+    Trouble with y2011, 002
+    Trouble with y2010, 002
+    Trouble with y2008, 002
+    Trouble with y2009, 002
+
+"""
