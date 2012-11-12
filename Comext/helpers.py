@@ -29,3 +29,43 @@ def unit_price(df, col1='VALUE_1000ECU', col2='QUANTITY_TON',
         unit_p = df[col1] / df[col2]
         return unit_p
     return unit_p
+
+"""
+Pickling dicts:
+import cPickle
+
+Pickling cpa:
+output = open('product_dict.pkl', 'wb')
+cPickle.dump(cpa, output, 2)
+output.close()
+
+# Pickling partners:
+out = open('partners_dict.pkl', 'wb')
+cPickle.dump(partners, out, 2)
+out.close()
+
+# Pickling country codes:
+out = open('declarants_no_002_dict.pkl', 'wb')
+cPickle.dump(country_code, out, 2)
+out.close()
+---------------------------------------------------
+
+Getting dicts:
+import cPickle
+
+with open('product_dict.pkl', 'rb') as pickle_file:
+    cpa = cPickle.load(pickle_file)
+pickle_file.closed
+
+with open('partners_dict.pkl', 'rb') as partners_pickle:
+    partners = cPickle.load(partners_pickle)
+partners_pickle.closed
+
+with open('declarants_no_002_dict.pkl', 'r') as declarants:
+    declarants = cPickle.load(declarants)
+declarants.closed
+---------------------------------------------------
+
+
+
+"""
