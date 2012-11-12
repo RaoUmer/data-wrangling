@@ -1,5 +1,7 @@
 import string
 import cPickle
+import itertools as it
+from collections import deque
 
 import numpy as np
 import pandas as pd
@@ -28,7 +30,6 @@ partners_pickle.close()
 
 country_code = {
             '001': 'France',
-            '002': 'Belg.-Luxbg',
             '003': 'Netherlands',
             '004': 'Fr Germany',
             '005': 'Italy',
@@ -87,61 +88,49 @@ def lexicographic(df, i, j):
         else:
             return df[j]
 
-def get_quantities(year):
-        match = [
-            '001',
-            '003',
-            '004',
-            '005',
-            '006',
-            '007',
-            '008',
-            '009',
-            '010',
-            '011',
-            '017',
-            '018',
-            '030',
-            '032',
-            '038',
-            '046',
-            '053',
-            '054',
-            '055',
-            '060',
-            '061',
-            '063',
-            '064',
-            '066',
-            '068',
-            '091',
-            '600',
-            'EU',
-            ]
-        """
-        Use to find the correct frames and quantities for the weighting calculation.
-        """
-        if year[6:] in match:
-            print 'Working on %s' % year
-            yield pd.DataFrame(yearly[year].apply(lexicographic, axis=1, args=(0, 1)), columns=['quantity'])
-        else:
-            pass
+countries = sorted(country_code.keys())
 
 
+def get_quantities(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
+    """"
+    Countruts pyTables for the quantities used in the weight_matrix.
+    Paramaters
+    ----------
 
-def weight_matrix(store, nyears=5):
+    Returns:
+    --------
+    """
+    q_gen = it.product([1, 2], sorted(country_code.keys()), sorted(cpa.keys()))
+    for country in countries:
+        try:
+            yearly['quantity' + '_' + country] = pd.DataFrame(yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
+        except:
+            print 'Trouble with %s' % country
+        for year in years[1:]:
+            try:
+                yearly['quantity' + '_' + country] = yearly['quantity' + '_' + country].append(pd.DataFrame(yearly[year + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[year]))
+            except:
+                print 'Trouble with %s, %s in inner loop.' % (country, year)
+
+def weight_matrix(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
     """
     T^(3/2)((1 / q_{gct}) + (1 / q_{gct-1}))^(-1/2)
 
+    Current step is to get quantities for each country, index by (flow, )
     Need to get the index correct.  Want variety_XXX
-    to have a (partner, product) multiindex.
+    to have a (partner, product) multiIndex.
 
-    Need a pairwise combinaiton of each.
+    Having to treat the first year special.
 
     Check on switching:
     df[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
     df2[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
+
+    df.reset_index(level='PERIOD') may be useful.
     """
+    
+
+
 
     for year in sorted(yearly.keys()):
 
