@@ -31,18 +31,19 @@ with open('declarants_no_002_dict.pkl', 'r') as declarants:
     country_code = cPickle.load(declarants)
 declarants.closed
 
-def lexicographic(df, i, j):
-        '''
-        Function to apply to 2 columns of a DataFrame.  Returns a series
-        that is the lexicographic max (assuming nonzero here).  Call with
-        pd.DataFrame(df.apply(lexicographic, axis=1, args=(0, 1)),
-        columns=['quantity'])
-        '''
 
-        if df[i] != 0:
-            return df[i]
-        else:
-            return df[j]
+def lexicographic(df, i, j):
+    '''
+    Function to apply to 2 columns of a DataFrame.  Returns a series
+    that is the lexicographic max (assuming nonzero here).  Call with
+    pd.DataFrame(df.apply(lexicographic, axis=1, args=(0, 1)),
+    columns=['quantity'])
+    '''
+
+    if df[i] != 0:
+        return df[i]
+    else:
+        return df[j]
 
 countries = sorted(country_code.keys())
 years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
@@ -51,7 +52,7 @@ for country in countries:
     try:
         yearly['quantity' + '_' + country] = pd.DataFrame(
             yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(
-            lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
+            lexicographic, axis=1, args=('QUANTITY_TON', 'SUP_QUANTITY')), columns=[years[0]])
     except:
         print 'Trouble with %s' % country
     for year in years[1:]:
@@ -59,7 +60,7 @@ for country in countries:
             yearly['quantity' + '_' + country] = yearly[
                 'quantity' + '_' + country].merge(pd.DataFrame(
                 yearly[year + '_' + country].reset_index(level='PERIOD').apply(
-                lexicographic, axis=1, args=(0, 1)), columns=[year]),
+                lexicographic, axis=1, args=('QUANTITY_TON', 'SUP_QUANTITY')), columns=[year]),
                 how='outer', left_index=True, right_index=True)
         except:
             print 'Trouble with %s, %s in inner loop.' % (country, year)
