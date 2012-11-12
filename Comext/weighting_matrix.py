@@ -1,10 +1,7 @@
-import cPickle
-
-import numpy as np
-import pandas as pd
 
 
-def weight_matrix(store, country, year):
+def weight_matrix(store, country, year,
+    years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011'], t=5):
     """
     To adjust for heteroskedasticity in the GMM estimation of
     the elasticity of substitution.
@@ -41,8 +38,9 @@ def weight_matrix(store, country, year):
     df2[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
 
     """
-    years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']  # TEMPORARY
+    # years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']  # TEMPORARY
     y0 = years[years.index(year) - 1]
     t = len(years)
-    y0 = years[years.index(year) - 1]
-    return t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (1 / df[y0])) ** (-1 / 2)
+
+    return t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (
+        1 / store['quantity_' + country][y0])) ** (-1 / 2)
