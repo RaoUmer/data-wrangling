@@ -10,6 +10,10 @@ import pandas as pd
 # cPickle.dump(cpa, output, 2)
 # output.close()
 
+# # Pickling partners:
+# out = open('partners_dict.pkl', 'wb')
+# cPickle.dump(partners, out, 2)
+# out.close()
 
 # Read with:
 yearly = pd.HDFStore('yearly.h5')
@@ -18,38 +22,41 @@ pickle_file = open('product_dict.pkl', 'rb')
 cpa = cPickle.load(pickle_file)
 pickle_file.close()
 
+partners_pickle = open('partners_dict.pkl', 'rb')
+partners = cPickle.load(partners_pickle)
+partners_pickle.close()
 
-# country_code = {
-#             '001': 'France',
-#             '002': 'Belg.-Luxbg',
-#             '003': 'Netherlands',
-#             '004': 'Fr Germany',
-#             '005': 'Italy',
-#             '006': 'Utd. Kingdom',
-#             '007': 'Ireland',
-#             '008': 'Denmark',
-#             '009': 'Greece',
-#             '010': 'Portugal',
-#             '011': 'Spain',
-#             '017': 'Belgium',
-#             '018': 'Luxembourg',
-#             '030': 'Sweden',
-#             '032': 'Finland',
-#             '038': 'Austria',
-#             '600': 'Cyprus',
-#             '061': 'Czech Republic',
-#             '053': 'Estonia',
-#             '064': 'Hungary',
-#             '055': 'Lithuania',
-#             '054': 'Latvia',
-#             '046': 'Malta',
-#             '060': 'Poland',
-#             '091': 'Slovenia',
-#             '063': 'Slovakia',
-#             '068': 'Bulgaria',
-#             '066': 'Romania',
-#             'EU': 'EU',
-# }
+country_code = {
+            '001': 'France',
+            '002': 'Belg.-Luxbg',
+            '003': 'Netherlands',
+            '004': 'Fr Germany',
+            '005': 'Italy',
+            '006': 'Utd. Kingdom',
+            '007': 'Ireland',
+            '008': 'Denmark',
+            '009': 'Greece',
+            '010': 'Portugal',
+            '011': 'Spain',
+            '017': 'Belgium',
+            '018': 'Luxembourg',
+            '030': 'Sweden',
+            '032': 'Finland',
+            '038': 'Austria',
+            '600': 'Cyprus',
+            '061': 'Czech Republic',
+            '053': 'Estonia',
+            '064': 'Hungary',
+            '055': 'Lithuania',
+            '054': 'Latvia',
+            '046': 'Malta',
+            '060': 'Poland',
+            '091': 'Slovenia',
+            '063': 'Slovakia',
+            '068': 'Bulgaria',
+            '066': 'Romania',
+            'EU': 'EU',
+}
 
 
     # leaves = zip(['variety'] * len(country_code), country_code)
