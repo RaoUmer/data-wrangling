@@ -19,9 +19,9 @@ import pandas as pd
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 yearly = pd.HDFStore('yearly.h5')
 
-pickle_file = open('product_dict.pkl', 'rb')
-cpa = cPickle.load(pickle_file)
-pickle_file.close()
+with open('product_dict.pkl', 'rb') as pickle_file:
+    cpa = cPickle.load(pickle_file)
+pickle_file.closed
 
 # partners_pickle = open('partners_dict.pkl', 'rb')
 # partners = cPickle.load(partners_pickle)
