@@ -27,38 +27,9 @@ pickle_file.closed
 # partners = cPickle.load(partners_pickle)
 # partners_pickle.close()
 
-
-country_code = {
-            '001': 'France',
-            '003': 'Netherlands',
-            '004': 'Fr Germany',
-            '005': 'Italy',
-            '006': 'Utd. Kingdom',
-            '007': 'Ireland',
-            '008': 'Denmark',
-            '009': 'Greece',
-            '010': 'Portugal',
-            '011': 'Spain',
-            '017': 'Belgium',
-            '018': 'Luxembourg',
-            '030': 'Sweden',
-            '032': 'Finland',
-            '038': 'Austria',
-            '600': 'Cyprus',
-            '061': 'Czech Republic',
-            '053': 'Estonia',
-            '064': 'Hungary',
-            '055': 'Lithuania',
-            '054': 'Latvia',
-            '046': 'Malta',
-            '060': 'Poland',
-            '091': 'Slovenia',
-            '063': 'Slovakia',
-            '068': 'Bulgaria',
-            '066': 'Romania',
-            'EU': 'EU',
-}
-
+with open('declarants_no_002_dict.pkl', 'r') as declarants:
+    country_code = cPickle.load(declarants)
+declarants.closed
 
 def lexicographic(df, i, j):
         '''
