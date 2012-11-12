@@ -68,21 +68,7 @@ cols = [
         ]
 
 
-
-def get_quantity(year, country):
-    """
-    Idea is to take a year, quantity pair and look up the
-    correct quantity in yearly['year_country'].  Need a way
-    to pick from QUANTITY_TON and SUP_QUANTITY.
-
-    To get zero in QUANTITY_TON and nonzero in SUP_QUANTITY:
-    df.ix[(df[df.QUANTITY_TON == 0]).index][df.ix[
-        (df[df.QUANTITY_TON == 0]).index].SUP_QUANTITY != 0]
-
-    Filters out q_t == 0; Then pass that filted df into a sup_q != 0.
-    """
-
-    def lexicographic(df, i, j):
+def lexicographic(df, i, j):
         '''
         Function to apply to 2 columns of a DataFrame.  Returns a series
         that is the lexicographic max (assuming nonzero here).  Call with
@@ -94,7 +80,7 @@ def get_quantity(year, country):
         else:
             return df[j]
 
-    def get_quantities(year):
+def get_quantities(year):
         match = [
             '001',
             '003',
@@ -151,7 +137,7 @@ def weight_matrix(store, nyears=5):
     """
 
     for year in sorted(yearly.keys()):
-        
+
 
     variety_600 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
     variety_091 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
