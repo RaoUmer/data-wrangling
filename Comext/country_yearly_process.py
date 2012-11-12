@@ -71,36 +71,36 @@ Failers also on:
 '002' : Belg.-Lux may just be zeros.
 On to prices:
     Idiot.  Series don't have .xs.
+    Idiot.  Forgot comma in todo.
 """
 todo = [
-    'y2007001'
+    'y2007001',
     'y2007003'
 ]
 # Very hackish with the -5: slice to get the prices.
 
-for leaf in yearly.keys():
-    for key in keys:
-        if leaf + key in todo:
-            try:
-                yearly[leaf + '_' + key] = yearly[leaf].xs(key, level='DECLARANT')
-                print 'done with %s, %s' % (leaf, key)
-            except:
-                print 'Trouble with %s, %s' % (leaf, key)
-        else:
-            pass
-    print 'All done with %s' % leaf
+# for leaf in yearly.keys():
+#     for key in keys:
+#         if leaf + key in todo:
+#             try:
+#                 yearly[leaf + '_' + key] = yearly[leaf].xs(key, level='DECLARANT')
+#                 print 'done with %s, %s' % (leaf, key)
+#             except:
+#                 print 'Trouble with %s, %s' % (leaf, key)
+#         else:
+#             pass
+#     print 'All done with %s' % leaf
 
 for leaf in yearly.keys():
     for key in keys:
         if leaf[-5:] == 'price':
             try:
-                yearly[leaf + '_' + key] = pd.DataFrame(leaf).xs(
+                yearly[leaf + '_' + key] = pd.DataFrame(yearly[leaf]).xs(
                     '001', level='DECLARANT')
                 print 'done with %s, %s' % (leaf, key)
             except:
                 print 'Trouble with %s, %s' % (leaf, key)
         else:
             pass
-    print 'All done with %s' % leaf
 
 yearly.close()
