@@ -25,6 +25,11 @@ def get_reference(store, country,
         ...
         End with index of (flow, good, partner) that works as references.
 
+    TODO:
+    Going to have to rework this to return a list of potentials for each good.
+    From that list we'll (automatically according to some criteria) choose
+    the reference **for that good**.
+
     Parameters:
     -----------
     store : HDF5Store
