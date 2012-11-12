@@ -1,3 +1,4 @@
+import pandas as pd
 
 
 def weight_matrix(store, country, year,
@@ -21,12 +22,10 @@ def weight_matrix(store, country, year,
     --------
     An g*k (number of nonzero varieties).
 
-    Current: Probably drop for loops and just call weight_matrix() in
-    the grand GMM estimation.
+    TODO:
 
-    May need to drop the solo varieties (only one year).
+    - May need to drop the solo varieties (only one year).
 
-    Helpers:
 
     df.count(axis=1)  # Gives the T for each variety.
     sum(df1.count(axis=1) == 1)  # Count of solos
@@ -37,10 +36,12 @@ def weight_matrix(store, country, year,
     df[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
     df2[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
 
+    Helpers:
     """
     # years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']  # TEMPORARY
+    print 'Starting country %s, year %s now.' % (country, year)
     y0 = years[years.index(year) - 1]
     t = len(years)
 
-    return t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (
-        1 / store['quantity_' + country][y0])) ** (-1 / 2)
+    return pd.DataFrame(t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (
+        1 / store['quantity_' + country][y0])) ** (-1 / 2), columns=['weight']).dropna()
