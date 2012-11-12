@@ -30,7 +30,7 @@ def weight_matrix(store, country, year,
 
     df.count(axis=1)  # Gives the T for each variety.
     sum(df1.count(axis=1) == 1)  # Count of solos
-    df1[df1.counst(axis=1) == 1]  # DataFrame of the solos
+    df1[df1.count(axis=1) == 1]  # DataFrame of the solos
 
 
     Check on switching:
