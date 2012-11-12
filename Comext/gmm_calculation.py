@@ -33,7 +33,7 @@ def get_reference(store, country,
 
     Returns:
     --------
-    MultiIndex
+    DataFrame (call index on this; for storage reasons)
     """
 
     return wm(store, country, years[4]).ix[
@@ -42,10 +42,4 @@ def get_reference(store, country,
         wm(store, country, years[1]).index
         ].dropna().index
         ].dropna().index
-        ].dropna().index
-
-
-
-    # df[df.count(axis=1) == 5] gives the index
-    # df.ix[df[df.count(axis=1) == 5]] gives values.
-    store['quantity_' + country]
+        ].dropna()
