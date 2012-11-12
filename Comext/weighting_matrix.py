@@ -66,16 +66,6 @@ country_code = {
     #     final.append(string.join(elem, sep='_'))
 
 
-idx = sorted(cpa.keys())
-cols = [
-        'product_2007',
-        'product_2008',
-        'product_2009',
-        'product_2010',
-        'product_2011',
-        ]
-
-
 def lexicographic(df, i, j):
         '''
         Function to apply to 2 columns of a DataFrame.  Returns a series
@@ -91,16 +81,18 @@ def lexicographic(df, i, j):
 countries = sorted(country_code.keys())
 
 
-def get_quantities(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
+def get_quantities(countries, store=yearly, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
     """"
-    Countruts pyTables for the quantities used in the weight_matrix.
+    Counstructs pyTables for the quantities used in the weight_matrix.
+    May be useful: q_gen = it.product([1, 2], sorted(country_code.keys()), sorted(cpa.keys()))
+
     Paramaters
+    
     ----------
 
     Returns:
     --------
     """
-    q_gen = it.product([1, 2], sorted(country_code.keys()), sorted(cpa.keys()))
     for country in countries:
         try:
             yearly['quantity' + '_' + country] = pd.DataFrame(yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
@@ -108,9 +100,10 @@ def get_quantities(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 
             print 'Trouble with %s' % country
         for year in years[1:]:
             try:
-                yearly['quantity' + '_' + country] = yearly['quantity' + '_' + country].append(pd.DataFrame(yearly[year + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[year]))
+                yearly['quantity' + '_' + country] = yearly['quantity' + '_' + country].merge(pd.DataFrame(yearly[year + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[year]), how='outer', left_index=True, right_index=True)
             except:
                 print 'Trouble with %s, %s in inner loop.' % (country, year)
+    store.close
 
 def weight_matrix(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
     """
@@ -128,41 +121,39 @@ def weight_matrix(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', '
 
     df.reset_index(level='PERIOD') may be useful.
     """
-    
 
 
+    # for year in sorted(yearly.keys()):
 
-    for year in sorted(yearly.keys()):
 
-
-    variety_600 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_091 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_010 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_011 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_038 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_018 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_017 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_032 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_055 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_030 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_053 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_061 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_060 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_063 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_064 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_066 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_068 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_003 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_002 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_001 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_007 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_006 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_005 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_004 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_EU = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_046 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_009 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_008 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    variety_054 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_600 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_091 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_010 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_011 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_038 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_018 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_017 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_032 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_055 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_030 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_053 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_061 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_060 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_063 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_064 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_066 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_068 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_003 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_002 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_001 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_007 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_006 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_005 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_004 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_EU = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_046 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_009 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_008 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
+    # variety_054 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
 
 yearly.close()
