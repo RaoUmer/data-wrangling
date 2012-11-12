@@ -1,159 +1,48 @@
-import string
 import cPickle
-import itertools as it
-from collections import deque
 
 import numpy as np
 import pandas as pd
 
 
-# # Pickling cpa:
-# output = open('product_dict.pkl', 'wb')
-# cPickle.dump(cpa, output, 2)
-# output.close()
+def weight_matrix(store, country, year):
+    """
+    To adjust for heteroskedasticity in the GMM estimation of
+    the elasticity of substitution.
 
-# # Pickling partners:
-# out = open('partners_dict.pkl', 'wb')
-# cPickle.dump(partners, out, 2)
-# out.close()
+    Formula: T^(3/2)((1 / q_{gct}) + (1 / q_{gct-1}))^(-1/2)
+        where:
+        T : number of years involved in estimate (5 for now)
+        q_{gct} : quantity of variety gc at t.
 
-# Read with:
-yearly = pd.HDFStore('yearly.h5')
-
-pickle_file = open('product_dict.pkl', 'rb')
-cpa = cPickle.load(pickle_file)
-pickle_file.close()
-
-partners_pickle = open('partners_dict.pkl', 'rb')
-partners = cPickle.load(partners_pickle)
-partners_pickle.close()
-
-country_code = {
-            '001': 'France',
-            '003': 'Netherlands',
-            '004': 'Fr Germany',
-            '005': 'Italy',
-            '006': 'Utd. Kingdom',
-            '007': 'Ireland',
-            '008': 'Denmark',
-            '009': 'Greece',
-            '010': 'Portugal',
-            '011': 'Spain',
-            '017': 'Belgium',
-            '018': 'Luxembourg',
-            '030': 'Sweden',
-            '032': 'Finland',
-            '038': 'Austria',
-            '600': 'Cyprus',
-            '061': 'Czech Republic',
-            '053': 'Estonia',
-            '064': 'Hungary',
-            '055': 'Lithuania',
-            '054': 'Latvia',
-            '046': 'Malta',
-            '060': 'Poland',
-            '091': 'Slovenia',
-            '063': 'Slovakia',
-            '068': 'Bulgaria',
-            '066': 'Romania',
-            'EU': 'EU',
-}
-
-
-    # leaves = zip(['variety'] * len(country_code), country_code)
-    # final = []
-    # for elem in leaves:
-    #     final.append(string.join(elem, sep='_'))
-
-
-def lexicographic(df, i, j):
-        '''
-        Function to apply to 2 columns of a DataFrame.  Returns a series
-        that is the lexicographic max (assuming nonzero here).  Call with
-        pd.DataFrame(df.apply(lexicographic, axis=1, args=(0, 1)), columns=['quantity'])
-        '''
-
-        if df[i] != 0:
-            return df[i]
-        else:
-            return df[j]
-
-countries = sorted(country_code.keys())
-
-
-def get_quantities(countries, store=yearly, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
-    """"
-    Counstructs pyTables for the quantities used in the weight_matrix.
-    May be useful: q_gen = it.product([1, 2], sorted(country_code.keys()), sorted(cpa.keys()))
-
-    Paramaters
-    
-    ----------
+    Parameters:
+    -----------
+    store: pyTables object
+    country: A string from the declarants dict.
+    year: A string e.g. 'y2007' from years.
 
     Returns:
     --------
-    """
-    for country in countries:
-        try:
-            yearly['quantity' + '_' + country] = pd.DataFrame(yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
-        except:
-            print 'Trouble with %s' % country
-        for year in years[1:]:
-            try:
-                yearly['quantity' + '_' + country] = yearly['quantity' + '_' + country].merge(pd.DataFrame(yearly[year + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[year]), how='outer', left_index=True, right_index=True)
-            except:
-                print 'Trouble with %s, %s in inner loop.' % (country, year)
-    store.close
+    An g*k (number of nonzero varieties).
 
-def weight_matrix(store, countries, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
-    """
-    T^(3/2)((1 / q_{gct}) + (1 / q_{gct-1}))^(-1/2)
+    Current: Probably drop for loops and just call weight_matrix() in
+    the grand GMM estimation.
 
-    Current step is to get quantities for each country, index by (flow, )
-    Need to get the index correct.  Want variety_XXX
-    to have a (partner, product) multiIndex.
+    May need to drop the solo varieties (only one year).
 
-    Having to treat the first year special.
+    Helpers:
+
+    df.count(axis=1)  # Gives the T for each variety.
+    sum(df1.count(axis=1) == 1)  # Count of solos
+    df1[df1.counst(axis=1) == 1]  # DataFrame of the solos
+
 
     Check on switching:
     df[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
     df2[(df2['QUANTITY_TON'] == 0) != (df['QUANTITY_TON'] == 0)].head()
 
-    df.reset_index(level='PERIOD') may be useful.
     """
-
-
-    # for year in sorted(yearly.keys()):
-
-
-    # variety_600 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_091 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_010 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_011 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_038 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_018 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_017 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_032 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_055 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_030 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_053 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_061 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_060 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_063 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_064 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_066 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_068 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_003 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_002 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_001 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_007 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_006 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_005 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_004 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_EU = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_046 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_009 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_008 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-    # variety_054 = pd.DataFrame(np.zeros([len(cpa), nyears]), idx, columns=cols)
-
-yearly.close()
+    years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']  # TEMPORARY
+    y0 = years[years.index(year) - 1]
+    t = len(years)
+    y0 = years[years.index(year) - 1]
+    return t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (1 / df[y0])) ** (-1 / 2)
