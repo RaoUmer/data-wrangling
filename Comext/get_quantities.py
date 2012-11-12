@@ -4,10 +4,12 @@ import cPickle
 import pandas as pd
 
 
-# def get_quantities(countries, store=yearly, years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
+# def get_quantities(countries, store=yearly, years=['y2007', 'y2008', 'y2009',
+#         'y2010', 'y2011']):
 #     """"
 #     Counstructs pyTables for the quantities used in the weight_matrix.
-#     May be useful: q_gen = it.product([1, 2], sorted(country_code.keys()), sorted(cpa.keys()))
+#     May be useful: q_gen = it.product([1, 2], sorted(country_code.keys()),
+#         sorted(cpa.keys()))
 #     Paramaters
 #     ----------
 #     Returns:
@@ -76,12 +78,18 @@ years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
 
 for country in countries:
     try:
-        yearly['quantity' + '_' + country] = pd.DataFrame(yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
+        yearly['quantity' + '_' + country] = pd.DataFrame(
+            yearly[years[0] + '_' + country].reset_index(level='PERIOD').apply(
+            lexicographic, axis=1, args=(0, 1)), columns=[years[0]])
     except:
         print 'Trouble with %s' % country
     for year in years[1:]:
         try:
-            yearly['quantity' + '_' + country] = yearly['quantity' + '_' + country].merge(pd.DataFrame(yearly[year + '_' + country].reset_index(level='PERIOD').apply(lexicographic, axis=1, args=(0, 1)), columns=[year]), how='outer', left_index=True, right_index=True)
+            yearly['quantity' + '_' + country] = yearly[
+                'quantity' + '_' + country].merge(pd.DataFrame(
+                yearly[year + '_' + country].reset_index(level='PERIOD').apply(
+                lexicographic, axis=1, args=(0, 1)), columns=[year]),
+                how='outer', left_index=True, right_index=True)
         except:
             print 'Trouble with %s, %s in inner loop.' % (country, year)
 yearly.close
