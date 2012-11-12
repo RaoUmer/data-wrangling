@@ -22,10 +22,6 @@ def weight_matrix(store, country, year,
     --------
     An g*k (number of nonzero varieties).
 
-    TODO:
-
-    - May need to drop the solo varieties (only one year).
-
 
     df.count(axis=1)  # Gives the T for each variety.
     sum(df1.count(axis=1) == 1)  # Count of solos
@@ -43,5 +39,7 @@ def weight_matrix(store, country, year,
     y0 = years[years.index(year) - 1]
     t = len(years)
 
-    return pd.DataFrame(t ** (3 / 2) * ((1 / store['quantity_' + country][year]) + (
-        1 / store['quantity_' + country][y0])) ** (-1 / 2), columns=['weight']).dropna()
+    return pd.DataFrame(t ** (3 / 2) * ((
+        1 / store['quantity_' + country][year]) + (
+        1 / store['quantity_' + country][y0])) ** (-1 / 2),
+        columns=['weight']).dropna()
