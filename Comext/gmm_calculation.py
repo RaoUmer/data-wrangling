@@ -14,6 +14,12 @@ years_dict_file.closed
 years = sorted(years_dict.keys())
 
 
+def flip(x):
+    if x == 1:
+        return 2
+    else:
+        return 1
+
 def error(w, s, store, country, product, partner, year, reference, flow):
     """
     u_gct = [delta^k * ln(p_gct)]**2 - theta_1 * (delta^k * ln(s_gct))**2 -
@@ -23,23 +29,42 @@ def error(w, s, store, country, product, partner, year, reference, flow):
         theta_1 = w_g / ((1 + w_g)(sigma_g - 1))
         theta_2 = (1 - w_g(sigma_g - 2)) / ((1 + w_g)(sigma_g -1))
 
-    To get shares: Something like
+    Parameters:
+    -----------
+    s : the elasticity of substitution for that variety
+    w : omega, inverse supply elasticity
 
-    over total: df.xs(good, level='PRODUCT_NC')['VALUE_1000ECU'].sum()
 
-
-    """
     # TODO:
     # Build in some error control for if no ref in EuroArea.  May want
     # to avoid the EU group btw.
+    ------------------------
+    I'm temporarily assuming that when we difference with country k, we're
+    looking at the **exports** of country k, when the country of focus in
+    **importing**.  This means the (log) diff with country k will be about
+    zero.
+    """
+
     y0 = years[years.index(year) - 1]
 
     share = np.log(store[year + '_' + country]['VALUE_1000ECU'].xs((flow, product, partner),
         level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
         store[year + '_' + country]['VALUE_1000ECU'].xs((flow, product),
         level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) - (
-        np.log(store[year + '_' + country])
+        np.log(store[y0 + '_' + country])['VALUE_1000ECU'].xs((flow, product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
+        store[y0 + '_' + country]['VALUE_1000ECU'].xs((flow, product),
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) - (
+        np.log(store[year + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
+        store[year + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product),
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) - (
+        np.log(store[y0 + '_' + country])['VALUE_1000ECU'].xs((flip(flow), product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
+        store[y0 + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product),
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) 
         )
+        
         
 
     price = store[year + '_price_' + country].xs((flow, product, partner), 
@@ -68,16 +93,16 @@ def get_reference(store, country,
     Finds potential countries to use as k in calculating errors.
     Must provide a positive quantity in every year. (Exports & Imports?)
 
-    Read inside out to maintain sanity.  Would be so easy recursivly...
+    Read inside out to maintain sanity.  Would be so easy recursively...
         Get index wm for first year possible (i.e. second year in sample).
         Filter by calling .ix on that index; drop the NaNs.  Take that index.
         ...
-        End with index of (flow, good, partner) that works as references.
+        End with index of (flow, product, partner) that works as references.
 
     TODO:
-    Going to have to rework this to return a list of potentials for each good.
+    Going to have to rework this to return a list of potentials for each product.
     From that list we'll (automatically according to some criteria) choose
-    the reference **for that good**.  That critera MUST include preference
+    the reference **for that product**.  That criteria MUST include preference
     for other countries in the dataset.  If not, no way to calculate moment.
 
     Parameters:
