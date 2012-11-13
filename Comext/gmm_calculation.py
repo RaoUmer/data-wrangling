@@ -54,7 +54,12 @@ def error(w, s, store, country, product, partner, year, reference, flow):
         np.log(store[y0 + '_' + country])['VALUE_1000ECU'].xs((flow, product, partner),
         level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
         store[y0 + '_' + country]['VALUE_1000ECU'].xs((flow, product),
-        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) - (
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum()))
+
+    # This needs to be looked at more closely.  What is going on with the reference?
+    # Are we differencing on its exports?  For that variety or that good?
+
+    ref_share = (
         np.log(store[year + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product, partner),
         level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
         store[year + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product),
@@ -62,16 +67,29 @@ def error(w, s, store, country, product, partner, year, reference, flow):
         np.log(store[y0 + '_' + country])['VALUE_1000ECU'].xs((flip(flow), product, partner),
         level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
         store[y0 + '_' + country]['VALUE_1000ECU'].xs((flip(flow), product),
-        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) 
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum()))
         )
-        
-        
 
-    price = store[year + '_price_' + country].xs((flow, product, partner), 
-        level = ('FLOW', 'PRODUCT_NC', 'PARTNER')) #PARTNER? Self?
+    price = np.log(store[year + '_price_' + country].xs((flow, product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER'))) - np.log(
+        store[y0 + '_price_' + country].xs((flow, product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')))
 
-    u = 
+    # This needs to be looked at more closely.  What is going on with the reference?
+    # Are we differencing on its exports?  For that variety or that good?
+    # Very unsure here.  Don't give it any status quo bias.
 
+    ref_price = np.log(store[year + '_price_' + reference]).xs(
+        (flow, product, partner), level=('FLOW', 'PRODUCT_NC', 'PARTNER')) - (
+        np.log(store[y0 + '_price_' + reference]).xs((flow, product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')))
+
+    theta_1 = w / ((1 + w) * (s - 1))
+    theta_2 = (1 - w * (s - 2)) / ((1 + w) * (s - 1))
+
+    u = ((price - ref_price) ** 2 - theta_1 * (share - ref_share) ** 2 +
+            theta_2 * ((price - ref_price) * (share - ref_share)))
+    return u
     # prices = (np.log(store[year + '_' + 'price' + '_' + country].xs(
     #     (years_dict[year], product), level=('PERIOD', 'PRODUCT_NC'))) -
     #     np.log(store[year + '_' + 'price' + '_' + reference].xs(
@@ -81,8 +99,6 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     # shares = (np.log(store[year + '_price' + country].xs((product, partner),
     #     level=('PRODUCT_NC', 'PARTNER'))) * (
     # store['quantity_' + country].xs((product, partner))))
-
-    
 
     # ASSUME A REFERENCE COUNTRY
 
@@ -123,3 +139,4 @@ def get_reference(store, country,
         ].dropna().index
         ].dropna().index
         ].dropna()
+        
