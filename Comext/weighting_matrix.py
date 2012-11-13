@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def weight_matrix(store, country, year,
-    years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011'], t=5):
+    years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011'], t=5, nrows=500):
     """
     To adjust for heteroskedasticity in the GMM estimation of
     the elasticity of substitution.
@@ -40,6 +40,6 @@ def weight_matrix(store, country, year,
     t = len(years)
 
     return pd.DataFrame(t ** (3 / 2) * ((
-        1 / store['quantity_' + country][year]) + (
-        1 / store['quantity_' + country][y0])) ** (-1 / 2),
+        1 / store['quantity_' + country].head(nrows)[year]) + (
+        1 / store['quantity_' + country].head(nrows)[y0])) ** (-1 / 2),
         columns=['weight']).dropna()
