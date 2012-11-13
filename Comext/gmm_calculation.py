@@ -6,14 +6,15 @@ import pandas as pd
 from weighting_matrix import weight_matrix as wm
 
 
-with open('years_dict.pkl', 'r') as years_dict:
-    years_dict = load(years_dict)
-years_dict.closed
-
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 
+with open('years_dict.pkl', 'r') as years_dict_file:
+    years_dict = load(years_dict_file)
+years_dict_file.closed
+years = sorted(years_dict.keys())
 
-def error(store, country, good, partner, year, reference):
+
+def error(w, s, store, country, product, partner, year, reference, flow):
     """
     u_gct = [delta^k * ln(p_gct)]**2 - theta_1 * (delta^k * ln(s_gct))**2 -
         theta_2 * (delta^k * ln(p_gct) * delta^k * ln(s_gct))
@@ -28,13 +29,35 @@ def error(store, country, good, partner, year, reference):
 
 
     """
+    # TODO:
+    # Build in some error control for if no ref in EuroArea.  May want
+    # to avoid the EU group btw.
+    y0 = years[years.index(year) - 1]
 
-    prices = (np.log(store[year + '_' + 'price' + '_' + country].xs(
-        (years_dict[year], good), level=('PERIOD', 'PRODUCT_NC'))) -
-        np.log(store[year + '_' + 'price' + '_' + reference].xs(
-        (years_dict[year], good), level=('PERIOD', 'PRODUCT_NC')))) ** 2
+    share = np.log(store[year + '_' + country]['VALUE_1000ECU'].xs((flow, product, partner),
+        level=('FLOW', 'PRODUCT_NC', 'PARTNER')) / (
+        store[year + '_' + country]['VALUE_1000ECU'].xs((flow, product),
+        level=('FLOW', 'PRODUCT_NC'))['VALUE_1000ECU'].sum())) - (
+        np.log(store[year + '_' + country])
+        )
+        
 
-    shares = (np.log(store[]))
+    price = store[year + '_price_' + country].xs((flow, product, partner), 
+        level = ('FLOW', 'PRODUCT_NC', 'PARTNER')) #PARTNER? Self?
+
+    u = 
+
+    # prices = (np.log(store[year + '_' + 'price' + '_' + country].xs(
+    #     (years_dict[year], product), level=('PERIOD', 'PRODUCT_NC'))) -
+    #     np.log(store[year + '_' + 'price' + '_' + reference].xs(
+    #     (years_dict[year], product), level=('PERIOD', 'PRODUCT_NC')))) ** 2
+
+    # # ((price * quantity) of variety) / (total exp on that product.)
+    # shares = (np.log(store[year + '_price' + country].xs((product, partner),
+    #     level=('PRODUCT_NC', 'PARTNER'))) * (
+    # store['quantity_' + country].xs((product, partner))))
+
+    
 
     # ASSUME A REFERENCE COUNTRY
 
