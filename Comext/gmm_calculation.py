@@ -39,10 +39,9 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     # Build in some error control for if no ref in EuroArea.  May want
     # to avoid the EU group btw.
     ------------------------
-    I'm temporarily assuming that when we difference with country k, we're
-    looking at the **exports** of country k, when the country of focus in
-    **importing**.  This means the (log) diff with country k will be about
-    zero.
+    I still don't know. Just build it flexible. Feenstra 1994 says
+    'eliminate the random terms [...]by subtracting the same equation
+    for source k' p. 163.
     """
 
     y0 = years[years.index(year) - 1]
