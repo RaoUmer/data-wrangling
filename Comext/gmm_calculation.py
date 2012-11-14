@@ -1,6 +1,14 @@
-import pandas as pd
-from weighting_matrix import weight_matrix as wm
+import os
+import cPickle
 
+import pandas as pd
+    from weighting_matrix import weight_matrix as wm
+
+os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
+
+with open('declarants_no_002_dict.pkl', 'r') as declarants:
+    countries = cPickle.load(declarants)
+declarants.closed
 
 def error():
     """
@@ -26,10 +34,15 @@ def get_reference(store, country,
         End with index of (flow, good, partner) that works as references.
 
     TODO:
-    Going to have to rework this to return a list of potentials for each good.
+    1. Going to have to rework this to return a list of potentials for each good.
     From that list we'll (automatically according to some criteria) choose
     the reference **for that good**.
 
+
+    2. I want to rework this so there's no need to write anything out to disk.
+    I want call it for each gmm estimation (I think).  It will return a tuple with
+    the reference country for that product.  Probaly will need to attach some info
+    about which country it's for.
     Parameters:
     -----------
     store : HDF5Store
@@ -39,12 +52,17 @@ def get_reference(store, country,
     Returns:
     --------
     DataFrame (call index on this; for storage reasons)
+
+    Will want to return some kind of (product, reference) pair.
     """
 
-    return wm(store, country, years[4]).ix[
+    df = wm(store, country, years[4]).ix[
         wm(store, country, years[3]).ix[
         wm(store, country, years[2]).ix[
         wm(store, country, years[1]).index
         ].dropna().index
         ].dropna().index
         ].dropna()
+
+    ref = df.index.levels[2]
+
