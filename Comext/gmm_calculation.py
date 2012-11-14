@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 from cPickle import load
 
@@ -19,6 +21,7 @@ def flip(x):
         return 2
     else:
         return 1
+
 
 def error(w, s, store, country, product, partner, year, reference, flow):
     """
@@ -88,7 +91,23 @@ def error(w, s, store, country, product, partner, year, reference, flow):
 
     u = ((price - ref_price) ** 2 - theta_1 * (share - ref_share) ** 2 +
             theta_2 * ((price - ref_price) * (share - ref_share)))
-    return u
+
+    # Now (I think) the goal is to use GMM to estimate theta_i to
+    # minimize the weighted SSR w/ moments E(u_i,t,(c?)) = 0.
+
+
+
+
+
+
+
+
+    # Finally, solve for:
+
+    rho_hat = .5 + (.25 - (1 / (4 + (theta_2 ** 2 / theta_1 ** 2)))) ** (1 / 2)
+    sigma_hat = 1 + ((2 * rho_hat) / (1 - rho_hat)) * (1 / theta_2)
+
+
     # prices = (np.log(store[year + '_' + 'price' + '_' + country].xs(
     #     (years_dict[year], product), level=('PERIOD', 'PRODUCT_NC'))) -
     #     np.log(store[year + '_' + 'price' + '_' + reference].xs(
@@ -100,6 +119,19 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     # store['quantity_' + country].xs((product, partner))))
 
     # ASSUME A REFERENCE COUNTRY
+
+
+def picker(list):
+    done = False
+    while done == False:
+        for int in list:
+            if int in partners:
+                return partners[int]
+                done = True
+            else:
+                pass
+    else:
+        print 'No Matches!'
 
 
 def get_reference(store, country,
@@ -131,11 +163,14 @@ def get_reference(store, country,
     DataFrame (call index on this; for storage reasons)
     """
 
-    return wm(store, country, years[4]).ix[
+    df = wm(store, country, years[4]).ix[
         wm(store, country, years[3]).ix[
         wm(store, country, years[2]).ix[
         wm(store, country, years[1]).index
         ].dropna().index
         ].dropna().index
         ].dropna()
-        
+
+    for prod in np.unique(df.index.get_level_values('PRODUCT_NC')):
+        print picker(df.xs((1, prod), level=('FLOW', 'PRODUCT_NC')).index)
+            
