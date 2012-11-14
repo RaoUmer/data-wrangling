@@ -54,11 +54,11 @@ Getting dicts:
 import cPickle
 
 with open('product_dict.pkl', 'rb') as pickle_file:
-    cpa = cPickle.load(pickle_file)
+    cpa = load(pickle_file)
 pickle_file.closed
 
 with open('partners_dict.pkl', 'rb') as partners_pickle:
-    partners = cPickle.load(partners_pickle)
+    partners = load(partners_pickle)
 partners_pickle.closed
 
 with open('declarants_no_002_dict.pkl', 'r') as declarants:
