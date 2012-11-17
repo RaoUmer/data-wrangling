@@ -32,7 +32,7 @@ def get_reference(store, country, n=500,
     I need a (product, reference) tuple
     """
 
-    df =store['quantity_' + country].head(n)[years[4]].ix[1].ix[
+    idx =store['quantity_' + country].head(n)[years[4]].ix[1].ix[
         store['quantity_' + country].head(n)[years[3]].ix[1].ix[
         store['quantity_' + country].head(n)[years[2]].ix[1].ix[
         store['quantity_' + country].head(n)[years[1]].ix[1].ix[
@@ -40,9 +40,17 @@ def get_reference(store, country, n=500,
         ].dropna().index
         ].dropna().index
         ].dropna().index
-        ].dropna()
-    return df
-    
+        ].dropna().index
+
+    holder = '0'
+    references = []
+    for tuple in idx:
+        if tuple[0] == holder:
+            pass
+        else:
+            references.append(tuple)
+            holder = tuple[0]
+
 
     # for product in np.unique(df.index.get_level_values('PRODUCT_NC')):
     #     print picker(df.xs((1, product), level=('FLOW', 'PRODUCT_NC')).index)
