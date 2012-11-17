@@ -1,5 +1,5 @@
 import os
-import cPickle
+from cPickle import load
 
 import pandas as pd
 
@@ -20,15 +20,15 @@ os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 yearly = pd.HDFStore('yearly.h5')
 
 with open('product_dict.pkl', 'rb') as pickle_file:
-    cpa = cPickle.load(pickle_file)
+    cpa = load(pickle_file)
 pickle_file.closed
 
 # partners_pickle = open('partners_dict.pkl', 'rb')
-# partners = cPickle.load(partners_pickle)
+# partners = load(partners_pickle)
 # partners_pickle.close()
 
 with open('declarants_no_002_dict.pkl', 'r') as declarants:
-    country_code = cPickle.load(declarants)
+    country_code = load(declarants)
 declarants.closed
 
 
