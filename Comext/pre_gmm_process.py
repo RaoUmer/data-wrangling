@@ -72,12 +72,10 @@ declarants.closed
 
 declarants = sorted(country_code.keys())
 
-cols = [
-        'p_2008', 's_2008', 'ps_2008',
-        'p_2009', 's_2009', 'ps_2009',
-        'p_2010', 's_2010', 'ps_2010',
-        'p_2011', 's_2011', 'ps_2011']
-
+shares = ['p_2008', 'p_2009', 'p_2010', 'p_2011']
+prices = ['s_2008', 's_2009', 's_2010', 's_2011']
+cross  = ['ps_2008', 'ps_2009', 'ps_2010', 'ps_2011']
+cols = shares + prices + cross
 
 for country in declarants:
     reference_tuple = get_reference(yearly, country)
