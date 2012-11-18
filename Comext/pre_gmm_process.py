@@ -209,8 +209,8 @@ def get_cross(df_col, store=yearly):
             np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) * (
             (np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
             np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
-            np.log(store[year + 'price_' + country].ix[1, iyear, refcountry]) -
-            np.log(store[prev + 'price_' + country].ix[1, iprev, refcountry])))
+            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
+            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
 
 
 
