@@ -91,6 +91,10 @@ def get_shares(df_col, store=yearly):
 
     Params
     df_col: an n x 1 DataFrame via [[column]]
+
+    Returns
+    -------
+    A scaler that will fill the gmm_calc matrix.  Not yet squared though.
     """
 
     year = 'y' + df_col.index[0][-4:] + '_'
@@ -128,7 +132,7 @@ def get_shares(df_col, store=yearly):
         return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
                 np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
                 np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
-                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) ** 2
+                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum))))
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
