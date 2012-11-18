@@ -161,17 +161,12 @@ def get_prices(df_col, store=yearly):
     iprev = int(prev[1:5] + '52')
 
     try:
-        return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
+        return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], variety[1]]) -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], variety[1]])) - (
                 np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
                 np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
-
-
-
-
-
 
 
 # Will probably need to do tb[thing] = tb[thing].apply
