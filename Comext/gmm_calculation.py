@@ -1,3 +1,8 @@
+###
+# This code has been replaced by pre_gmm_process
+###
+
+
 from __future__ import division
 
 import os
@@ -14,13 +19,6 @@ with open('years_dict.pkl', 'r') as years_dict_file:
     years_dict = load(years_dict_file)
 years_dict_file.closed
 years = sorted(years_dict.keys())
-
-
-def flip(x):
-    if x == 1:
-        return 2
-    else:
-        return 1
 
 
 def error(w, s, store, country, product, partner, year, reference, flow):
@@ -44,7 +42,7 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     ------------------------
     I still don't know. Just build it flexible. Feenstra 1994 says
     'eliminate the random terms [...]by subtracting the same equation
-    for source k' p. 163.
+    for source k' p. 163. So I'm leaning towards *only* looking at *imports*.
     """
 
     y0 = years[years.index(year) - 1]
@@ -119,58 +117,3 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     # store['quantity_' + country].xs((product, partner))))
 
     # ASSUME A REFERENCE COUNTRY
-
-
-def picker(list):
-    done = False
-    while done == False:
-        for int in list:
-            if int in partners:
-                return partners[int]
-                done = True
-            else:
-                pass
-    else:
-        print 'No Matches!'
-
-
-def get_reference(store, country,
-        years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
-    """
-    Finds potential countries to use as k in calculating errors.
-    Must provide a positive quantity in every year. (Exports & Imports?)
-
-    Read inside out to maintain sanity.  Would be so easy recursively...
-        Get index wm for first year possible (i.e. second year in sample).
-        Filter by calling .ix on that index; drop the NaNs.  Take that index.
-        ...
-        End with index of (flow, product, partner) that works as references.
-
-    TODO:
-    Going to have to rework this to return a list of potentials for each product.
-    From that list we'll (automatically according to some criteria) choose
-    the reference **for that product**.  That criteria MUST include preference
-    for other countries in the dataset.  If not, no way to calculate moment.
-
-    Parameters:
-    -----------
-    store : HDF5Store
-    country : String
-    years: list of strings
-
-    Returns:
-    --------
-    DataFrame (call index on this; for storage reasons)
-    """
-
-    df = wm(store, country, years[4]).ix[
-        wm(store, country, years[3]).ix[
-        wm(store, country, years[2]).ix[
-        wm(store, country, years[1]).index
-        ].dropna().index
-        ].dropna().index
-        ].dropna()
-
-    for prod in np.unique(df.index.get_level_values('PRODUCT_NC')):
-        print picker(df.xs((1, prod), level=('FLOW', 'PRODUCT_NC')).index)
-            
