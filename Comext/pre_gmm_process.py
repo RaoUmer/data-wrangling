@@ -150,7 +150,7 @@ def get_prices(df_col, store=yearly):
 
     Returns
     -------
-    A scaler with the price used in the gmm calculation.
+    A scaler with the price used in the gmm calculation.  Not yet squared.
     """
 
     year = 'y' + df_col.index[0][-4:] + '_'
@@ -164,7 +164,7 @@ def get_prices(df_col, store=yearly):
         return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
                 np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
                 np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry]))) ** 2
+                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
