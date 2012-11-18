@@ -1,3 +1,7 @@
+###
+# This code has been replaced by get_reference2.
+###
+
 from __future__ import division
 
 import os
@@ -60,8 +64,13 @@ def get_reference(store, country,
 
     Returns:
     --------
-    DataFrame (call index on this; for storage reasons)
+    DataFrame (call index on this; for storage reasons).
+    Or maybe a list of tuples with (good, partner) pairs?
+
+    I need a (product, reference) tuple
     """
+
+    print('**WANRING** This is not the code you are looking for.')
 
     df = wm(store, country, years[4]).ix[
         wm(store, country, years[3]).ix[
@@ -70,6 +79,6 @@ def get_reference(store, country,
         ].dropna().index
         ].dropna().index
         ].dropna()
-
+    return df
     for product in np.unique(df.index.get_level_values('PRODUCT_NC')):
         print picker(df.xs((1, product), level=('FLOW', 'PRODUCT_NC')).index)
