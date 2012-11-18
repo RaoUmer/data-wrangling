@@ -169,52 +169,7 @@ def get_prices(df_col, store=yearly):
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
 
-def get_cross(df_col, store=yearly):
-    """
-    Use to fill the cross column in the gmm_calc DataFrame.
-    Pass it a DataFrame called via tb['c'+country] =
-        tb['c+country'][[ps_20YY]].apply(get_cross, axis=1).
 
-    Parameters
-    ----------
-    df_col : A DataFrame via [[column]]
-
-    Returns
-    -------
-    A scaler with the share * price used in the gmm calculation.
-    """
-
-    year = 'y' + df_col.index[0][-4:] + '_'
-    iyear = int(year[1:5] + '52')
-    variety = df_col.name
-    refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[1:5]) - 1) + '_'
-    iprev = int(prev[1:5] + '52')
-
-    try:
-        value_sum = (
-            np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate sum for %r, %r') % (variety[0], variety[1])
-
-    try:
-        prior_sum = (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate prev for %r, %r') % (variety[0], variety[1])
-
-    return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
-            np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) * (
-            (np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
-            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
-            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
-            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
 
 
 
@@ -249,6 +204,60 @@ Currently hitting an error on the reference lookup for '01019090'
 # Generates the final DataFrame.  Already ran on accident, but it should work.
  for country in declarants:
      tb['c_' + country] = pd.DataFrame(index=reference_tuple[0], columns=cols)
+
+
+# get_cross().  Going to pick up by filling the gmm_store with non squared
+values first, filling the croses with the product, and then squaring the
+prices and shares.
+
+def get_cross(df_col, store=yearly):
+    """
+    # Use to fill the cross column in the gmm_calc DataFrame.
+    # Pass it a DataFrame called via tb['c'+country] =
+    #     tb['c+country'][[ps_20YY]].apply(get_cross, axis=1).
+
+    # Parameters
+    # ----------
+    # df_col : A DataFrame via [[column]]
+
+    # Returns
+    # -------
+    # A scaler with the share * price used in the gmm calculation.
+    """
+
+    year = 'y' + df_col.index[0][-4:] + '_'
+    iyear = int(year[1:5] + '52')
+    variety = df_col.name
+    refcountry = reference[variety[0]]
+    prev = 'y' + str(int(year[1:5]) - 1) + '_'
+    iprev = int(prev[1:5] + '52')
+
+    try:
+        value_sum = (
+            np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
+            variety[0]].sum()))
+
+    except:
+        print('Couldn\'t calculate sum for %r, %r') % (variety[0], variety[1])
+
+    try:
+        prior_sum = (
+            np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
+            variety[0]].sum()))
+
+    except:
+        print('Couldn\'t calculate prev for %r, %r') % (variety[0], variety[1])
+
+    return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
+            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - ((
+            np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum)) - (
+            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) * ((
+            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
+            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
+            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
+            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
+
+
 """
 
 
