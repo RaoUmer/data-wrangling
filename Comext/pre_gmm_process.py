@@ -187,6 +187,22 @@ for country in declarants:
     for column in tb['c_' + country][prices]:
         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)    
 
+
+# Test Producdure
+yearly = pd.HDFStore('yearly.h5')
+country = '001'
+year = 'y2008_'
+iyear = 200852
+prev = 'y2007_'
+iprev = 200752
+variety = ('01', 3)
+reference_tuple = get_reference(yearly, country)
+reference = reference_tuple[1]
+refcountry = reference[variety[0]]
+
+# Particular df depends on testing prices vs. shares
+df = tb['c_' + country][['p_2008']]
+
 """
 I'm currently have some index issues.  All the data we're getting is comming
 from the y20xx_country leaves.  Our reference index is coming from the quantity
