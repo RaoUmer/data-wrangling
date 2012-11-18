@@ -124,14 +124,14 @@ def get_shares(df_col, store=yearly):
         print('Couldn\'t calculate prior for %r, %r') % (variety[0], variety[1])
 
     try:
-        return (np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-            variety[0], variety[1])] / value_sum)) - (
-            np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
-            variety[0], variety[1])] / prior_sum)) - (
-            np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-            variety[0], ref_country)] / value_sum) - (
-            np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
-            variety[0], ref_country)] / prior_sum)))
+        return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+                    variety[0], variety[1])] / value_sum)) - (
+                    np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
+                    variety[0], variety[1])] / prior_sum)) - (
+                    np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+                    variety[0], ref_country)] / value_sum) - (
+                    np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
+                    variety[0], ref_country)] / prior_sum)))) ** 2
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
