@@ -82,19 +82,23 @@ cols = shares + prices + cross
 start_time = datetime.now()
 
 
-def get_shares(series, store=yearly):
+def get_shares(df_col, store=yearly):
     """
-    To fill the initialized DataFrame
+    To fill the initialized DataFrame.
+
+    Pass it a DataFrame called via tb['c'+country] =
+        tb['c+country'][[s_20YY]].apply(get_shares, axis=1).
 
     Params
-    df: an n x 1 DataFrame via [[column]]
-    country: sring
-    shares: list of strings
+    df_col: an n x 1 DataFrame via [[column]]
     """
-    year = 'y' + series.index[0][-4:] + '_'
+
+    year = 'y' + df_col.index[0][-4:] + '_'
     iyear = int(year[1:5] + '52')
-    variety = series.name
+    variety = df_col.name
     ref_country = reference[variety[0]]
+    prior = 'y' + str(int(year[2:6]) + 1) + '_'
+    iprior = int(year[1:5] + '52')
     # if product == ref_product:
     #     pass
     # else:
