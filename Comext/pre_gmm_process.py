@@ -102,16 +102,50 @@ def get_shares(series, store=yearly):
     #     ref_product = product
 
     print('Working on %r, %r') % (variety[0], variety[1])
-    print(datetime.now - start_time)
-    value_sum = (
-        np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
-        variety[0]].sum()))
+    print(datetime.now() - start_time)
+    try:
+        value_sum = (
+            np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
+            variety[0]].sum()))
 
-    return np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-        variety[0], variety[1])] / value_sum) - (
-        np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-        variety[0], ref_country)] / value_sum))
+    except:
+        print('Couldn\'t calculate sum for %r, %r') % (variety[0], variety[1])
 
+    try:
+        prior_sum = (
+            np.log(store[prior + country]['VALUE_1000ECU'].ix[1, iprior,
+            variety[0]].sum()))
+
+    except:
+        print('Couldn\'t calculate prior for %r, %r') % (variety[0], variety[1])
+
+    try:
+        return (np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+            variety[0], variety[1])] / value_sum)) - (
+            np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
+            variety[0], variety[1])] / prior_sum)) - (
+            np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+            variety[0], ref_country)] / value_sum) - (
+            np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
+            variety[0], ref_country)] / prior_sum)))
+    except:
+        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
+
+
+def get_prices(df_col, store=yearly):
+    """
+    """
+
+    year = 'y' + df_col.index[0][-4:] + '_'
+    iyear = int(year[1:5] + '52')
+    variety = df_col.name
+    ref_country = reference[variety[0]]
+    prior = 'y' + str(int(year[2:6]) + 1) + '_'
+    iprior = int(year[1:5] + '52')
+
+
+# Will probably need to do tb[thing] = tb[thing].apply
+# Use df[[column]] to pass a series to apply apparantly axis=1
 
 for country in declarants:
     reference_tuple = get_reference(yearly, country)
