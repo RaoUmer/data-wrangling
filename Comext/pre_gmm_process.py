@@ -97,8 +97,9 @@ def get_shares(df_col, store=yearly):
     iyear = int(year[1:5] + '52')
     variety = df_col.name
     refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[2:6]) + 1) + '_'
-    iprev = int(year[1:5] + '52')
+    prev = 'y' + str(int(year[1:5]) - 1) + '_'
+    iprev = int(prev[1:5] + '52')
+
     # if product == ref_product:
     #     pass
     # else:
@@ -125,9 +126,9 @@ def get_shares(df_col, store=yearly):
 
     try:
         return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
-                np.log( store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
-                np.log( store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
-                np.log( store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) ** 2
+                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
+                np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
+                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) ** 2
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
@@ -152,8 +153,8 @@ def get_prices(df_col, store=yearly):
     iyear = int(year[1:5] + '52')
     variety = df_col.name
     refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[2:6]) + 1) + '_'
-    iprev = int(year[1:5] + '52')
+    prev = 'y' + str(int(year[1:5]) - 1) + '_'
+    iprev = int(prev[1:5] + '52')
 
     try:
         return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
@@ -183,8 +184,8 @@ def get_cross(df_col, store=yearly):
     iyear = int(year[1:5] + '52')
     variety = df_col.name
     refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[2:6]) + 1) + '_'
-    iprev = int(year[1:5] + '52')
+    prev = 'y' + str(int(year[1:5]) - 1) + '_'
+    iprev = int(prev[1:5] + '52')
 
     try:
         value_sum = (
