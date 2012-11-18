@@ -169,6 +169,46 @@ def get_prices(df_col, store=yearly):
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
 
+def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
+    store=yearly):
+    """
+    Use to fill prices for gmm calculation.
+
+    Parameters
+    ----------
+    df_col : the column/row being applied to
+    country : String. From the outer loop
+    product : String. From the next loop
+    refcountry : Int. From reference dict.
+    year : String, pulled from column name.
+    iyear : Int. Pulled from column name.
+    prev : String. Derived from column name.
+    iprev: Int. Derived from column name.
+
+    Example:
+    for country in declarants:
+    for column in gmm_matrix[prices]:
+        for product in p_test.index.levels[0][:34]:
+            refcountry = reference[product]
+            year = 'y' + column[-4:] + '_'
+            iyear = int(year[1:5] + '52')
+            prev = 'y' + str(int(year[1:5]) - 1) + '_'
+            iprev = int(prev[1:5] + '52')
+            ref_price = np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
+                        np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values))
+
+            p_test.apply(get_prices2, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
+    """
+
+    partner = df_col.name[1]
+    print('Working on %r') % partner
+    try:
+        return (np.log(store[year + 'price_' + country].ix[1, iyear, product, partner].values) -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)) - (
+                ref_price)[0][0]
+    except:
+        print('Oh Noes')
+
 # Will probably need to do tb[thing] = tb[thing].apply
 # Use df[[column]] to pass a series to apply apparantly axis=1
 
