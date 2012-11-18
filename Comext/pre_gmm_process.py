@@ -2,6 +2,7 @@ from __future__ import division
 
 import os
 from cPickle import load
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -25,7 +26,7 @@ to accept NA's in the DataFrame.
 
   p_gct^2 | s_gct^2 | p_gct * s_gct || p_gct+1^2 | s_gct+1^2 | p_gct+1*s_gct+1
 
-PROD
+(PROD, Partner)
 
 where each has been differenced with an appropriate country (same accros t,
 different (potentially) across g).
@@ -50,10 +51,12 @@ by goods.
 Implementation
 --------------
 For each country:
-    For each good:
-        1. Find reference country
-        2. Calculate delta k log shares for every variety.
-        3. Calculate delta k log prices for every variety.
+    1. Find reference country for each good
+    2. Construct empty DataFrame
+    3. Calculate delta k log shares for every variety.
+        -Plan is to use df.apply
+
+    3. Calculate delta k log prices for every variety.
 
 TODO:
     Check on "weighting the data".  Does that mean the values in the
@@ -72,15 +75,63 @@ declarants.closed
 
 declarants = sorted(country_code.keys())
 
-shares = ['p_2008', 'p_2009', 'p_2010', 'p_2011']
-prices = ['s_2008', 's_2009', 's_2010', 's_2011']
-cross  = ['ps_2008', 'ps_2009', 'ps_2010', 'ps_2011']
+prices = ['p_2008', 'p_2009', 'p_2010', 'p_2011']
+shares = ['s_2008', 's_2009', 's_2010', 's_2011']
+cross = ['ps_2008', 'ps_2009', 'ps_2010', 'ps_2011']
 cols = shares + prices + cross
+start_time = datetime.now()
+
+
+def get_shares(series, store=yearly):
+    """
+    To fill the initialized DataFrame
+
+    Params
+    df: an n x 1 DataFrame via [[column]]
+    country: sring
+    shares: list of strings
+    """
+    year = 'y' + series.index[0][-4:] + '_'
+    iyear = int(year[1:5] + '52')
+    variety = series.name
+    ref_country = reference[variety[0]]
+    # if product == ref_product:
+    #     pass
+    # else:
+    #     global ref_product
+    #     ref_product = product
+
+    print('Working on %r, %r') % (variety[0], variety[1])
+    print(datetime.now - start_time)
+    value_sum = (
+        np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
+        variety[0]].sum()))
+
+    return np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+        variety[0], variety[1])] / value_sum) - (
+        np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
+        variety[0], ref_country)] / value_sum))
+
 
 for country in declarants:
     reference_tuple = get_reference(yearly, country)
     reference = reference_tuple[1]
     tb['c_' + country] = pd.DataFrame(index=reference_tuple[0], columns=cols)
+
+# Will probably need to do tb[thing] = tb[thing].apply
+# Use df[[column]] to pass a series to apply apparantly axis=1
+
+    for column in tb['c_' + country]:
+
+
+"""
+I'm currently have some index issues.  All the data we're getting is comming
+from the y20xx_country leaves.  Our reference index is coming from the quantity
+leaves.  The quantity index **should** be a superset of the shares/pricse index.
+
+This means I should be able to move ahead using the quantity index to
+initialize the DataFrameself.
+"""
 
 
     #     tb['c_' + country] = pd.DataFrame((np.log(yearly['quantity_' + country].xs(
