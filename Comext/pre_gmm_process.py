@@ -96,9 +96,9 @@ def get_shares(df_col, store=yearly):
     year = 'y' + df_col.index[0][-4:] + '_'
     iyear = int(year[1:5] + '52')
     variety = df_col.name
-    ref_country = reference[variety[0]]
-    prior = 'y' + str(int(year[2:6]) + 1) + '_'
-    iprior = int(year[1:5] + '52')
+    refcountry = reference[variety[0]]
+    prev = 'y' + str(int(year[2:6]) + 1) + '_'
+    iprev = int(year[1:5] + '52')
     # if product == ref_product:
     #     pass
     # else:
@@ -117,43 +117,63 @@ def get_shares(df_col, store=yearly):
 
     try:
         prior_sum = (
-            np.log(store[prior + country]['VALUE_1000ECU'].ix[1, iprior,
+            np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
             variety[0]].sum()))
 
     except:
-        print('Couldn\'t calculate prior for %r, %r') % (variety[0], variety[1])
+        print('Couldn\'t calculate prev for %r, %r') % (variety[0], variety[1])
 
     try:
-        return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-                    variety[0], variety[1])] / value_sum)) - (
-                    np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
-                    variety[0], variety[1])] / prior_sum)) - (
-                    np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear,
-                    variety[0], ref_country)] / value_sum) - (
-                    np.log(store[prior + country]['VALUE_1000ECU'].ix[(1, iprior,
-                    variety[0], ref_country)] / prior_sum)))) ** 2
+        return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
+                np.log( store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
+                np.log( store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
+                np.log( store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) ** 2
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
 
 def get_prices(df_col, store=yearly):
     """
+    Use to fill for the gmm_calc DataFrame.
+
+    Pass it a DataFrame called via tb['c'+country] =
+        tb['c+country'][[p_20YY]].apply(get_shares, axis=1).
+
+    Parameters
+    ----------
+    df_col : A DataFrame via [[column]]
+
+    Returns
+    -------
+    A scaler with the price used in the gmm calculation.
     """
 
     year = 'y' + df_col.index[0][-4:] + '_'
     iyear = int(year[1:5] + '52')
     variety = df_col.name
-    refctry = reference[variety[0]]
+    refcountry = reference[variety[0]]
     prev = 'y' + str(int(year[2:6]) + 1) + '_'
     iprev = int(year[1:5] + '52')
 
     try:
         return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
                 np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
-                np.log(store[year + 'price_' + refctry].ix[1, iyear, variety[0]]) -
-                np.log(store[prev + 'price_' + refctry].ix[1, iprev, variety[0]]))) ** 2
+                np.log(store[year + 'price_' + country].ix[1, iyear, refcountry]) -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, refcountry]))) ** 2
     except:
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
+
+
+def get_cross(df_col, store=yearly):
+    """
+    """
+
+    year = 'y' + df_col.index[0][-4:] + '_'
+    iyear = int(year[1:5] + '52')
+    variety = df_col.name
+    refcountry = reference[variety[0]]
+    prev = 'y' + str(int(year[2:6]) + 1) + '_'
+    iprev = int(year[1:5] + '52')
 
 
 # Will probably need to do tb[thing] = tb[thing].apply
@@ -162,13 +182,12 @@ def get_prices(df_col, store=yearly):
 for country in declarants:
     reference_tuple = get_reference(yearly, country)
     reference = reference_tuple[1]
-    tb['c_' + country] = pd.DataFrame(index=reference_tuple[0], columns=cols)
 
-# Will probably need to do tb[thing] = tb[thing].apply
-# Use df[[column]] to pass a series to apply apparantly axis=1
+    for column in tb['c_' + country][shares]:
+        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_shares, axis=1)
 
-    for column in tb['c_' + country]:
-
+    for column in tb['c_' + country][prices]:
+        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)    
 
 """
 I'm currently have some index issues.  All the data we're getting is comming
