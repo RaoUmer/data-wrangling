@@ -193,216 +193,30 @@ def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
     except:
         print('Failed on the fill of %r, %r') % (product, partner)
 
-# for country in declarants:
-#     reference_tuple = get_reference(yearly, country)
-#     reference = reference_tuple[1]
-
-#     for column in tb['c_' + country][shares]:
-#         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_shares, axis=1)
-
-#     for column in tb['c_' + country][prices]:
-#         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)
-
 
 # Test Producdure
-yearly = pd.HDFStore('yearly.h5')
-product = '01'
-country = '001'
-year = 'y2008_'
-iyear = 200852
-prev = 'y2007_'
-iprev = 200752
-variety = ('01', 3)
-reference_tuple = get_reference(yearly, country)
-reference = reference_tuple[1]
-refcountry = reference[variety[0]]
-ref_price = float(np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
-    np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values)))
+# yearly = pd.HDFStore('yearly.h5')
+# product = '01'
+# country = '001'
+# year = 'y2008_'
+# iyear = 200852
+# prev = 'y2007_'
+# iprev = 200752
+# variety = ('01', 3)
+# reference_tuple = get_reference(yearly, country)
+# reference = reference_tuple[1]
+# refcountry = reference[variety[0]]
+# ref_price = float(np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
+#     np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values)))
 
-# Particular df depends on testing prices vs. shares
-p_test = tb['c_' + country][['p_2008']]
-df1 = yearly[year + 'price_' + country].head(100)
-df2 = yearly[prev + 'price_' + country].head(100)
-p_test.head(5).apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
-
-
-s_test = tb['c_' + country][['s_2008']]
-df1 = yearly[year + country].head(100)
-df2 = yearly[prev + country].head(100)
-s_test.head(5).apply(get_shares, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
+# # Particular df depends on testing prices vs. shares
+# p_test = tb['c_' + country][['p_2008']]
+# df1 = yearly[year + 'price_' + country].head(100)
+# df2 = yearly[prev + 'price_' + country].head(100)
+# p_test.head(5).apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
 
 
-"""
-I'm currently have some index issues.  All the data we're getting is comming
-from the y20xx_country leaves.  Our reference index is coming from the quantity
-leaves.  The quantity index **should** be a superset of the shares/pricse index.
-
-This means I should be able to move ahead using the quantity index to
-initialize the DataFrameself.
-
-Currently hitting an error on the reference lookup for '01019090'
-"""
-
-
-# Displaced Code Below
-"""
-# Generates the final DataFrame.  Already ran on accident, but it should work.
- for country in declarants:
-     tb['c_' + country] = pd.DataFrame(index=reference_tuple[0], columns=cols)
-
-
-# get_cross().  Going to pick up by filling the gmm_store with non squared
-values first, filling the croses with the product, and then squaring the
-prices and shares.
-
-def get_cross(df_col, store=yearly):
-    """
-    # Use to fill the cross column in the gmm_calc DataFrame.
-    # Pass it a DataFrame called via tb['c'+country] =
-    #     tb['c+country'][[ps_20YY]].apply(get_cross, axis=1).
-
-    # Parameters
-    # ----------
-    # df_col : A DataFrame via [[column]]
-
-    # Returns
-    # -------
-    # A scaler with the share * price used in the gmm calculation.
-    """
-
-    year = 'y' + df_col.index[0][-4:] + '_'
-    iyear = int(year[1:5] + '52')
-    variety = df_col.name
-    refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[1:5]) - 1) + '_'
-    iprev = int(prev[1:5] + '52')
-
-    try:
-        value_sum = (
-            np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate sum for %r, %r') % (variety[0], variety[1])
-
-    try:
-        prior_sum = (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate prev for %r, %r') % (variety[0], variety[1])
-
-    return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - ((
-            np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum)) - (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum)))) * ((
-            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0]]) -
-            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0]])) - (
-            np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
-            np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
-
-
-def get_prices(df_col, store=yearly):
-    """
-    # Use to fill for the gmm_calc DataFrame.
-
-    # Pass it a DataFrame called via tb['c'+country] =
-    #     tb['c+country'][[p_20YY]].apply(get_shares, axis=1).
-
-    # Parameters
-    # ----------
-    # df_col : A DataFrame via [[column]]
-
-    # Returns
-    # -------
-    # A scaler with the price used in the gmm calculation.  Not yet squared.
-    """
-
-    year = 'y' + df_col.index[0][-4:] + '_'
-    iyear = int(year[1:5] + '52')
-    variety = df_col.name
-    refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[1:5]) - 1) + '_'
-    iprev = int(prev[1:5] + '52')
-
-    try:
-        return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], variety[1]]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], variety[1]])) - (
-                np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
-    except:
-        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
-
-
-def get_shares(df_col, store=yearly):
-    """
-    # To fill the initialized DataFrame.
-
-    # Pass it a DataFrame called via tb['c'+country] =
-    #     tb['c+country'][[s_20YY]].apply(get_shares, axis=1).
-
-    # Params
-    # df_col: an n x 1 DataFrame via [[column]]
-
-    # Returns
-    # -------
-    # A scaler that will fill the gmm_calc matrix.  Not yet squared though.
-    """
-
-    year = 'y' + df_col.index[0][-4:] + '_'
-    iyear = int(year[1:5] + '52')
-    variety = df_col.name
-    refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[1:5]) - 1) + '_'
-    iprev = int(prev[1:5] + '52')
-
-    # if product == ref_product:
-    #     pass
-    # else:
-    #     global ref_product
-    #     ref_product = product
-
-    print('Working on %r, %r') % (variety[0], variety[1])
-    print(datetime.now() - start_time)
-    try:
-        value_sum = (
-            np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate sum for %r, %r') % (variety[0], variety[1])
-
-    try:
-        prior_sum = (
-            np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
-            variety[0]].sum()))
-
-    except:
-        print('Couldn\'t calculate prev for %r, %r') % (variety[0], variety[1])
-
-    try:
-        return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], variety[1])] / value_sum)) - (
-                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], variety[1])] / prior_sum)) - (
-                np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, variety[0], refcountry)] / value_sum) - (
-                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, variety[0], refcountry)] / prior_sum))))
-    except:
-        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
-
-
-"""
-
-
-    #     tb['c_' + country] = pd.DataFrame((np.log(yearly['quantity_' + country].xs(
-    #         1, level='FLOW')[years[1]]) - np.log(yearly['quantity_' + country].xs(
-    #         1, level='FLOW')[years[0]]))-(np.log(yearly['quantity_' + qq        refctry].xs(
-    #         1, level='FLOW')[years[1]]) - np.log(yearly['quantity_' + refctry].xs(
-    #         1, level='FLOW')[years[0]]) ** 2
-    # except:
-    #     print('Trouble with %s setup') % country
-    #     break
-    # for year in years:
-    #     try:
-    #         yearly['c_' + country] = yearly['c_' + country].merge(pd.DataFrame(
-    #             yearly))
-
+# s_test = tb['c_' + country][['s_2008']]
+# df1 = yearly[year + country].head(100)
+# df2 = yearly[prev + country].head(100)
+# s_test.head(5).apply(get_shares, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
