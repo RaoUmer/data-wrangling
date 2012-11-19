@@ -1,6 +1,3 @@
-### HEY! LISTEN!
-### Probably need to build in some functionality for *SWITCHING THE REFCTRY**
-
 from __future__ import division
 
 import os
@@ -86,13 +83,13 @@ cols = shares + prices + cross
 start_time = datetime.now()
 
 
-def get_shares2(df_col, country, product, refcountry, year, iyear, prev, iprev, store=yearly):
+def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, store=yearly):
     """
     To fill the initialized DataFrame.
 
     Call with:
 
-    s_test.head(5).apply(get_shares2, axis=1, args=(country, product,
+    s_test.head(5).ix[product].apply(get_shares, axis=1, args=(country, product,
         refcountry, year, iyear, prev, iprev))
 
 
@@ -114,7 +111,7 @@ def get_shares2(df_col, country, product, refcountry, year, iyear, prev, iprev, 
     Example:
     for country in declarants:
         for column in gmm_matrix[shares]
-            for product in s_test.index.levels[0][:2]:
+            for product in s_test.index.levels[0]:
                 refcountry = reference[product]
                 year = 'y' + column[-4:] + '_'
                 iyear = int(year[1:5] + '52')
@@ -138,6 +135,8 @@ def get_shares2(df_col, country, product, refcountry, year, iyear, prev, iprev, 
                 ref_share = (
                     np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, refcountry)] / value_sum).values - (
                     np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, refcountry)] / prior_sum).values))
+                tb['c_' + country][column] = tb['c_' + country][[column]].ix[product].apply(get_shares, axis=1, args=(country, product,
+                    refcountry, year, iyear, prev, iprev))
     """
 
     partner = df_col.name[1]
@@ -152,7 +151,7 @@ def get_shares2(df_col, country, product, refcountry, year, iyear, prev, iprev, 
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
 
-def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
+def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
     store=yearly):
     """
     Use to fill prices for gmm calculation.
@@ -171,7 +170,7 @@ def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
     Example:
     for country in declarants:
         for column in gmm_matrix[prices]:
-            for product in p_test.index.levels[0][:34]:
+            for product in p_test.index.levels[0]:
                 refcountry = reference[product]
                 year = 'y' + column[-4:] + '_'
                 iyear = int(year[1:5] + '52')
@@ -180,11 +179,12 @@ def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
                 ref_price = np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
                             np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values))
 
-            p_test.apply(get_prices2, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
+                p_test.ix[product].apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
     """
 
     partner = df_col.name[1]
     print('Working on %r') % partner
+    print(datetime.now() - start_time)
     try:
         return (np.log(store[year + 'price_' + country].ix[1, iyear, product, partner].values)[0] -
                 np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)[0]) - (
@@ -208,6 +208,7 @@ for country in declarants:
 
 # Test Producdure
 yearly = pd.HDFStore('yearly.h5')
+product = '01'
 country = '001'
 year = 'y2008_'
 iyear = 200852
@@ -224,13 +225,13 @@ np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].value
 p_test = tb['c_' + country][['p_2008']]
 df1 = yearly[year + 'price_' + country].head(100)
 df2 = yearly[prev + 'price_' + country].head(100)
-p_test.head(5).apply(get_prices2, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
+p_test.head(5).apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
 
 
 s_test = tb['c_' + country][['s_2008']]
 df1 = yearly[year + country].head(100)
 df2 = yearly[prev + country].head(100)
-s_test.head(5).apply(get_shares, axis=1)
+s_test.head(5).apply(get_shares, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
 
 
 """
