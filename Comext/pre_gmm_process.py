@@ -139,7 +139,7 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
                     refcountry, year, iyear, prev, iprev))
     """
 
-    partner = df_col.name[1]
+    partner = df_col.name
     print('Working on %r, %r') % (product, partner)
     print(datetime.now() - start_time)
 
