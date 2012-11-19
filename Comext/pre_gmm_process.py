@@ -137,38 +137,6 @@ def get_shares(df_col, store=yearly):
         print('Failed on the fill of %r, %r') % (variety[0], variety[1])
 
 
-def get_prices(df_col, store=yearly):
-    """
-    Use to fill for the gmm_calc DataFrame.
-
-    Pass it a DataFrame called via tb['c'+country] =
-        tb['c+country'][[p_20YY]].apply(get_shares, axis=1).
-
-    Parameters
-    ----------
-    df_col : A DataFrame via [[column]]
-
-    Returns
-    -------
-    A scaler with the price used in the gmm calculation.  Not yet squared.
-    """
-
-    year = 'y' + df_col.index[0][-4:] + '_'
-    iyear = int(year[1:5] + '52')
-    variety = df_col.name
-    refcountry = reference[variety[0]]
-    prev = 'y' + str(int(year[1:5]) - 1) + '_'
-    iprev = int(prev[1:5] + '52')
-
-    try:
-        return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], variety[1]]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], variety[1]])) - (
-                np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
-    except:
-        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
-
-
 def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
     store=yearly):
     """
@@ -321,6 +289,38 @@ def get_cross(df_col, store=yearly):
             np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
 
 
+def get_prices(df_col, store=yearly):
+    """
+    # Use to fill for the gmm_calc DataFrame.
+
+    # Pass it a DataFrame called via tb['c'+country] =
+    #     tb['c+country'][[p_20YY]].apply(get_shares, axis=1).
+
+    # Parameters
+    # ----------
+    # df_col : A DataFrame via [[column]]
+
+    # Returns
+    # -------
+    # A scaler with the price used in the gmm calculation.  Not yet squared.
+    """
+
+    year = 'y' + df_col.index[0][-4:] + '_'
+    iyear = int(year[1:5] + '52')
+    variety = df_col.name
+    refcountry = reference[variety[0]]
+    prev = 'y' + str(int(year[1:5]) - 1) + '_'
+    iprev = int(prev[1:5] + '52')
+
+    try:
+        return ((np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], variety[1]]) -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], variety[1]])) - (
+                np.log(store[year + 'price_' + country].ix[1, iyear, variety[0], refcountry]) -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, variety[0], refcountry])))
+    except:
+        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
+
+
 """
 
 
@@ -336,3 +336,4 @@ def get_cross(df_col, store=yearly):
     #     try:
     #         yearly['c_' + country] = yearly['c_' + country].merge(pd.DataFrame(
     #             yearly))
+
