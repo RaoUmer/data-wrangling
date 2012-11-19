@@ -220,7 +220,7 @@ for country in declarants:
         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_shares, axis=1)
 
     for column in tb['c_' + country][prices]:
-        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)    
+        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)
 
 
 # Test Producdure
@@ -234,9 +234,21 @@ variety = ('01', 3)
 reference_tuple = get_reference(yearly, country)
 reference = reference_tuple[1]
 refcountry = reference[variety[0]]
+ref_price = float(np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
+np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values)))
 
 # Particular df depends on testing prices vs. shares
-df = tb['c_' + country][['p_2008']]
+p_test = tb['c_' + country][['p_2008']]
+df1 = yearly[year + 'price_' + country].head(100)
+df2 = yearly[prev + 'price_' + country].head(100)
+p_test.head(5).apply(get_prices2, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
+
+
+s_test = tb['c_' + country][['s_2008']]
+df1 = yearly[year + country].head(100)
+df2 = yearly[prev + country].head(100)
+s_test.head(5).apply(get_shares, axis=1)
+
 
 """
 I'm currently have some index issues.  All the data we're getting is comming
