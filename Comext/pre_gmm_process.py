@@ -110,8 +110,10 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
 
     Example:
     for country in declarants:
-        for column in gmm_matrix[shares]
-            for product in s_test.index.levels[0]:
+        for column in tb[shares]:
+            for product in tb[column].index.levels[0]:
+                reference_tuple = get_reference(yearly, country)
+                reference = reference_tuple[1]
                 refcountry = reference[product]
                 year = 'y' + column[-4:] + '_'
                 iyear = int(year[1:5] + '52')
@@ -119,23 +121,22 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
                 iprev = int(prev[1:5] + '52')
                 try:
                     value_sum = (
-                        np.log(store[year + country]['VALUE_1000ECU'].ix[1, iyear,
+                        np.log(yearly[year + country]['VALUE_1000ECU'].ix[1, iyear,
                         product].sum()))
-
                 except:
-                    print('Couldn\'t calculate sum for %r, %r') % (product, variety[1])
+                    print('Couldn\'t calculate sum for %r') % (
+                        product)
                 try:
                     prior_sum = (
-                        np.log(store[prev + country]['VALUE_1000ECU'].ix[1, iprev,
+                        np.log(yearly[prev + country]['VALUE_1000ECU'].ix[1, iprev,
                         product].sum()))
-
                 except:
-                    print('Couldn\'t calculate prev for %r, %r') % (product, variety[1])
-
+                    print('Couldn\'t calculate prev for %r') % (product)
                 ref_share = (
-                    np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, refcountry)] / value_sum).values - (
-                    np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, refcountry)] / prior_sum).values))
-                tb['c_' + country][column] = tb['c_' + country][[column]].ix[product].apply(get_shares, axis=1, args=(country, product,
+                    np.log(yearly[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, refcountry)] / value_sum).values - (
+                    np.log(yearly[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, refcountry)] / prior_sum).values))
+                tb['c_' + country][column].ix[product] = tb['c_' + country][[column]].ix[
+                    product].apply(get_shares, axis=1, args=(country, product,
                     refcountry, year, iyear, prev, iprev))
     """
 
@@ -148,7 +149,7 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
                 np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, partner)] / prior_sum).values) - (
                 ref_share))
     except:
-        print('Failed on the fill of %r, %r') % (variety[0], variety[1])
+        print('Failed on the fill of %r, %r') % (product, partner)
 
 
 def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
@@ -190,20 +191,17 @@ def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
                 np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)[0]) - (
                 ref_price)
     except:
-        print('Oh Noes')
+        print('Failed on the fill of %r, %r') % (product, partner)
 
-# Will probably need to do tb[thing] = tb[thing].apply
-# Use df[[column]] to pass a series to apply apparantly axis=1
+# for country in declarants:
+#     reference_tuple = get_reference(yearly, country)
+#     reference = reference_tuple[1]
 
-for country in declarants:
-    reference_tuple = get_reference(yearly, country)
-    reference = reference_tuple[1]
+#     for column in tb['c_' + country][shares]:
+#         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_shares, axis=1)
 
-    for column in tb['c_' + country][shares]:
-        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_shares, axis=1)
-
-    for column in tb['c_' + country][prices]:
-        tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)
+#     for column in tb['c_' + country][prices]:
+#         tb['c_' + country][[column]] = tb['c_' + country][[column]].apply(get_prices, axis=1)
 
 
 # Test Producdure
@@ -219,7 +217,7 @@ reference_tuple = get_reference(yearly, country)
 reference = reference_tuple[1]
 refcountry = reference[variety[0]]
 ref_price = float(np.log(yearly[year + 'price_' + country].ix[1, iyear, product, refcountry].values) - (
-np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values)))
+    np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, refcountry].values)))
 
 # Particular df depends on testing prices vs. shares
 p_test = tb['c_' + country][['p_2008']]
