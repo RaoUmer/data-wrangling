@@ -182,7 +182,7 @@ def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
                 p_test.ix[product].apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
     """
 
-    partner = df_col.name[1]
+    partner = df_col.name
     print('Working on %r') % partner
     print(datetime.now() - start_time)
     try:
