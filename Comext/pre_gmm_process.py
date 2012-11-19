@@ -203,9 +203,9 @@ def get_prices2(df_col, country, product, refcountry, year, iyear, prev, iprev,
     partner = df_col.name[1]
     print('Working on %r') % partner
     try:
-        return (np.log(store[year + 'price_' + country].ix[1, iyear, product, partner].values) -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)) - (
-                ref_price)[0][0]
+        return (np.log(store[year + 'price_' + country].ix[1, iyear, product, partner].values)[0] -
+                np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)[0]) - (
+                ref_price)
     except:
         print('Oh Noes')
 
