@@ -60,7 +60,8 @@ For each country:
         -Plan is to use df.apply
 
     3. Calculate delta k log prices for every variety.
-
+    4. Multiply for the delta k cross
+    5. Square prices and shares at the end, in place.
 TODO:
     Check on "weighting the data".  Does that mean the values in the
     DataFrames I'm counstructing need to be scaled?  Or does this go in
