@@ -1,6 +1,6 @@
 
 
-def get_reference(store, country, n=500,
+def get_reference(store, country,
         years=['y2007', 'y2008', 'y2009', 'y2010', 'y2011']):
 
     """
@@ -24,11 +24,11 @@ def get_reference(store, country, n=500,
     Or maybe a list of tuples with (good, partner) pairs?
     """
 
-    idx = store['quantity_' + country].head(n)[years[4]].ix[1].ix[
-          store['quantity_' + country].head(n)[years[3]].ix[1].ix[
-          store['quantity_' + country].head(n)[years[2]].ix[1].ix[
-          store['quantity_' + country].head(n)[years[1]].ix[1].ix[
-          store['quantity_' + country].head(n)[years[0]].ix[1].dropna().index
+    idx = store['quantity_' + country][years[4]].ix[1].ix[
+          store['quantity_' + country][years[3]].ix[1].ix[
+          store['quantity_' + country][years[2]].ix[1].ix[
+          store['quantity_' + country][years[1]].ix[1].ix[
+          store['quantity_' + country][years[0]].ix[1].dropna().index
           ].dropna().index
           ].dropna().index
           ].dropna().index
@@ -42,8 +42,7 @@ def get_reference(store, country, n=500,
         else:
             references.append(tuple)
             holder = tuple[0]
-    return (store['quantity_' + country].head(n).xs(1, level='FLOW').index,
-        {prod: partner for prod, partner in references})
+    return {prod: partner for prod, partner in references}
 
     # for product in np.unique(df.index.get_level_values('PRODUCT_NC')):
     #     print picker(df.xs((1, product), level=('FLOW', 'PRODUCT_NC')).index)
