@@ -14,7 +14,7 @@ with open('declarants_no_002_dict.pkl', 'r') as f:
     declarants = load(f)
 f.closed
 
-years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
+years = [2007, 2008, 2009, 2010, 2011]
 
 for country in declarants:
     for year in years[1:]:
@@ -27,15 +27,15 @@ def get_shares(country, year, store=yearly):
     Parameters
     ----------
     country : string. From the list of declarants
-    string : from the list of years
-    
+    year : int e.g. 2008
+
     Returns:
     --------
     Right now just a series.
     """
 
     ref_dict = get_reference(yearly, country)
-    
+
     year1 = 'y' + str(year) + '_'
     year0 = 'y' + str(year - 1) + '_'
     iyear1 = int(str(year) + '52')
