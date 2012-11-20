@@ -17,7 +17,7 @@ f.closed
 years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
 
 for country in declarants:
-    for year in years[1:]
+    for year in years[1:]:
         get_shares(country, year)
 
 def get_shares(country, year, store=yearly):
