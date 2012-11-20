@@ -1,4 +1,5 @@
 import os
+from cPickle import load
 
 import numpy as np
 import pandas as pd
@@ -9,20 +10,15 @@ yearly = pd.HDFStore('yearly.h5')
 
 # Globals
 
-# This must surely be country depenant?
 with open('declarants_no_002_dict.pkl', 'r') as f:
     declarants = load(f)
 f.closed
 
-country = '001'
-
-ref_tuple = get_reference(yearly, country)
-ref_dict = ref_tuple
+years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
 
 for country in declarants:
-
-
-
+    for year in years[1:]
+        get_shares(country, year)
 
 def get_shares(country, year, store=yearly):
     """
@@ -32,16 +28,44 @@ def get_shares(country, year, store=yearly):
     year : int
     """
 
+    ref_dict = get_reference(yearly, country)
+    
     year1 = 'y' + str(year) + '_'
     year0 = 'y' + str(year - 1) + '_'
     iyear1 = int(str(year) + '52')
-    iyear0 = int(str(year - 1)+ '52')
+    iyear0 = int(str(year - 1) + '52')
 
-    df1 = yearly[year1]['VALUE_1000ECU'].ix[1]
-    df0 = yearly[year0]['VALUE_1000ECU'].ix[1]
-    
+    df1 = yearly[year1 + country]['VALUE_1000ECU'].ix[1]
+    df0 = yearly[year0 + country]['VALUE_1000ECU'].ix[1]
+
     gr1 = df1.groupby(axis=0, level='PRODUCT_NC')
     gr0 = df0.groupby(axis=0, level='PRODUCT_NC')
+
+    l1 = []
+    drop1 = []
+    for product in gr1.groups.keys():
+        try:
+            l1.append((iyear1, product, ref_dict[product]))
+        except KeyError:
+            drop1.append(product)
+
+    l0 = []
+    drop0 = []
+    for product in gr0.groups.keys():
+        try:
+            l0.append((iyear0, product, ref_dict[product]))
+        except KeyError:
+            drop0.append(product)
+
+    # Check if return is actually what you want to do.
+    return (
+        np.log(df1 / gr1.sum().reindex(df1.index, level='PRODUCT_NC')).ix[iyear1] - (
+        np.log(df0 / gr0.sum().reindex(df0.index, level='PRODUCT_NC')).ix[iyear0]) - (
+        np.log(df1.ix[l2].ix[iyear1].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df1.index, level='PRODUCT_NC').ix[iyear1] / gr1.sum().reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
+        np.log(df0.ix[l4].ix[iyear0].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df0.index, level='PRODUCT_NC').ix[iyear0] / gr0.sum().reindex(df0.index, level='PRODUCT_NC').ix[iyear0])
+        )
+        )
+        )
 
 
 ##############################################################################
@@ -61,13 +85,14 @@ gr08 = df08.groupby(axis=0, level='PRODUCT_NC')
 # grouped = df.groupby(axis=0, level='PRODUCT_NC')
 
 ref_dict = get_reference(yearly, country)
-ref_tuple = [(k, v) for k, v in ref_dict.iteritems()]
+# Not necessary, good for testing though
+# ref_tuple = [(k, v) for k, v in ref_dict.iteritems()]
 
 # Now Generalize to arbitrary product!
 
-adiff = np.log(df08 / gr08.sum().reindex(df08.index, level='PRODUCT_NC')).ix[200852] - (
-        np.log(df07 / gr07.sum().reindex(df07.index, level='PRODUCT_NC')).ix[200752]) - (
-    )
+# adiff = np.log(df08 / gr08.sum().reindex(df08.index, level='PRODUCT_NC')).ix[200852] - (
+#         np.log(df07 / gr07.sum().reindex(df07.index, level='PRODUCT_NC')).ix[200752]) - (
+#         Insert Arbitrary reference here)
 
 # Now diff with the reference
 # Pass .ix[] a list of tuples: get = [(200852, '01', 3), (200852, '01', 5)]
@@ -84,7 +109,7 @@ Next drop the year and PARTNER levels with .ix[year] and rest_index & select
 just the Value.  This gives us a # Products x 1 series of the reference
 values.
 
-Now broadcast this up with .reindex.
+Now broadcast this up with .reindex.  Finally take the difference.
 
 """
 
@@ -109,10 +134,19 @@ for x in l3:
         drops07.append(x)
 
 
-ref_d = np.log(df08.ix[l2].ix[200852].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df08.index, level='PRODUCT_NC').ix[200852] / gr08.sum().reindex(df08.index, level='PRODUCT_NC').ix[200852]) - (
+# ydiff = np.log(df08 / gr08.sum().reindex(df08.index, level='PRODUCT_NC')).ix[200852] - (
+#         np.log(df07 / gr07.sum().reindex(df07.index, level='PRODUCT_NC')).ix[200752])
+
+
+# kdiff = np.log(df08.ix[l2].ix[200852].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df08.index, level='PRODUCT_NC').ix[200852] / gr08.sum().reindex(df08.index, level='PRODUCT_NC').ix[200852]) - (
+#         np.log(df07.ix[l4].ix[200752].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df07.index, level='PRODUCT_NC').ix[200752] / gr07.sum().reindex(df07.index, level='PRODUCT_NC').ix[200752])
+#         )
+
+# ydiff - kdiff Goes in the table (squared)
+
+np.log(df08 / gr08.sum().reindex(df08.index, level='PRODUCT_NC')).ix[200852] - (
+        np.log(df07 / gr07.sum().reindex(df07.index, level='PRODUCT_NC')).ix[200752]) - (
+        np.log(df08.ix[l2].ix[200852].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df08.index, level='PRODUCT_NC').ix[200852] / gr08.sum().reindex(df08.index, level='PRODUCT_NC').ix[200852]) - (
         np.log(df07.ix[l4].ix[200752].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df07.index, level='PRODUCT_NC').ix[200752] / gr07.sum().reindex(df07.index, level='PRODUCT_NC').ix[200752])
         )
-
-
-# def diff(df1, gr1, df2, gr2):
-#     np.log(df1.ix[])
+        )
