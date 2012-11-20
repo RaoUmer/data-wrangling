@@ -18,14 +18,20 @@ years = ['y2007', 'y2008', 'y2009', 'y2010', 'y2011']
 
 for country in declarants:
     for year in years[1:]:
-        get_shares(country, year)
+        gmm_store[year + country] = get_shares(country, year)
 
 def get_shares(country, year, store=yearly):
     """
+    Use to fill in the table for gmm calculation.
 
     Parameters
     ----------
-    year : int
+    country : string. From the list of declarants
+    string : from the list of years
+    
+    Returns:
+    --------
+    Right now just a series.
     """
 
     ref_dict = get_reference(yearly, country)
