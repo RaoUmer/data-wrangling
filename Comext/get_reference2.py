@@ -42,8 +42,7 @@ def get_reference(store, country,
         else:
             references.append(tuple)
             holder = tuple[0]
-    return (store['quantity_' + country].ix[1].index,
-      {prod: partner for prod, partner in references})
+    return {prod: partner for prod, partner in references}
 
     # for product in np.unique(df.index.get_level_values('PRODUCT_NC')):
     #     print picker(df.xs((1, product), level=('FLOW', 'PRODUCT_NC')).index)
