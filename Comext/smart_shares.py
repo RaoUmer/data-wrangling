@@ -36,21 +36,6 @@ gr08 = df08.groupby(axis=0, level='PRODUCT_NC')
 ref_dict = get_reference(yearly, country)
 ref_tuple = [(k, v) for k, v in ref_dict.iteritems()]
 
-# Get shares
-# df07.ix[200752, '01'] / gr07.sum().ix['01']
-# df08.ix[200752, '01'] / gr08.sum().ix['01']
-
-# The diff.  Currently specific to a product
-# Note can't use .ix[:] for year since then the subtraction treat them
-# as different indices.
-
-ref_country = ref_dict['01']
-
-year_diff = np.log(df08.ix[200852, '01'] / gr08.sum().ix['01']) - (
-            np.log(df07.ix[200752, '01'] / gr07.sum().ix['01'])) - (
-            np.log(df08.ix[200852, '01', 3] / gr08.sum().ix['01']) - (
-            np.log(df07.ix[200752, '01', 3] / gr07.sum().ix['01'])))
-
 # Now Generalize to arbitrary product!
 
 adiff = np.log(df08 / gr08.sum().reindex(df08.index, level='PRODUCT_NC')).ix[200852] - (
