@@ -8,13 +8,40 @@ os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 yearly = pd.HDFStore('yearly.h5')
 
 # Globals
-# Probably will become for country in []
+
+# This must surely be country depenant?
+with open('declarants_no_002_dict.pkl', 'r') as f:
+    declarants = load(f)
+f.closed
+
 country = '001'
 
 ref_tuple = get_reference(yearly, country)
-ref_dict = ref_tuple[1]
+ref_dict = ref_tuple
 
-# For now we'll focus on with year.  May need it later.
+for country in declarants:
+
+
+
+
+def get_shares(country, year, store=yearly):
+    """
+
+    Parameters
+    ----------
+    year : int
+    """
+
+    year1 = 'y' + str(year) + '_'
+    year0 = 'y' + str(year - 1) + '_'
+    iyear1 = int(str(year) + '52')
+    iyear0 = int(str(year - 1)+ '52')
+
+    df1 = yearly[year1]['VALUE_1000ECU'].ix[1]
+    df0 = yearly[year0]['VALUE_1000ECU'].ix[1]
+    
+    gr1 = df1.groupby(axis=0, level='PRODUCT_NC')
+    gr0 = df0.groupby(axis=0, level='PRODUCT_NC')
 
 
 ##############################################################################
