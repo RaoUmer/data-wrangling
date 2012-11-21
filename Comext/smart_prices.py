@@ -33,6 +33,9 @@ def get_prices(country, year, store=yearly):
     df1 = yearly[year1 + 'price_' + country][0].ix[1]  # Need [0] to get Series.
     df0 = yearly[year0 + 'price_' + country][0].ix[1]
 
+    df1.name = 'p' + str(year)
+    df0.name = 'p' + str(year - 1)
+
     gr1 = df1.groupby(axis=0, level='PRODUCT_NC')
     gr0 = df0.groupby(axis=0, level='PRODUCT_NC')
 
@@ -55,8 +58,8 @@ def get_prices(country, year, store=yearly):
             drops0.append(product)
 
     return (np.log(df1.ix[iyear1]) - np.log(df0.ix[iyear0]) - (
-            np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER').reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
-            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER').reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** 2
+            np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER')['p' + str(year)].reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
+            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** 2
 
 for country in declarants:
     for year in years[1:]:
@@ -69,6 +72,9 @@ for country in declarants:
 
 # df07 = yearly['y2007_price_001'][0].head(500).ix[1]  # Need [0] to get Series.
 # df08 = yearly['y2008_price_001'][0].head(500).ix[1]
+
+# df07.name = 'p2007'
+# df08.name = 'p2008'
 
 # gr07 = df07.groupby(axis=0, level='PRODUCT_NC')
 # gr08 = df08.groupby(axis=0, level='PRODUCT_NC')
@@ -96,7 +102,7 @@ for country in declarants:
 
 # ydiff = np.log(df08.ix[200852]) - np.log(df07.ix[200752])
 
-# kdiff = np.log(df08.ix[l2].ix[200852].reset_index(level='PARTNER')[0].reindex(df08.index, level='PRODUCT_NC').ix[200852]) - (
-#         np.log(df07.ix[l4].ix[200752].reset_index(level='PARTNER')[0].reindex(df07.index, level='PRODUCT_NC').ix[200752]))
+# kdiff = np.log(df08.ix[l2].ix[200852].reset_index(level='PARTNER')['p2008'].reindex(df08.index, level='PRODUCT_NC').ix[200852]) - (
+#         np.log(df07.ix[l4].ix[200752].reset_index(level='PARTNER')['p2007'].reindex(df07.index, level='PRODUCT_NC').ix[200752]))
 
-# ydiff - kdiff
+# x = ydiff - kdiff
