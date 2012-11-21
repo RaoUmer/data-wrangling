@@ -68,7 +68,7 @@ for country in sorted(declarants):
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print start_time - datetime.now()
-        gmm_store['y' + str(year) + country] = get_prices(country, year)
+        gmm_store['p_y' + str(year) + country] = get_prices(country, year)
 
 ##############################################################################
 # os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
