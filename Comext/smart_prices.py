@@ -38,31 +38,29 @@ def get_prices(country, year, store=yearly):
 
     ref_dict = get_reference(yearly, country)
 
-    l1 = gr1.groups.keys()
-    l2 = []
+    l1 = []
     drops1 = []
-    for product in l1:
+    for product in gr1.groups.keys():
         try:
-            l2.append((iyear1, product, ref_dict[product]))
+            l1.append((iyear1, product, ref_dict[product]))
         except KeyError:
             drops1.append(product)
 
-    l3 = gr0.groups.keys()
-    l4 = []
+    l0 = []
     drops0 = []
-    for product in l3:
+    for product in gr0.goups.keys():
         try:
-            l4.append((iyear0, product, ref_dict[product]))
+            l0.append((iyear0, product, ref_dict[product]))
         except KeyError:
             drops0.append(product)
 
     return (np.log(df1.ix[iyear1]) - np.log(df0.ix[iyear0]) - (
-            np.log(df1.ix[l2].ix[iyear1].reset_index(level='PARTNER').reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
-            np.log(df0.ix[l4].ix[iyear0].reset_index(level='PARTNER').reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** 2
+            np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER').reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
+            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER').reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** 2
 
 for country in declarants:
     for year in years[1:]:
-        gmm_store['y' + year + country] = get_shares(country, year)
+        gmm_store['y' + str(year) + country] = get_prices(country, year)
 
 ##############################################################################
 # os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
