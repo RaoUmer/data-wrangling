@@ -57,6 +57,7 @@ except:
 ref_share = (
     np.log(yearly[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, refcountry)] / value_sum).values - (
     np.log(yearly[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, refcountry)] / prior_sum).values))
+
 tb['c_' + country][[column]].ix[product] = tb['c_' + country][[column]].ix[
     product].apply(get_shares, axis=1, args=(country, product,
     refcountry, year, iyear, prev, iprev))

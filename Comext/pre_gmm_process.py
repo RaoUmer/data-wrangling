@@ -34,12 +34,12 @@ different (potentially) across g).
 The pyTable should ideally look like
 |-root
 |  |
-|  |-Counties (N: 'c001')
-|  |  |
-|  |  | -Goods (G: '01')
-|  |  |
-|  |  |
-|  |  |
+|  |-Countries (N: 'c001')
+|  |    |
+|  |    | -Goods (G: '01')
+|  |    |
+|  |    |
+|  |    |
 
 But will probably just be 'cXXX_YYYYYYYY' where XXX is the country code
 and YYYYYYYY is the CN8 PRODUCT_NC identifier.
@@ -83,7 +83,7 @@ cols = shares + prices + cross
 start_time = datetime.now()
 
 
-def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, store=yearly):
+def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev):
     """
     To fill the initialized DataFrame.
 
@@ -111,7 +111,7 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
     Example:
     for country in declarants:
         for column in tb[shares]:
-            for product in tb[column].index.levels[0]:
+            for product in tb['c_' + country][[column]].index.levels[0]:
                 reference_tuple = get_reference(yearly, country)
                 reference = reference_tuple[1]
                 refcountry = reference[product]
@@ -135,7 +135,7 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
                 ref_share = (
                     np.log(yearly[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, refcountry)] / value_sum).values - (
                     np.log(yearly[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, refcountry)] / prior_sum).values))
-                tb['c_' + country][column].ix[product] = tb['c_' + country][[column]].ix[
+                tb['c_' + country][[column]].ix[product] = tb['c_' + country][[column]].ix[
                     product].apply(get_shares, axis=1, args=(country, product,
                     refcountry, year, iyear, prev, iprev))
     """
@@ -145,15 +145,15 @@ def get_shares(df_col, country, product, refcountry, year, iyear, prev, iprev, s
     print(datetime.now() - start_time)
 
     try:
-        return ((np.log(store[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, partner)] / value_sum).values) - (
-                np.log(store[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, partner)] / prior_sum).values) - (
+        return ((np.log(yearly[year + country]['VALUE_1000ECU'].ix[(1, iyear, product, partner)] / value_sum).values) - (
+                np.log(yearly[prev + country]['VALUE_1000ECU'].ix[(1, iprev, product, partner)] / prior_sum).values) - (
                 ref_share))
     except:
         print('Failed on the fill of %r, %r') % (product, partner)
 
 
 def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
-    store=yearly):
+    yearly=yearly):
     """
     Use to fill prices for gmm calculation.
 
@@ -183,13 +183,13 @@ def get_prices(df_col, country, product, refcountry, year, iyear, prev, iprev,
                 p_test.ix[product].apply(get_prices, axis=1, args=(country, product, refcountry, year, iyear, prev, iprev))
     """
 
-    partner = df_col.name
+    # partner = df_col.name
     print('Working on %r') % partner
     print(datetime.now() - start_time)
     try:
-        return (np.log(store[year + 'price_' + country].ix[1, iyear, product, partner].values)[0] -
-                np.log(store[prev + 'price_' + country].ix[1, iprev, product, partner].values)[0]) - (
-                ref_price)
+        return pd.Series((np.log(yearly[year + 'price_' + country].ix[1, iyear, product, partner].values)[0] -
+                np.log(yearly[prev + 'price_' + country].ix[1, iprev, product, partner].values)[0]) - (
+                ref_price), index=[(product, partner)])
     except:
         print('Failed on the fill of %r, %r') % (product, partner)
 
