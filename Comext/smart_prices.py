@@ -6,24 +6,19 @@ import numpy as np
 import pandas as pd
 from get_reference2 import get_reference
 
-start_time = datetime.now()
-os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
-
-# Globals
-
 yearly = pd.HDFStore('yearly.h5')
-gmm_store = pd.HDFStore('gmm_store.h5')
-
-with open('declarants_no_002_dict.pkl', 'r') as f:
-    declarants = load(f)
-f.closed
-
-years = [2007, 2008, 2009, 2010, 2011]
 
 
 def get_prices(country, year, square=2, store=yearly):
     """
     Use to fill prices for gmm calc.
+
+    Parameters
+    --------
+
+    Returns
+    -------
+    A dataframe w/ col name p_YYYY
     """
 
     year1 = 'y' + str(year) + '_'
@@ -61,12 +56,31 @@ def get_prices(country, year, square=2, store=yearly):
             np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))), columns=['p_' + str(year)]) ** square
 
 
+start_time = datetime.now()
+os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
+
+# Globals
+
+yearly = pd.HDFStore('yearly.h5')
+gmm_store = pd.HDFStore('gmm_store.h5')
+with open('declarants_no_002_dict.pkl', 'r') as f:
+    declarants = load(f)
+f.closed
+years = [2007, 2008, 2009, 2010, 2011]
+
+# Processing
+
 for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print start_time - datetime.now()
-        gmm_store['p_y' + str(year) + country] = get_prices(country, year)
+        if year == 2008:
+            gmm_store['p_y' + country] = get_prices(country, year)
+        else:
+            gmm_store['p_y' + country] = gmm_store['p_y' + country].merge(
+                get_prices(country, year),
+                how='outer', left_index=True, right_index=True)
 
 ##############################################################################
 # os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
