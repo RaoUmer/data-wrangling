@@ -1,5 +1,6 @@
 import os
 from cPickle import load
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -8,7 +9,7 @@ from get_reference2 import get_reference
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 
 # Globals
-
+start_time = datetime.now()
 yearly = pd.HDFStore('yearly.h5')
 gmm_store = pd.HDFStore('gmm_store.h5')
 
@@ -75,7 +76,15 @@ def get_shares(country, year, square=2, store=yearly):
 for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
-        gmm_store['s_' + country + '_y' + str(year)] = get_shares(country, year)
+        print 'Working on %r, %r.' % (country, year)
+        print datetime.now() - start_time
+        if year == 2008:
+            gmm_store['s_' + country] = get_shares(country, year)
+        else:
+            gmm_store['s_' + country] = gmm_store['s_' + country].merge(
+                get_shares(country, year),
+                how='outer', left_index=True, right_index=True)
+
 
 ##############################################################################
 # Testing
