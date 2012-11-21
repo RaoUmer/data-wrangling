@@ -40,8 +40,6 @@ def get_prices(country, year, square=2, store=yearly):
     gr1 = df1.groupby(axis=0, level='PRODUCT_NC')
     gr0 = df0.groupby(axis=0, level='PRODUCT_NC')
 
-    ref_dict = get_reference(yearly, country)
-
     l1 = []
     drops1 = []
     for product in gr1.groups.keys():
@@ -60,7 +58,7 @@ def get_prices(country, year, square=2, store=yearly):
 
     return pd.DataFrame((np.log(df1.ix[iyear1]) - np.log(df0.ix[iyear0]) - (
             np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER')['p' + str(year)].reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
-            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** square)
+            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))), columns=['p_' + str(year)]) ** square
 
 
 for country in sorted(declarants):
