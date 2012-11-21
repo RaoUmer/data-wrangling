@@ -19,7 +19,7 @@ f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 
 
-def get_shares(country, year, store=yearly):
+def get_shares(country, year, square=2, store=yearly):
     """
     Use to fill in the table for gmm calculation.
 
@@ -70,7 +70,7 @@ def get_shares(country, year, store=yearly):
         np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df0.index, level='PRODUCT_NC').ix[iyear0] / gr0.sum().reindex(df0.index, level='PRODUCT_NC').ix[iyear0])
         )
         )
-        ) ** 2
+        ) ** square
 
     print('done with %r.') % country
 
