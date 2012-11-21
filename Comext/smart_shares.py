@@ -75,7 +75,7 @@ def get_shares(country, year, square=2, store=yearly):
 for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
-        gmm_store['s_y' + str(year) + '_' + country] = get_shares(country, year)
+        gmm_store['s_' + country + '_y' + str(year)] = get_shares(country, year)
 
 ##############################################################################
 # Testing

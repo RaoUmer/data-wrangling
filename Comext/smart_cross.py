@@ -18,10 +18,10 @@ f.closed
 
 years = [2007, 2008, 2009, 2010, 2011]
 
-for country in declarants:
+for country in sorted(declarants):
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print start_time - datetime.now()
-        gmm_store['c' + str(year) + country] = (
+        gmm_store['c_' + country + '_y' + str(year)] = (
             get_shares(country, year, square=1) * (
             get_prices(country, year, square=1)))
