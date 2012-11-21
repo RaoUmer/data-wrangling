@@ -19,7 +19,7 @@ f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 
 
-def get_shares(country, year, store=yearly):
+def get_prices(country, year, store=yearly):
     """
     Use to fill prices for gmm calc.
     """
