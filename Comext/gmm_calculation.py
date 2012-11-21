@@ -117,3 +117,38 @@ def error(w, s, store, country, product, partner, year, reference, flow):
     # store['quantity_' + country].xs((product, partner))))
 
     # ASSUME A REFERENCE COUNTRY
+=======
+    TODO:
+    1. Going to have to rework this to return a list of potentials for each good.
+    From that list we'll (automatically according to some criteria) choose
+    the reference **for that good**.
+
+
+    2. I want to rework this so there's no need to write anything out to disk.
+    I want call it for each gmm estimation (I think).  It will return a tuple with
+    the reference country for that product.  Probaly will need to attach some info
+    about which country it's for.
+    Parameters:
+    -----------
+    store : HDF5Store
+    country : String
+    years: list of strings
+
+    Returns:
+    --------
+    DataFrame (call index on this; for storage reasons)
+
+    Will want to return some kind of (product, reference) pair.
+    """
+
+    df = wm(store, country, years[4]).ix[
+        wm(store, country, years[3]).ix[
+        wm(store, country, years[2]).ix[
+        wm(store, country, years[1]).index
+        ].dropna().index
+        ].dropna().index
+        ].dropna()
+
+    ref = df.index.levels[2]
+
+>>>>>>> master
