@@ -33,8 +33,6 @@ def get_shares(country, year, square=2, store=yearly):
     Right now just a series.
     """
 
-    ref_dict = get_reference(yearly, country)
-
     year1 = 'y' + str(year) + '_'
     year0 = 'y' + str(year - 1) + '_'
     iyear1 = int(str(year) + '52')
@@ -74,7 +72,8 @@ def get_shares(country, year, square=2, store=yearly):
 
     print('done with %r.') % country
 
-for country in declarants:
+for country in sorted(declarants):
+    ref_dict = get_reference(yearly, country)
     for year in years[1:]:
         gmm_store['y' + str(year) + '_' + country] = get_shares(country, year)
 

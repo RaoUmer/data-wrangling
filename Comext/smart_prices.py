@@ -26,7 +26,6 @@ def get_prices(country, year, square=2, store=yearly):
     Use to fill prices for gmm calc.
     """
 
-    ref_dict = get_reference(yearly, country)
     year1 = 'y' + str(year) + '_'
     year0 = 'y' + str(year - 1) + '_'
     iyear1 = int(str(year) + '52')
@@ -64,7 +63,8 @@ def get_prices(country, year, square=2, store=yearly):
             np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))) ** square)
 
 
-for country in declarants:
+for country in sorted(declarants):
+    ref_dict = get_reference(yearly, country)
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print start_time - datetime.now()
