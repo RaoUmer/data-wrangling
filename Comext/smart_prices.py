@@ -74,7 +74,7 @@ for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
-        print start_time - datetime.now()
+        print datetime.now() - start_time
         if year == 2008:
             gmm_store['p_y' + country] = get_prices(country, year)
         else:
