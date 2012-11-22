@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from get_reference2 import get_reference
 
+os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 yearly = pd.HDFStore('yearly.h5')
 
 
@@ -69,18 +70,15 @@ f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 
 # Processing
-
+# Need to merge the first one too.
 for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print datetime.now() - start_time
-        if year == 2008:
-            gmm_store['p_y' + country] = get_prices(country, year)
-        else:
-            gmm_store['p_y' + country] = gmm_store['p_y' + country].merge(
-                get_prices(country, year),
-                how='outer', left_index=True, right_index=True)
+        gmm_store['s_' + country] = gmm_store['ps_' + country].merge(
+            get_prices(country, year),
+            how='outer', left_index=True, right_index=True)
 
 ##############################################################################
 # os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
