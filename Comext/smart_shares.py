@@ -22,18 +22,20 @@ f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 
 
-def get_shares(country, year, square=2, store=yearly):
+def get_shares(country, year, square=2, name='s_', store=yearly):
     """
     Use to fill in the table for gmm calculation.
 
     Parameters
     ----------
-    country : string. From the list of declarants
-    year : int e.g. 2008
-
-    Returns:
-    --------
-    Dataframe with col name s_YYYY
+    country : string.  Probably from an outer loop.
+    year : int.
+    square : whether to square the result or not. Defaults to true (i.e. 2).
+    name : string. For the returned column name.
+    store : HDFStore.
+    Returns
+    -------
+    A dataframe w/ col name name_YYYY
     """
 
     year1 = 'y' + str(year) + '_'
@@ -70,7 +72,7 @@ def get_shares(country, year, square=2, store=yearly):
         np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df1.index, level='PRODUCT_NC').ix[iyear1] / gr1.sum().reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
         np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['VALUE_1000ECU'].reindex(df0.index, level='PRODUCT_NC').ix[iyear0] / gr0.sum().reindex(df0.index, level='PRODUCT_NC').ix[iyear0])
         )
-        ), columns=['s_' + str(year)]
+        ), columns=[name + str(year)]
         ) ** square
 
     print('done with %r.') % country

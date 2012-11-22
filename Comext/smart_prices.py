@@ -18,7 +18,7 @@ def get_prices(country, year, square=2, name='p_', store=yearly):
     --------
     country : string.  Probably from an outer loop.
     year : int.
-    square : whether to square the result or not. Defaults to true (i.e. 2)
+    square : whether to square the result or not. Defaults to true (i.e. 2).
     name : string. For the returned column name.
     store : HDFStore.
     Returns
@@ -80,7 +80,7 @@ for country in sorted(declarants):
     for year in years[1:]:
         print 'Working on %r, %r.' % (country, year)
         print datetime.now() - start_time
-        gmm_store['s_' + country] = gmm_store['ps_' + country].merge(
+        gmm_store['s_' + country] = gmm_store['s_' + country].merge(
             get_prices(country, year),
             how='outer', left_index=True, right_index=True)
 
