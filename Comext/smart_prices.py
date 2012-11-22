@@ -73,8 +73,6 @@ with open('declarants_no_002_dict.pkl', 'r') as f:
 f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 
-# Processing
-# Need to merge the first one too.
 for country in sorted(declarants):
     ref_dict = get_reference(yearly, country)
     for year in years[1:]:
