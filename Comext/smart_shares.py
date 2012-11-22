@@ -1,3 +1,5 @@
+# Gave an error on EU
+
 import os
 from cPickle import load
 from datetime import datetime
