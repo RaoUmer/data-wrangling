@@ -10,16 +10,20 @@ os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 yearly = pd.HDFStore('yearly.h5')
 
 
-def get_prices(country, year, square=2, store=yearly):
+def get_prices(country, year, square=2, name='p_', store=yearly):
     """
     Use to fill prices for gmm calc.
 
     Parameters
     --------
-
+    country : string.  Probably from an outer loop.
+    year : int.
+    square : whether to square the result or not. Defaults to true (i.e. 2)
+    name : string. For the returned column name.
+    store : HDFStore.
     Returns
     -------
-    A dataframe w/ col name p_YYYY
+    A dataframe w/ col name name_YYYY
     """
 
     year1 = 'y' + str(year) + '_'
@@ -54,7 +58,7 @@ def get_prices(country, year, square=2, store=yearly):
 
     return pd.DataFrame((np.log(df1.ix[iyear1]) - np.log(df0.ix[iyear0]) - (
             np.log(df1.ix[l1].ix[iyear1].reset_index(level='PARTNER')['p' + str(year)].reindex(df1.index, level='PRODUCT_NC').ix[iyear1]) - (
-            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))), columns=['p_' + str(year)]) ** square
+            np.log(df0.ix[l0].ix[iyear0].reset_index(level='PARTNER')['p' + str(year - 1)].reindex(df0.index, level='PRODUCT_NC').ix[iyear0])))), columns=[name + str(year)]) ** square
 
 
 start_time = datetime.now()
