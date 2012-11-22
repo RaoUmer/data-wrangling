@@ -31,7 +31,7 @@ def get_shares(country, year, square=2, store=yearly):
 
     Returns:
     --------
-    Right now just a series.
+    Dataframe with col name s_YYYY
     """
 
     year1 = 'y' + str(year) + '_'
