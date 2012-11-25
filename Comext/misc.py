@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 from cPickle import load
 import itertools as it
@@ -14,8 +16,8 @@ f.closed
 years = [2007, 2008, 2009, 2010, 2011]
 declarants.pop('EU')
 
-df_s = gmm_store['s_001']
-df_p = gmm_store['p_001']
+df_s = gmm_store['s_001'].head(500)
+df_p = gmm_store['p_001'].head(500)
 
 gr_s = df_s.groupby(axis=0, level='PRODUCT_NC')
 gr_p = df_p.groupby(axis=0, level='PRODUCT_NC')
@@ -63,9 +65,12 @@ df3 = pd.concat([df3, pd.merge(df_s.ix['01011010'], df_p.ix['01011010'],
 # This iterator yields ((product, df_s), (product, df_p)) tuples.
 
 iz = it.izip(gr_s, gr_p)
-df = pd.DataFrame()
+df = pd.DataFrame(columns=df_s.columns)
 for i in iz:
-    df = pd.concat([df, pd.merge(i[0][1], i[1][1], how='outer', left_index=True, right_index=True)])
+    df = pd.merge(df, pd.merge(i[0][1], i[1][1], how='outer', left_index=True, right_index=True))
 
 df.index = pd.MultiIndex.from_tuples(df.index, names=['product', 'partner'])
+
+#########################################################
+
 

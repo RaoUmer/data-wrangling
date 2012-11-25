@@ -10,8 +10,10 @@ start_time = datetime.now()
 gmm_store = pd.HDFStore('gmm_store.h5')
 with open('declarants_no_002_dict.pkl', 'r') as f:
     declarants = load(f)
+
 f.closed
 years = [2007, 2008, 2009, 2010, 2011]
+declarants.pop('EU')
 
 for country in sorted(declarants):
     print('Working on %s') % country
