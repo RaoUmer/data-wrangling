@@ -23,7 +23,7 @@ def unit_price(df, col1='VALUE_1000ECU', col2='QUANTITY_TON',
     """
     if df[col2] == 0:
         if df[col3] == 0:
-            unit_p = 0
+            unit_p = np.nan
             return unit_p
         else:
             unit_p = df[col1] / df[col3]
