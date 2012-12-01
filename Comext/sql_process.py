@@ -9,9 +9,9 @@ import pandas as pd
 from pandas.io import sql as sql
 
 """
-Takes as give an HDFStore with two leaves for each country:
-one for shares, one for prices.  Moves these to a sqlite table
-and joins them.
+Takes as given an HDFStore with two leaves for each country:
+one for shares, one for prices and a SQLite db.
+Moves these leaves to the db and joins them.
 """
 
 ##### Testing #####
@@ -50,16 +50,9 @@ UNION
 SELECT df2.PRODUCT_NC, df2.PARTNER, df2.p_2008 FROM df2 LEFT OUTER JOIN df1 ON (df1.PRODUCT_NC = df2.PRODUCT_NC AND df1.PARTNER = df2.PARTNER);'
 """
 
-query = '''SELECT df1.PRODUCT_NC, df1.PARTNER, df1.s_2008 FROM df1 LEFT OUTER JOIN df2 ON (df1.PRODUCT_NC = df2.PRODUCT_NC AND df1.PARTNER = df2.PARTNER)
-            UNION
-            SELECT df2.PRODUCT_NC, df2.PARTNER, df2.p_2008 FROM df2 LEFT OUTER JOIN df1 ON (df1.PRODUCT_NC = df2.PRODUCT_NC AND df1.PARTNER = df2.PARTNER);'''
-
-read_frame(query, con)
-
-
-"""
-SELECT PRODUCT_NC, PARTNER, s_2008, s_2009, s_2010, s_2011, p_2008, p_2009, p_2010, p_2011
+query = """
+SELECT df1.PRODUCT_NC, df1.PARTNER, s_2008, s_2009, s_2010, s_2011, p_2008, p_2009, p_2010, p_2011
 FROM df1 JOIN df2
 ON (df1.PRODUCT_NC = df2.PRODUCT_NC AND df1.PARTNER = df2.PARTNER);
-
 """
+ret = sql.read_frame(query, con)
