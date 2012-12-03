@@ -4,6 +4,8 @@ import os
 
 import pandas as pd
 
+# May want to get df1 below and write those as an HDF5 store,
+# so 1 for each (country, product) tuple.
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 gmm = pd.HDFStore('gmm_store.h5')
 
