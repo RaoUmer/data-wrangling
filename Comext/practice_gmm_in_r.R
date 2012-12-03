@@ -28,18 +28,18 @@ g1 <- function(tet, x) {
 }
 
 g2 <- function(theta, x) {
-    m1 = x[1, 4] - theta[1] * x[1, 3] - theta[2] * x[1, 5]
-    m2 = x[2, 4] - theta[1] * x[2, 3] - theta[2] * x[2, 5]
-    m3 = x[3, 4] - theta[1] * x[3, 3] - theta[2] * x[3, 5]
-    m4 = x[4, 4] - theta[1] * x[4, 3] - theta[2] * x[4, 5]
-    m5 = x[5, 4] - theta[1] * x[5, 3] - theta[2] * x[5, 5]
-    m6 = x[6, 4] - theta[1] * x[6, 3] - theta[2] * x[6, 5]
-    m7 = x[7, 4] - theta[1] * x[7, 3] - theta[2] * x[7, 5]
-    m8 = x[8, 4] - theta[1] * x[8, 3] - theta[2] * x[8, 5]
-    m9 = x[9, 4] - theta[1] * x[9, 3] - theta[2] * x[9, 5]
-    m10 = x[10, 4] - theta[1] * x[10, 3] - theta[2] * x[10, 5]
-    g <- cbind(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10)
-    return(g)
+    m1 <- x[1, 4] - theta[1] * x[1, 3] - theta[2] * x[1, 5]
+    m2 <- x[2, 4] - theta[1] * x[2, 3] - theta[2] * x[2, 5]
+    m3 <- x[3, 4] - theta[1] * x[3, 3] - theta[2] * x[3, 5]
+    m4 <- x[4, 4] - theta[1] * x[4, 3] - theta[2] * x[4, 5]
+    m5 <- x[5, 4] - theta[1] * x[5, 3] - theta[2] * x[5, 5]
+    m6 <- x[6, 4] - theta[1] * x[6, 3] - theta[2] * x[6, 5]
+    m7 <- x[7, 4] - theta[1] * x[7, 3] - theta[2] * x[7, 5]
+    m8 <- x[8, 4] - theta[1] * x[8, 3] - theta[2] * x[8, 5]
+    m9 <- x[9, 4] - theta[1] * x[9, 3] - theta[2] * x[9, 5]
+    m10 <- x[10, 4] - theta[1] * x[10, 3] - theta[2] * x[10, 5]
+    f <- cbind(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10)
+    return(f)
 }
 theta0 = cbind(4,4)
 res <- gmm(g2, x=df2, t0=theta0)
