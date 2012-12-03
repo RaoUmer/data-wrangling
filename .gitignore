@@ -46,3 +46,10 @@ Comext/Comext.sublime-project
 Comext/Comext.sublime-workspace
 partner.py
 gmm_store.h5
+Eurostat/ind_prod/CN-PD.pkl
+Eurostat/ind_prod/cn11-prodcom11.pkl
+Eurostat/ind_prod/cn12-cn11.pkl
+Eurostat/ind_prod/ind_prod_store
+Eurostat/ind_prod/sample_ind_import
+Eurostat/supply_use/metadata.pdf
+Eurostat/use_supply.pdf
