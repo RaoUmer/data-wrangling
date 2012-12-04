@@ -34,27 +34,29 @@ def pct_chng(country, period):
         except:
             print('Not a valid quarter. Enter 1, 2, 3, or 4')
             raise
-            
-    df1 = monthly[months(period[1])[0] + '_' + str(period[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))
-    gr1 = monthly[months(period[1])[0] + '_' + str(period[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
-    gr2 = monthly[months(period[1])[1] + '_' + str(period[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
-    gr3 = monthly[months(period[1])[2] + '_' + str(period[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
+
+    def op(p):
+        """ Penultimate to calculating pct_chng. Pass
+        period & [period[0] -1, period[1]].
+        """
+        gr1 = monthly[months(p[1])[0] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
+        gr2 = monthly[months(p[1])[1] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
+        gr3 = monthly[months(p[1])[2] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
+
+        d = {
+            months(period[1])[0]: gr1.sum(),
+            months(period[1])[1]: gr2.sum(),
+            months(period[1])[2]: gr3.sum()}
+
+        return pd.DataFrame(d).mean(axis=1)
+
+    df1 = op(period)
+    df2 = op([period[0] - 1, period[1]])
 
     d = {
-        months(period[1])[0]: gr1.sum(),
-        months(period[1])[1]: gr2.sum(),
-        months(period[1])[2]: gr3.sum()}
+        period[0]    : df1,
+        period[0] -1 : df2}
 
-    df1 = pd.DataFrame(d).mean(axis=1)
+    df = pd.DataFrame(d)
+    return d.mean(axis=1)
 
-    gr1 = monthly[months(period[1] - 1)[0] + '_' + str(period[0])[-2:]].xs(4, level='STAT_REGIME').groupby(axis=0, level='PRODUCT_NC')
-    gr2 = monthly[months(period[1] - 1)[1] + '_' + str(period[0])[-2:]].xs(4, level='STAT_REGIME').groupby(axis=0, level='PRODUCT_NC')
-    gr3 = monthly[months(period[1] - 1)[2] + '_' + str(period[0])[-2:]].xs(4, level='STAT_REGIME').groupby(axis=0, level='PRODUCT_NC')
-
-    d = {
-    months(period[1] - 1)[0]: gr1.sum()['VALUE_1000ECU'],
-    months(period[1] - 1)[1]: gr2.sum()['VALUE_1000ECU'],
-    months(period[1] - 1)[2]: gr3.sum()['VALUE_1000ECU']}
-    
-    df2 = pd.DataFrame(d).mean(axis=1)
-    return (df1 - df2) / df2
