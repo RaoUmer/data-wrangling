@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 from cPickle import load
 
@@ -15,11 +17,15 @@ monthly = pd.HDFStore('monthly.h5')
 def pct_chng(country, period):
     """ Gives the percentage change in each good's flow.
     country : string
-    quarter : [int, int] [year, quarter]
+    period : [int, int] [year, quarter]
+        Everything is THIS year i.e. period[0] relative
+        to last year: period[0] - 1. So period >= 2009
 
     returns: DataFrame. percentage change for each product.
     """
     def months(q):
+        """Quarter number to constituent months.
+        """
         try:
             if q == 1:
                 return ['jan', 'feb', 'mar']
@@ -42,7 +48,7 @@ def pct_chng(country, period):
         gr1 = monthly[months(p[1])[0] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
         gr2 = monthly[months(p[1])[1] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
         gr3 = monthly[months(p[1])[2] + '_' + str(p[0])[-2:]].xs((country, 4), level=('DECLARANT', 'STAT_REGIME'))['VALUE_1000ECU'].groupby(level=['FLOW', 'PRODUCT_NC'])
-
+        # Put in dict and mean to avoid excess na's.
         d = {
             months(period[1])[0]: gr1.sum(),
             months(period[1])[1]: gr2.sum(),
@@ -54,9 +60,8 @@ def pct_chng(country, period):
     df2 = op([period[0] - 1, period[1]])
 
     d = {
-        period[0]    : df1,
-        period[0] -1 : df2}
+        period[0]     : df1,
+        period[0] - 1 : df2}
 
     df = pd.DataFrame(d)
-    return d.mean(axis=1)
-
+    return (df[period[0]] - df[period[0] - 1]) / df[period[0] - 1]
