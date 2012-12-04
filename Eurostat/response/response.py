@@ -16,12 +16,19 @@ monthly = pd.HDFStore('monthly.h5')
 
 def pct_chng(country, period):
     """ Gives the percentage change in each good's flow.
+    Parameters
+    ----------
     country : string
     period : [int, int] [year, quarter]
         Everything is THIS year i.e. period[0] relative
         to last year: period[0] - 1. So period >= 2009
 
     returns: DataFrame. percentage change for each product.
+    Notes
+    -----
+    Use this to generate the response variable for regression.
+    Right now it's quite memory intensive (not paging out though)
+    and takes ~10 seconds to run.
     """
     def months(q):
         """Quarter number to constituent months.
