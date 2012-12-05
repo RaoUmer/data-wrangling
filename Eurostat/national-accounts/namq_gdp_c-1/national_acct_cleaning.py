@@ -53,6 +53,7 @@ for x in df.index:
     l.append(rename_part(x))
 
 df.index = pd.MultiIndex.from_tuples(l)
-df.index.names=['quarter', 'geo']
+df.index.names = ['quarter', 'geo']
+df = df.sortlevel()
 
 df.to_csv('na_accts_clean.csv')
