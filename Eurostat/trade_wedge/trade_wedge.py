@@ -105,4 +105,12 @@ def trade_wedge(q1, q2, e=e1):
 
     wedge = imp_delta - e * (gdp_def_delta - imp_def_delta) + demand_delta
 
+    wedge = wedge.rename({'Euro area (17 countries)': 'EU17',
+                'European Union (27 countries)': 'EU27',
+                'Former Yugoslav Republic of Macedonia, the':'Macedonia',
+                'Germany (including  former GDR from 1991)':'Germany'
+                })
     return wedge
+
+wedges = trade_wedge('2008-06-01', '2009-06-01')
+wedges.order(ascending=False).plot(kind='barh')
