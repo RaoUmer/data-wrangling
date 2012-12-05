@@ -6,22 +6,43 @@ library(gmm)
 setwd('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly')
 df = read.csv('test_r.csv')
 
-# tet is a list of the parameters to be estimated
-#   tet[1] = just a number; solve for omega_g later
-#   tet[2] = just a number; solve for sigma_g later
+summary(res <- lm(p_2008~s_2008 + c_2008, df[,3:5]))  # Works
+
+# theta is a list of the parameters to be estimated
+#   theta[1] = just a number; solve for omega_g later
+#   theta[2] = just a number; solve for sigma_g later
 # x is the dataframe? colums are:
 #   1: PRODUCT_NC
 #   2: PARTNER
 #   3: s_YYYY
 #   4: p_YYYY
 #   5: c_YYYY
-# TODO: Check if I need to subtract 1 when defining elas
-df2 = df[1:5,]
 
-g1 <- function(tet, x) {
-    elas <- (x[4] - tet[1] * x[3] - tet[2] * x[5])
-    for(i in 1:lenght(x[,1])){
-        x[i, 4] - tet[1] * x[i, 3] - tet[2] * x[i, 5]
+theta0 <- coef(res)[cbind(2, 3)]
+y <- as.matrix(df[,4])
+z1 <- as.matrix(df[,3])
+z2 <- as.matrix(df[,5])
+
+res <-gmm(y~ z1 + z2, x=cbind(y, z2, z2))
+
+
+
+
+
+
+
+df2 = df[1:10,]
+
+g0 <- function(theta, x) {
+  m = x[,2] - theta[1] * x[,1] - theta[2]*x[,3]
+ return(m)
+ }
+
+
+g1 <- function(theta, x) {
+    elas <- (x[4] - theta[1] * x[3] - theta[2] * x[5])
+    for(i in 1:length(x[,1])){
+        x[i, 4] - theta[1] * x[i, 3] - theta[2] * x[i, 5]
     }
 
     return(elas)
@@ -48,7 +69,7 @@ Fails with:
 Error in ar.ols(x, aic = aic, order.max = order.max, na.action = na.action,  : 
   'order.max' must be < 'n.used'
   OR
-  can't eval at given params.
+  can't eval at given params depending upon t0.
 """
 # Linear method?
 g3 <- function(theta, x){
