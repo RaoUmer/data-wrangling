@@ -32,7 +32,7 @@ to the CPA.
 
 """
 
-df.columns = [int(x.strip(' ')) for x in df.columns]
+df.columns = [(x.strip(' ')) for x in df.columns]
 df.index.names = ['unit', 'geo', 'industry', 'input']
 df2 = df[2008]
 
