@@ -33,4 +33,3 @@ for t in x['tups']:
 
 x['max_drop'] = l1
 x['max_drop'].value_counts().plot(kind='bar', rot=45)
-

@@ -55,3 +55,8 @@ Eurostat/supply_use/metadata.pdf
 Eurostat/use_supply.pdf
 use_supply.pdf
 SCL_nace_r2_new.xls
+exports.csv
+Eurostat/national-accounts/namq_gdp_c-1/gdp.csv
+Eurostat/national-accounts/namq_gdp_c-1/imports.csv
+Eurostat/national-accounts/namq_gdp_c-1/na_accts_clean.csv
+Eurostat/national-accounts/namq_gdp_c-1/namq_gdp_c_Label.csv
