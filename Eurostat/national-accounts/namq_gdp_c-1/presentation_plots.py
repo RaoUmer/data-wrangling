@@ -33,3 +33,33 @@ for t in x['tups']:
 
 x['max_drop'] = l1
 x['max_drop'].value_counts().plot(kind='bar', rot=45)
+
+##### Heatmap for Supply Use ##########
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/naio_cp15_r2.tsv',
+        na_values=[':', ' :', ': '], sep=',|s*\t',
+        index_col=['unit', 'geo\\time', 't_cols2', 't_rows2'])
+
+df.columns = [int(x.strip(' ')) for x in df.columns]
+df.index.names = ['unit', 'geo', 'industry', 'input']
+df2 = df[2008]
+df2 = df2.unstack(level='industry')
+
+
+def heatmap(df, cmap=plt.cm.gray_r):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    axim = ax.imshow(df.values, cmap=cmap, interpolation='nearest')
+    ax.set_xlabel(df.columns.name)
+    ax.set_xticks(np.arange(len(df.columns)))
+    ax.set_xticklabels(list(df.columns))
+    ax.set_ylabel(df.index.name)
+    ax.set_yticks(np.arange(len(df.index)))
+    ax.set_yticklabels(list(df.index))
+    plt.colorbar(axim)
+
+df3 = df2.ix['MIO_EUR', 'AT'].astype('float')
+heatmap(df3)
