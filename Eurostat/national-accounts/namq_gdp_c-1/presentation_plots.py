@@ -54,10 +54,10 @@ def heatmap(df, cmap=plt.cm.gray_r):
     ax = fig.add_subplot(111)
     axim = ax.imshow(df.values, cmap=cmap, interpolation='nearest')
     ax.set_xlabel(df.columns.name)
-    ax.set_xticks(np.arange(len(df.columns)))
+    ax.set_xticks(3 * np.arange(len(df.columns) / 3))
     ax.set_xticklabels(list(df.columns))
     ax.set_ylabel(df.index.name)
-    ax.set_yticks(np.arange(len(df.index)))
+    ax.set_yticks(3 * np.arange(len(df.index) / 3))
     ax.set_yticklabels(list(df.index))
     plt.colorbar(axim)
 
