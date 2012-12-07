@@ -1,10 +1,16 @@
+from __future__ import division
+
+import os
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/naio_cp15_r2.tsv',
-        na_values=[':', ' :', ': '], sep=',|s*\t',
-        index_col=['unit', 'geo\\time', 't_cols2', 't_rows2'])
+os.chdir('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/')
+df = pd.read_csv('clean_naio_cp15_r2.csv',
+        index_col=['unit', 'geo', 'industry', 'input'])
+
+
 # ,|s* is a regex to find a comma OR arbitrary white space then tab.
 # I don't think na_vavlues takes regex's.
 
