@@ -63,3 +63,9 @@ def heatmap(df, cmap=plt.cm.gray_r):
 
 df3 = df2.ix['MIO_EUR', 'AT'].astype('float')
 heatmap(df3)
+
+for country in df2.index.levels[1]:
+    try:
+        heatmap(np.log(df2.ix['MIO_EUR', country].astype('float')))
+    except:
+        pass
