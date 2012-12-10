@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-os.chdir('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/')
+os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 df = pd.read_csv('clean_naio_cp15_r2.csv',
         index_col=['unit', 'geo', 'industry', 'input'])
 
@@ -43,9 +43,17 @@ df.columns = [int(x.strip(' ')) for x in df.columns]
 df.index.names = ['unit', 'geo', 'industry', 'input']
 df2 = df[2008]
 
+# Drop second measure.  Should be ok.  I tested a couple.
+# I think identical for euro countries.  Only non-euro (UK, etc) change.
+df2 = df2.ix['MIO_EUR']
 # Gives the table for (unit, country) pairs. Work with this.
+
+# Index is (Country, input), columns are industries.
 df2 = df2.unstack(level='industry')
 gr = df2.groupby(axis=0, level='geo')
+df2.ix['AT'].mean(1)  # Does it for a country.  Now use groupby.
+# Control measure 1: Average value of Downstream use.
+
 
 
 def heatmap(df, cmap=plt.cm.gray_r):
