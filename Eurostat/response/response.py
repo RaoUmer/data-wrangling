@@ -15,7 +15,8 @@ monthly = pd.HDFStore('monthly.h5')
 
 
 def pct_chng(country, period):
-    """ Gives the percentage change in each good's flow.
+    """ Gives the percentage change in each good's flow over.
+    Aggregated from monthly over the quarterly.
     Parameters
     ----------
     country : string
