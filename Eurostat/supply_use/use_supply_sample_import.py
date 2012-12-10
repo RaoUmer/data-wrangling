@@ -40,34 +40,3 @@ producing enterprise given by the Statistical Classification of Economic
 Activities in the European Community (NACE) and the first six correspond
 to the CPA.
 """
-
-# Drop second measure.  Should be ok.  I tested a couple.
-# I think identical for euro countries.  Only non-euro (UK, etc) change.
-df = df.ix['MIO_NAC']
-# Gives the table for (unit, country) pairs. Work with this.
-
-# Index is (Country, input), columns are industries.
-df = df['2008'].unstack(level='industry')
-gr = df.groupby(axis=0, level='geo')
-df.ix['AT'].mean(1)  # Does it for a country.  Now use groupby.
-
-# Control measure 1: Average value of Downstream use.
-
-
-def heatmap(df, a=4, cmap=plt.cm.gray_r):
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    axim = ax.imshow(df.values, cmap=cmap, interpolation='nearest')
-    ax.set_xlabel(df.columns.name)
-    ax.set_xticks(a * np.arange(len(df.columns) / a))
-    ax.set_xticklabels(list(df.columns))
-    ax.set_ylabel(df.index.name)
-    ax.set_yticks(a * np.arange(len(df.index)/ a))
-    ax.set_yticklabels(list(df.index))
-    plt.colorbar(axim)
-
-for country in df.index.levels[0]:
-    try:
-        heatmap(np.log(df.ix[country]))
-    except:
-        pass
