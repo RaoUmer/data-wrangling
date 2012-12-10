@@ -30,4 +30,3 @@ def heatmap(df, a=4, cmap=plt.cm.gray_r):
     ax.set_yticks(a * np.arange(len(df.index) / a))
     ax.set_yticklabels(list(df.index))
     plt.colorbar(axim)
-
