@@ -7,12 +7,7 @@ import pandas as pd
 
 os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 
-files = ['clean_naio_cp15_r2.csv',
-        'clean_naio_cp16_r2.csv',
-        'clean_naio_cp17_r2.csv',
-        'clean_naio_cp17i_r2.csv']
-
-df = pd.read_csv(files[0],
+df = pd.read_csv('clean_naio_cp15_r2.csv',
         index_col=['unit', 'geo', 'industry', 'input'])
 
 # Drop second measure.  Should be ok.  I tested a couple.
