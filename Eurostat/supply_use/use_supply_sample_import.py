@@ -49,24 +49,27 @@ df2 = df2.ix['MIO_EUR']
 # Gives the table for (unit, country) pairs. Work with this.
 
 # Index is (Country, input), columns are industries.
-df2 = df2.unstack(level='industry')
-gr = df2.groupby(axis=0, level='geo')
-df2.ix['AT'].mean(1)  # Does it for a country.  Now use groupby.
+df = df['2008'].unstack(level='industry')
+gr = df.groupby(axis=0, level='geo')
+df.ix['AT'].mean(1)  # Does it for a country.  Now use groupby.
+
 # Control measure 1: Average value of Downstream use.
 
 
-
-def heatmap(df, cmap=plt.cm.gray_r):
+def heatmap(df, a=4, cmap=plt.cm.gray_r):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     axim = ax.imshow(df.values, cmap=cmap, interpolation='nearest')
     ax.set_xlabel(df.columns.name)
-    ax.set_xticks(np.arange(len(df.columns)))
+    ax.set_xticks(a * np.arange(len(df.columns) / a))
     ax.set_xticklabels(list(df.columns))
     ax.set_ylabel(df.index.name)
-    ax.set_yticks(np.arange(len(df.index)))
+    ax.set_yticks(a * np.arange(len(df.index)/ a))
     ax.set_yticklabels(list(df.index))
     plt.colorbar(axim)
 
-df3 = df2.ix['MIO_EUR', 'AT'].astype('float')
-heatmap(df3)
+for country in df.index.levels[0]:
+    try:
+        heatmap(np.log(df.ix[country]))
+    except:
+        pass
