@@ -3,7 +3,7 @@ from __future__ import division
 import os
 import pandas as pd
 
-os.chdir('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/')
+os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 df = pd.read_csv('naio_cp15_r2.tsv',
         na_values=[':', ' :', ': ', ': c'], sep=',|s*\t',
         index_col=['unit', 'geo\\time', 't_cols2', 't_rows2'])
