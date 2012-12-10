@@ -25,8 +25,8 @@ df.mean(axis=1)
 # Control measure 2: Count value of Downstream use.
 df.ix['AT'].apply(lambda x: np.count_nonzero(x.dropna()))
 
-# Has to be a better way.
-for group, df in gr:
-    df.ix[group].apply(lambda x: np.count_nonzero(x.dropna()))
+# Breaks things. Mutable data ftl.
+# for group, df in gr:
+#     df.ix[group].apply(lambda x: np.count_nonzero(x.dropna()))
 
 # Control measure 3: Herfindahl index
