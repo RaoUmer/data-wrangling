@@ -61,3 +61,15 @@ Eurostat/national-accounts/namq_gdp_c-1/imports.csv
 Eurostat/national-accounts/namq_gdp_c-1/na_accts_clean.csv
 Eurostat/national-accounts/namq_gdp_c-1/namq_gdp_c_Label.csv
 trade_wedge_clean.csv
+Eurostat/supply_use/table_names.png
+Eurostat/supply_use/tables/clean_naio_cp15_r2.csv
+Eurostat/supply_use/tables/clean_naio_cp16_r2.csv
+Eurostat/supply_use/tables/clean_naio_cp17_r2.csv
+Eurostat/supply_use/tables/clean_naio_cp17i_r2.csv
+Eurostat/supply_use/tables/naio_cp15_r2.tsv
+Eurostat/supply_use/tables/naio_cp16_r2.tsv
+Eurostat/supply_use/tables/naio_cp17_r2.tsv
+Eurostat/supply_use/tables/naio_cp17i_r2.tsv
+Eurostat/supply_use/tables/naio_esms.sdmx/ESMS_MSD.msd.xml
+Eurostat/supply_use/tables/naio_esms.sdmx/naio_esms.sdmx.xml
+Eurostat/supply_use/tables/supply_use_2008.csv

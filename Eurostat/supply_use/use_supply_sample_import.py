@@ -7,12 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
-df = pd.read_csv('clean_naio_cp15_r2.csv',
+
+files = ['clean_naio_cp15_r2.csv',
+        'clean_naio_cp16_r2.csv',
+        'clean_naio_cp17_r2.csv',
+        'clean_naio_cp17i_r2.csv']
+
+df = pd.read_csv(files[0],
         index_col=['unit', 'geo', 'industry', 'input'])
-
-
-# ,|s* is a regex to find a comma OR arbitrary white space then tab.
-# I don't think na_vavlues takes regex's.
 
 """
 Want to reproduce the table:
@@ -39,13 +41,9 @@ Activities in the European Community (NACE) and the first six correspond
 to the CPA.
 """
 
-df.columns = [int(x.strip(' ')) for x in df.columns]
-df.index.names = ['unit', 'geo', 'industry', 'input']
-df2 = df[2008]
-
 # Drop second measure.  Should be ok.  I tested a couple.
 # I think identical for euro countries.  Only non-euro (UK, etc) change.
-df2 = df2.ix['MIO_EUR']
+df = df.ix['MIO_NAC']
 # Gives the table for (unit, country) pairs. Work with this.
 
 # Index is (Country, input), columns are industries.
