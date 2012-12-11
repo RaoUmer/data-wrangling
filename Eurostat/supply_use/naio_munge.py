@@ -1,5 +1,7 @@
 from __future__ import division
 
+import os
+
 import pandas as pd
 
 
@@ -33,3 +35,16 @@ def naio_munge(file, ind=False):
         print 'Failed to convert to float'
 
     df.to_csv('clean_' + file[:-3] + 'csv', header=True)
+
+
+files =['naio_cp15_r2.tsv',
+        'naio_cp16_r2.tsv',
+        'naio_cp17_r2.tsv',
+        'naio_cp17i_r2.tsv']
+
+os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
+for f in files:
+    if f == 'naio_cp17i_r2.tsv':
+        naio_munge(f, ind=True)
+    else:
+        naio_munge(f)

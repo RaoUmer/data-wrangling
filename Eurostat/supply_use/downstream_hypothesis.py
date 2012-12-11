@@ -5,10 +5,11 @@ import os
 import numpy as np
 import pandas as pd
 
+# Supply Table
 os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 
 df = pd.read_csv('clean_naio_cp15_r2.csv',
-        index_col=['unit', 'geo', 'industry', 'input'])
+        index_col=['unit', 'geo', 'input', 'industry'])
 
 # Drop second measure.  Should be ok.  I tested a couple.
 # I think identical for euro countries.  Only non-euro (UK, etc) change.

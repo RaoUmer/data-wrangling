@@ -1,3 +1,5 @@
+##### REPLACED BY NAIO MUNGE
+
 from __future__ import division
 
 import os
@@ -12,6 +14,6 @@ df = pd.read_csv('naio_cp15_r2.tsv',
 # WARNING: Some provisionals stripped.
 
 df.columns = [int(x.strip(' ')) for x in df.columns]
-df.index.names = ['unit', 'geo', 'industry', 'input']
+df.index.names = ['unit', 'geo', 'input', 'industry']
 df = df.astype('float')
 df.to_csv('clean_naio_cp15_r2.csv')
