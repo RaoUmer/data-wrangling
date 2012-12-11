@@ -24,7 +24,7 @@ def naio_munge(file, ind=False):
         na_values=[':', ' :', ': ', ': c'], sep=',|s*\t',
         index_col=['unit', 'geo\\time', 't_cols2', 't_rows2'])
     df.columns = [int(x.strip(' ')) for x in df.columns]
-    df.index.names = ['unit', 'geo', 'input', 'industry']
+    df.index.names = ['unit', 'geo', 'cols', 'rows']
     if ind:
         df.index.names = ['unit', 'geo', 'cols', 'rows']
 

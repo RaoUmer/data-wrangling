@@ -17,12 +17,12 @@ with open('clean_use_col_labels.pkl', 'r') as f:
 os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 
 df = pd.read_csv('clean_naio_cp16_r2.csv',
-        index_col=['unit', 'geo', 'industry', 'input'])
+        index_col=['unit', 'geo', 'cols', 'rows'])
 
 df = df.ix['MIO_NAC']
 
 # Index is (Country, input), columns are industries.
-df = df['2008'].unstack(level='industry')
+df = df['2008'].unstack(level='cols')
 gr = df.groupby(axis=0, level='geo')
 
 # Control measure 1: Average value of Downstream use.
@@ -32,7 +32,13 @@ df.mean(axis=1)
 df.ix['AT'].apply(lambda x: np.count_nonzero(x.dropna()))
 
 
-## Label Check
+################### TESTING #####################
+## Groupby mechanics:
+tf = df.ix['AT']
+test = tf[['B1G', 'STAN11', 'CPA_S95']]
+
+
+## Label Check:  Shows that I should switch my col labels from original (done).
 hit = []
 miss = []
 fails = []
@@ -42,19 +48,19 @@ for k in df.columns:
         hit.append(d_row[k])
     except KeyError:
         try:
-            miss.append(d_col[k])
+            miss.append(d_col[k])  # Should get most/all
         except KeyError:
             fails.append(k)
+
 hit2 = []
 miss2 = []
 fails2 = []
 
-tf = df.ix['AT']
 for k in tf.index:
     try:
-        hit.append(d_row[k])
+        hit2.append(d_row[k])  # Should get most/all
     except KeyError:
         try:
-            miss.append(d_col[k])
+            miss2.append(d_col[k])
         except KeyError:
-            fails.append(k)
+            fails2.append(k)
