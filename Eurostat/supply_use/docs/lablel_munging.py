@@ -1,3 +1,4 @@
+import string
 import cPickle
 
 files = ["use_col_labels.txt", "use_row_labels.txt"]
@@ -12,7 +13,7 @@ for name in files:
     for l in lines:
         sp.append(l.split(' ', 1))
 
-    d = {k: v.lstrip() for k, v in sp}
+    d = {k: string.lstrip(v.rstrip('\n')) for k, v in sp}
 
     out = open('clean_' + name[:-4] + '.pkl', 'w')
     cPickle.dump(d, out, protocol=2)
