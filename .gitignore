@@ -81,10 +81,25 @@ Eurostat/supply_use/docs/table_names.png
 Eurostat/supply_use/docs/use_col_cleaned.pkl
 Eurostat/supply_use/docs/use_col_lables.txt
 Eurostat/supply_use/docs/use_row_labels.txt
-correspondences
 Eurostat/supply_use/docs/clean_use_col_labels.pkl
 Eurostat/supply_use/docs/use_col_labels.txt
 Eurostat/supply_use/docs/use_row_labels
 Eurostat/ind_prod/Short-term business statistics (STS) in brief.pdf
 Eurostat/ind_prod/meta.pdf
 Eurostat/ind_prod/Short-term business statistics (STS) in brief.pdf
+nace_durable_consumer.txt
+*.pkl
+*.pdf
+*.xls
+Eurostat/correspondences/cn11-cn12/Transposition_Corrections.txt
+Eurostat/correspondences/cpa08.dic.txt
+Eurostat/correspondences/nace_capital_goods.txt
+Eurostat/correspondences/nace_energy.txt
+Eurostat/correspondences/nace_intermediate.txt
+Eurostat/correspondences/nace_nondurable_consumer.txt
+Eurostat/correspondences/nace_r2_dic.txt
+Eurostat/correspondences/overview.DOC
+Eurostat/correspondences/t_cols2.txt
+Eurostat/correspondences/t_rows2.txt
+Eurostat/correspondences/use_col_labels.txt
+Eurostat/correspondences/use_row_labels.txt

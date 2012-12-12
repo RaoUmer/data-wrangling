@@ -7,6 +7,11 @@ import numpy as np
 import pandas as pd
 
 # USE Table
+"""
+*Classification Notes*:
+    -Should be by NACE Rev. 2.
+
+"""
 os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/docs')
 with open('clean_use_row_labels.pkl', 'r') as f:
     d_row = load(f)
@@ -46,7 +51,7 @@ df = df.ix['MIO_NAC']
 df = df['2008'].unstack(level='cols')
 
 # Control measure 1: Average value of Downstream use.
-res1 = df.mean(axis=1)
+res1 = df[df.columns - df[remove.keys()].columns].mean(axis=1)
 
 # Control measure 2: Count value of Downstream use.
 
@@ -54,7 +59,7 @@ res1 = df.mean(axis=1)
 def mycount(x):
     return np.count_nonzero(x.dropna())
 
-res2 = df.T.apply(mycount)
+res2 = df[df.columns - df[remove.keys()].columns].T.apply(mycount)
 
 
 ################### TESTING #####################
