@@ -48,6 +48,20 @@ df = df.ix['MIO_NAC']
 df = df['2008'].unstack(level='cols')
 gr = df.groupby(axis=0, level='geo')
 
+"""
+Miss d_col on:
+['D21_M_D31',
+ 'P118',
+ 'P7',
+ 'P7_S21',
+ 'P7_S2111',
+ 'P7_S2112',
+ 'P7_S22',
+ 'SUPBP',
+ 'SUPPP']
+which all miss d_row as well
+"""
+
 # Control measure 1: Average value of Downstream use.
 df.mean(axis=1)
 
