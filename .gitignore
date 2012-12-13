@@ -106,3 +106,26 @@ Eurostat/correspondences/use_row_labels.txt
 Eurostat/correspondences/excel_correspondences/Transposition_Corrections.txt
 Eurostat/correspondences/excel_correspondences/new_cn12_to_pc11
 table.gif
+Comext store
+Comext/clean_naio_cp15_r2.csv
+Comext/clean_naio_cp16_r2.csv
+Comext/clean_naio_cp17_r2.csv
+Comext/clean_naio_cp17i_r2.csv
+Comext/nace_r2.dic.txt
+Comext/use_col_labels.txt
+Comext/use_row_labels
+Comext/use_row_labels.txt
+correspondences/docs/overview.DOC
+correspondences/excel_correspondences/Transposition_Corrections.txt
+correspondences/final/new_cn12_to_pc11
+correspondences/nace_list.txt
+correspondences/non-pickles/cpa08.dic.txt
+correspondences/non-pickles/nace_capital_goods.txt
+correspondences/non-pickles/nace_energy.txt
+correspondences/non-pickles/nace_intermediate.txt
+correspondences/non-pickles/nace_nondurable_consumer.txt
+correspondences/non-pickles/nace_r2_dic.txt
+correspondences/non-pickles/t_cols2.txt
+correspondences/non-pickles/t_rows2.txt
+correspondences/non-pickles/use_col_labels.txt
+correspondences/non-pickles/use_row_labels.txt
