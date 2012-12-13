@@ -26,7 +26,7 @@ pr = pr.sortlevel()
 # Calculate the absolute change in the index by country:
 
 gr = pr.ix['2006-03-01':].groupby(axis=0, level='geo')
-res = gr.apply(lambda x: x - x.shift(4))
+res = gr.apply(lambda x: x - x.shift(4)).dropna(how='all')
 
 # Helper to get the largest decline. Not working with groupby though.
 res.apply(lambda x: x.index[x.dropna().argmin()])

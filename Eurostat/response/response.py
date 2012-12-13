@@ -24,7 +24,9 @@ def pct_chng(country, period):
         Everything is THIS year i.e. period[0] relative
         to last year: period[0] - 1. So period >= 2009
 
-    returns: DataFrame. percentage change for each product.
+    returns: Series. percentage change for each product.
+    Example: res = pct_chng('001', [2009, 2])
+
     Notes
     -----
     Use this to generate the response variable for regression.
