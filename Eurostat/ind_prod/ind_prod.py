@@ -21,6 +21,15 @@ pr = pd.read_csv('ind_prod_clean.csv', index_col=['time', 'geo'])
 
 
 pr.index.levels[0] = pd.DatetimeIndex(pr.index.levels[0])
+pr = pr.sortlevel()
+
+# Calculate the absolute change in the index by country:
+
+gr = pr.ix['2006-03-01':].groupby(axis=0, level='geo')
+res = gr.apply(lambda x: x - x.shift(4))
+
+# Helper to get the largest decline. Not working with groupby though.
+res.apply(lambda x: x.index[x.dropna().argmin()])
 
 ### Testing
 # Just some notes
