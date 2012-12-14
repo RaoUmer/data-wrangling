@@ -15,7 +15,8 @@ I need to decide if my predictor is percent change in ind_prod or
 just the change in ind_prod.  It seems to be indexed at 0 rather
 than 100 so does pct_change make sense?  Telling different stories.
 """
-
+os.chdir('/Users/tom/TradeData/data-wrangling/correspondences')
+from nace_parse import nace_pc
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Eurostat/ind_prod_store/')
 pr = pd.read_csv('ind_prod_clean.csv', index_col=['time', 'geo'])
 
@@ -23,6 +24,7 @@ pr = pd.read_csv('ind_prod_clean.csv', index_col=['time', 'geo'])
 pr.index.levels[0] = pd.DatetimeIndex(pr.index.levels[0])
 pr = pr.sortlevel()
 
+l = nace_pc(pr.columns)
 # Calculate the absolute change in the index by country:
 
 gr = pr.ix['2006-03-01':].groupby(axis=0, level='geo')
