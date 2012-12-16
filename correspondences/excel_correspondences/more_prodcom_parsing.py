@@ -68,3 +68,23 @@ d = {i:cp[cc[s]] for i in cc}
 
 out = open('new_cn12_to_pc11', 'w')
 cPickle.dump(d, out, protocol=2)
+
+
+################################$$
+############################$$$$$$
+################ Now the other way
+
+xls = pd.ExcelFile('PRODCOM 2011 - CN 2011.xls')
+df = xls.parse(xls.sheet_names[0], index_col=None)
+df.columns = ['year', 'pc', 'cn', 'comment']
+
+del df['year'], df['comment']
+d_cn_pc = df.groupby(df['pc']).groups
+
+out = open('new_pc_cn_dict.pkl', 'w')
+cPickle.dump(d_pc_cn, out, protocol=2)
+
+
+
+
+# Want the dict to give a list if multiple?
