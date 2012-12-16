@@ -130,3 +130,4 @@ correspondences/non-pickles/t_rows2.txt
 correspondences/non-pickles/use_col_labels.txt
 correspondences/non-pickles/use_row_labels.txt
 services
+*.sublime-project
