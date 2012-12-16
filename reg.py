@@ -107,6 +107,7 @@ class grandRegression(object):
                 self.endog < self.endog.quantile(.995)].index)
             self.f_exog = self.exog.ix[f_idx]
             self.f_endog = self.endog[f_idx]
+            self.f_res = sm.OLS(self.f_endog, self.f_exog).fit()
 
 if __name__ == '__main__':
     pass
