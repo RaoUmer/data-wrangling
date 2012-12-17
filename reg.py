@@ -42,16 +42,6 @@ def just_8(df):
     return df.index.levels[0][[len(x) == 8 for x in df.dropna().index.levels[0]]]
 
 
-def grand_reg(country, date):
-    """
-    Parameters
-    ----------
-        -Country: Should be string (e.g. '001')
-        -date: list of ints [year, month]: e.g. ['2009', 9]
-    """
-    pass
-
-
 class grandRegression(object):
         """docstring for grad_reg"""
         def __init__(self, country, date):
@@ -59,6 +49,7 @@ class grandRegression(object):
             """
             super(grandRegression, self).__init__()
             self.country = country
+            self.int_country = int(self.country)  # Wwont work for EU
             self.month = m_dict[date[1]][0]  # str
             self.q = m_dict[date[1]][1]
             self.year = date[0]
@@ -68,11 +59,11 @@ class grandRegression(object):
 
             #Data IO
             self.df = monthly[self.month + '_' + str(self.year)[2:]].xs((
-                1, self.isodt, self.country, 4), level=('FLOW', 'PERIOD',
+                1, self.isodt, self.int_country, 4), level=('FLOW', 'PERIOD',
                 'DECLARANT', 'STAT_REGIME'))
             self.sf = yearly[self.yearly][yearly[self.yearly][
-            'STAT_REGIME'] == 4].xs((1, 200952), level=("FLOW", 'PERIOD'))
-            self.y = pct_chng(self.country, [self.year, self.q]).dropna().ix[1]
+            'STAT_REGIME'] == 4].xs((1, int(str(self.year) + '52')), level=("FLOW", 'PERIOD'))
+            self.y = pct_chng(self.int_country, [self.year, self.q]).dropna().ix[1]
 
             # Indicies
             self.idx8 = just_8(self.df)
@@ -97,8 +88,9 @@ class grandRegression(object):
             model = sm.OLS(self.endog, self.exog)
             return model.fit()
 
-        def filter(self):
+        def filter(self, q=[.9997, .995]):
             """Attempt to "deal with" (ignore) outliers.
+            q is a list of quantiles 
             """
             f_idx = self.exog['size'][self.exog['size'] < self.exog[
                 'size'].quantile(.9997)].index
