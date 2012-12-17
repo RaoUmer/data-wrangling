@@ -90,7 +90,7 @@ class grandRegression(object):
 
         def filter(self, q=[.9997, .995]):
             """Attempt to "deal with" (ignore) outliers.
-            q is a list of quantiles 
+            q is a list of quantiles.
             """
             f_idx = self.exog['size'][self.exog['size'] < self.exog[
                 'size'].quantile(.9997)].index
@@ -102,7 +102,7 @@ class grandRegression(object):
             self.f_res = sm.OLS(self.f_endog, self.f_exog).fit()
 
 if __name__ == '__main__':
-    pass
+    c = grandRegression('001', [2008, 6])
 
 # Testing
 """
