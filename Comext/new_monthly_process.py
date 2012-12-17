@@ -118,6 +118,7 @@ lookup = {
 }
 
 for f in files:
+    print('working on %s') % f
     leaf = lookup[f]
 
     monthly[leaf] = pd.read_csv(f + '.dat', parse_dates=[5],
