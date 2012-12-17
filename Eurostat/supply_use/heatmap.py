@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def heatmap(df, a=4, cmap=plt.cm.gray_r):
+def hm(df, a=4, cmap=plt.cm.gray_r):
     """Returns a plot showing the intensity of a good's use in
     the other axis' industries.
 
@@ -16,7 +16,7 @@ def heatmap(df, a=4, cmap=plt.cm.gray_r):
     Call like:
     for country in df.index.levels[0]:
     try:
-        heatmap(np.log(df.ix[country]))
+        hm(np.log(df.ix[country]))
     except:
         pass
     """

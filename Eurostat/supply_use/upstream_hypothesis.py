@@ -1,10 +1,10 @@
 from __future__ import division
 
-import os
 from cPickle import load
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # USE Table
 """
@@ -64,7 +64,46 @@ class use(object):
         self.res2 = self.df[self.df.columns - self.df[
             self.remove.keys()].columns].T.apply(mycount)
 
+    def heatmap(self, a=4, cmap=plt.cm.gray_r, ctry='all'):
+        """Returns a plot showing the intensity of a good's use in
+        the other axis' industries.
 
+        Parameters:
+        df: dataframe (see notes below)
+        a: Thinning paramets.  Plots a label for every ath item.
+        cmap: colormap
+
+        Call like:
+        for country in df.index.levels[0]:
+        try:
+            heatmap(np.log(df.ix[country]))
+        except:
+            pass
+        """
+        import sys
+        sys.path.append('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/')
+        from heatmap import hm
+
+        if ctry == 'all':
+            for country in self.df.index.levels[0]:
+                try:
+                    hm(np.log(self.df.ix[country]))
+                except:
+                    print 'No plot for %s' % country
+        else:
+            if type(ctry) == str:
+                try:
+                    hm(np.log(self.df.ix[ctry]))
+                except:
+                    assert 'error'
+            elif type(ctry) == list:
+                for i, country in enumerate(ctry):
+                    try:
+                        hm(np.log(self.df.ix[country]))
+                    except:
+                        print('No plot for %s') % country
+            else:
+                print("Check your country type.  Should be str or list.")
 #######################################################
 # with open('clean_use_row_labels.pkl', 'r') as f:
 #     d_row = load(f)
