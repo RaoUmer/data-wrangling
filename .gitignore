@@ -132,3 +132,9 @@ correspondences/non-pickles/use_row_labels.txt
 services
 *.sublime-project
 euro_recession_trade.sublime-workspace
+paper/euro_recession_trade.aux
+paper/euro_recession_trade.bbl
+paper/euro_recession_trade.blg
+paper/euro_recession_trade.fdb_latexmk
+paper/euro_recession_trade.fls
+paper/figures/trade_wedge_1and5.png
