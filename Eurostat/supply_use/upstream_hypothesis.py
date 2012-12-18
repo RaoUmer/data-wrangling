@@ -64,6 +64,82 @@ class use(object):
         self.res2 = self.df[self.df.columns - self.df[
             self.remove.keys()].columns].T.apply(mycount)
 
+        self.thin = [
+            'A01',
+            'A02',
+            'A03',
+            'B',
+            'C10-C12',
+            'C13-C15',
+            'C16',
+            'C17',
+            'C18',
+            'C19',
+            'C20',
+            'C21',
+            'C22',
+            'C23',
+            'C24',
+            'C25',
+            'C26',
+            'C27',
+            'C28',
+            'C29',
+            'C30',
+            'C31_C32',
+            'C33',
+            'D35',
+            'E36',
+            'E37-E39',
+            'F',
+            'G45',
+            'G46',
+            'G47',
+            'H49',
+            'H50',
+            'H51',
+            'H52',
+            'H53',
+            'I',
+            'J58',
+            'J59_J60',
+            'J61',
+            'J62_J63',
+            'K64',
+            'K65',
+            'K66',
+            'L68A',
+            'L68B',
+            'M69_M70',
+            'M71',
+            'M72',
+            'M73',
+            'M74_M75',
+            'N77',
+            'N78',
+            'N79',
+            'N80-N82',
+            'O84',
+            'P3_S13',
+            'P3_S14',
+            'P3_S15',
+            'P51',
+            'P52',
+            'P53',
+            'P6_S2111',
+            'P6_S2112',
+            'P6_S22',
+            'P85',
+            'Q86',
+            'Q87_Q88',
+            'R90-R92',
+            'R93',
+            'S94',
+            'S95',
+            'S96',
+            'T',
+            'U']
+
     def heatmap(self, a=4, cmap=plt.cm.gray_r, ctry='all'):
         """Returns a plot showing the intensity of a good's use in
         the other axis' industries.
@@ -87,7 +163,7 @@ class use(object):
         if ctry == 'all':
             for country in self.df.index.levels[0]:
                 try:
-                    hm(np.log(self.df.ix[country]))
+                    hm(np.log(self.df.ix[country][self.thin]))
                 except:
                     print 'No plot for %s' % country
         else:
@@ -99,11 +175,18 @@ class use(object):
             elif type(ctry) == list:
                 for i, country in enumerate(ctry):
                     try:
-                        hm(np.log(self.df.ix[country]))
+                        hm(np.log(self.df.ix[country][self.thin]))
                     except:
                         print('No plot for %s') % country
             else:
                 print("Check your country type.  Should be str or list.")
+
+
+
+
+
+
+
 #######################################################
 # with open('clean_use_row_labels.pkl', 'r') as f:
 #     d_row = load(f)
