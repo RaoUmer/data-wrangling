@@ -29,4 +29,7 @@ def hm(df, a=4, cmap=plt.cm.gray_r):
     ax.set_ylabel(df.index.name)
     ax.set_yticks(a * np.arange(len(df.index) / a))
     ax.set_yticklabels(list(df.index))
+    labels = ax.get_xticklabels()
+    for label in labels:
+        label.set_rotation(30)
     plt.colorbar(axim)
