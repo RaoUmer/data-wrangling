@@ -26,6 +26,10 @@ class use(object):
             'docs/clean_use_col_labels.pkl', 'r') as f:
             self.d_col = load(f)
 
+        with open('/Users/tom/TradeData/data-wrangling/correspondences/cpa-cn/'\
+            'cpa-cn_dict.pkl', 'r') as f:
+            self.d_cpa_cn = load(f)
+
         self.remove = {
             'P3': 'Final consumption expenditure',
             'P3_S13': 'Final consumption expenditure by government',
