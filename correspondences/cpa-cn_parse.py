@@ -1,6 +1,8 @@
+import re
 import cPickle
 
 import pandas as pd
+import matplotlib.pylab as plt
 
 df = pd.read_csv('CPA 2008 - CN 2012_18-12-2012_18-16-46.csv',
     skiprows=1, index_col='"Source"')
@@ -11,17 +13,17 @@ out = open('cpa-cn_dict.pkl', 'w')
 cPickle.dump(d, out, protocol=2)
 out.close()
 
-
+c = use()  # Just to remove warnings further down.
 def use_col_parse(l):
     """Use to make column names in use table ammenable to dict lookup.
     """
-    ret = p[]
+    ret = []
     for s in l:  # heh snl
         m = re.search(r'\d+', s)
         if m:
             ret.append(m.group())
         else:
-
+            pass
 
 letter_header = {
         'A': ['01', '02', '03'],
@@ -50,7 +52,7 @@ letter_header = {
 l = c.res1.ix['AT'].index
 l2 = []
 for s in l:
-    m1 = re.search(r'CPA_\w*\d', s)
+    m1 = re.search(r'CPA_\w*\d|CPA_\w', s)
     if m1:
         m2 = re.findall(r'[^_]\d\d', s)
         l2.append(m2)
@@ -66,4 +68,16 @@ for l in l2:
         r = range(int(x1) + 1, int(x2))
         l2 = l2 + [l[0][0] + str(x) for x in r]
 
-full = sorted(flatten(l2))
+full = sorted(sorted(plt.flatten(l2)) + ['B', 'F', 'I', 'T', 'U'])
+
+l3 = []
+for s in full:
+    if len(s) > 1:
+        num = s[-2:]
+        l2 = [re.findall(s[-2:] + r'.\d\d.\d\d', x) for x in sorted(c.d_cpa_cn.keys())]
+        l3 = l3 + filter(lambda x: len(x) > 0, l2)
+    else:
+        temp = letter_header[s]
+        for s2 in temp:
+            l2 = [re.findall(s2 + r'.\d\d.\d\d', x) for x in sorted(c.d_cpa_cn.keys())]
+            l3 = l3 + filter(lambda x: len(x) > 0, l2)
