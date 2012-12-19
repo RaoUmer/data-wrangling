@@ -32,7 +32,7 @@ letter_header = {
 def use_col_parse(c, country=None):
     l = c.res1.ix[country].index
     l2 = []
-    l2 = {}
+    d2 = {}
     for s in l:
         m1 = re.search(r'CPA_\w\d\d\w|CPA_\w*\d|CPA_[B, F, I, T, U]$', s)
         if m1:
@@ -40,7 +40,7 @@ def use_col_parse(c, country=None):
             l2.append(m2)
             try:
                 for i, v in enumerate(m2):
-                    l2[v] = c.res1.ix[country].ix[s]
+                    d2[v] = c.res1.ix[country].ix[s]
             except IndexError:
                 pass
     """
