@@ -46,9 +46,19 @@ class grandRegression(object):
         """docstring for grad_reg"""
         def __init__(self, country, date):
             """Date should be [int, int], [year, month].
+            Country should be from Comext, e.g. '001'.
             """
             super(grandRegression, self).__init__()
+            from cPickle import load
+            with open('/Users/tom/TradeData/data-wrangling/correspondences/'\
+                'country_names_dict.pkl', 'r') as f:
+                country_dict = load(f)
+            with open('/Users/tom/TradeData/data-wrangling/correspondences/'\
+                'country_abbvr_dict.pkl', 'r') as f:
+                country_abbvr = load(f)
             self.country = country
+            self.country_name = country_dict[self.country]
+            self.country_abbvr = country_abbvr[self.country]
             self.int_country = int(self.country)  # Wwont work for EU
             self.month = m_dict[date[1]][0]  # str
             self.q = m_dict[date[1]][1]
@@ -100,6 +110,21 @@ class grandRegression(object):
             self.f_exog = self.exog.ix[f_idx]
             self.f_endog = self.endog[f_idx]
             self.f_res = sm.OLS(self.f_endog, self.f_exog).fit()
+
+        def upstream(self, method='res1'):
+            """Use to test upstream hypothesis.
+            Methods can be res1 or res2.
+            """
+            sys.path.append('/Users/tom/TradeData/data-wrangling/'\
+                'Eurostat/supply_use/')
+            from upstream_hypothesis import use
+            c = use()
+            df = c.gen_cn(ctry=self.country_abbvr)
+            id1 = df.index
+            id2 = self.endog.index
+            idx = id1.intersection(id2)  # Note: temporary.  Differs from above
+
+            return df.ix[idx].join(self.endog[idx]).join(self.exog.ix[idx])
 
 if __name__ == '__main__':
     c = grandRegression('001', [2008, 6])
