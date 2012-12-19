@@ -30,11 +30,12 @@ letter_header = {
 
 
 def use_col_parse(c, country=None):
+    # Right now getting odd matches for 'ES' in l57A/B
     l = c.res1.ix[country].index
     l2 = []
     d2 = {}
     for s in l:
-        m1 = re.search(r'CPA_\w*\d|CPA_[B, F, I, T, U]$|CPA_L68A', s)
+        m1 = re.search(r'CPA_\w\d\d\w|CPA_\w*\d|CPA_[B, F, I, T, U]$', s)
         if m1:
             m2 = re.findall(r'[^_]\d\d|[B, F, I, T, U]', s)
             l2.append(m2)
@@ -48,11 +49,11 @@ def use_col_parse(c, country=None):
     Need to get the endpoints of 'ranges', fill them in, append to l2,
     then flatten, then exand the leading letter, then go to dict.
     """
-    for l in l2:
-        if len(l) > 1:
-            x1, x2 = l[0][-2:], l[1][-2:]
+    for i in l2:
+        if type(i) == list and len(i) > 1:
+            x1, x2 = i[0][-2:], i[1][-2:]
             r = range(int(x1) + 1, int(x2))
-            l2 = l2 + [l[0][0] + str(x) for x in r]
+            l2 = l2 + [i[0][0] + str(x) for x in r]
 
     full = sorted(flatten(l2))
     diff = list(set(full) - set(d2.keys()))
@@ -67,7 +68,7 @@ def use_col_parse(c, country=None):
             for t in flatten(l3):
                 d3[t] = d2[s]
         else:
-            temp = letter_header[s]
+            temp = c.letter_header[s]
             for s2 in temp:
                 l2 = [re.findall(s2 + r'.\d\d.\d\d', x) for x in sorted(c.d_cpa_cn.keys())]
                 l3 = filter(lambda x: len(x) > 0, l2)
