@@ -30,24 +30,23 @@ letter_header = {
 
 
 def use_col_parse(c, country=None):
-    # Right now getting odd matches for 'ES' in l57A/B
     l = c.res1.ix[country].index
     l2 = []
-    d2 = {}
+    l2 = {}
     for s in l:
         m1 = re.search(r'CPA_\w\d\d\w|CPA_\w*\d|CPA_[B, F, I, T, U]$', s)
         if m1:
-            m2 = re.findall(r'[^_]\d\d|[B, F, I, T, U]', s)
+            m2 = re.findall(r'[^_]\d\d[A-Z]?|[B, F, I, T, U]', s)
             l2.append(m2)
             try:
                 for i, v in enumerate(m2):
-                    d2[v] = c.res1.ix[country].ix[s]
+                    l2[v] = c.res1.ix[country].ix[s]
             except IndexError:
                 pass
     """
     Not too proud of this one.  Some lists in our list l2 are 'ranges'.
     Need to get the endpoints of 'ranges', fill them in, append to l2,
-    then flatten, then exand the leading letter, then go to dict.
+    then flatten,[A-Z]hen exand the leading letter, then go to dict.
     """
     for i in l2:
         if type(i) == list and len(i) > 1:
