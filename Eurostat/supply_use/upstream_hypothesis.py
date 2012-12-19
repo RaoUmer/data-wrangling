@@ -5,7 +5,6 @@ from cPickle import load
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
 # USE Table
 """
 *Classification Notes*:
@@ -144,6 +143,56 @@ class use(object):
             'T',
             'U']
 
+        self.letter_header = {
+            'A': ['01', '02', '03'],
+            'B': ['05', '06', '07', '08', '09'],
+            'C': ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                '30', '31', '32', '33'],
+            'D': ['35'],
+            'E': ['36', '37', '38', '39'],
+            'F': ['41', '42', '43'],
+            'G': ['45', '46', '47'],
+            'H': ['49', '50', '51', '52'],
+            'I': ['55', '56'],
+            'J': ['58', '59', '60', '61', '62', '63'],
+            'K': ['64', '65', '66'],
+            'L': ['68'],
+            'M': ['69', '70', '71', '72', '73', '74', '75'],
+            'N': ['77', '78', '79', '80', '81', '82'],
+            'O': ['84'],
+            'P': ['85'],
+            'Q': ['86', '87', '88'],
+            'R': ['90', '91', '92', '93'],
+            'S': ['94', '95', '96'],
+            'T': ['97', '98'],
+            'U': ['99']
+            }
+
+    def gen_cn(self, ctry='all'):
+        """Use to take values from res1 and broadcast to CN.
+        """
+        import sys
+        sys.path.append('/Users/tom/TradeData/data-wrangling/correspondences/')
+        from cpa_cn_parse import use_col_parse
+        if ctry == 'all':
+            return (use_col_parse(self, country) for country in
+                self.df.index.levels[0])
+        else:
+            if type(ctry) == str:
+                try:
+                    return use_col_parse(self, ctry)
+                except:
+                    assert 'error'
+            elif type(ctry) == list:
+                for i, country in enumerate(ctry):
+                    try:
+                        return use_col_parse(self, country)
+                    except:
+                        print('No plot for %s') % country
+            else:
+                print("Check your country type.  Should be str or list.")
+
     def heatmap(self, a=4, cmap=plt.cm.gray_r, ctry='all'):
         """Returns a plot showing the intensity of a good's use in
         the other axis' industries.
@@ -184,8 +233,7 @@ class use(object):
                         print('No plot for %s') % country
             else:
                 print("Check your country type.  Should be str or list.")
-
-
+        pass
 
 
 
