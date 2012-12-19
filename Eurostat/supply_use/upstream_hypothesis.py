@@ -172,12 +172,13 @@ class use(object):
     def gen_cn(self, ctry='all'):
         """Use to take values from res1 and broadcast to CN.
         """
+        # No data for 'EE' and 'MK'; 'IE' has some more NaNs.
         import sys
         sys.path.append('/Users/tom/TradeData/data-wrangling/correspondences/')
         from cpa_cn_parse import use_col_parse
         if ctry == 'all':
             return (use_col_parse(self, country) for country in
-                self.df.index.levels[0])
+                self.df.index.levels[0].drop(['EE', 'MK']))
         else:
             if type(ctry) == str:
                 try:
