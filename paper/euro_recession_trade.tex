@@ -3,6 +3,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{natbib}
+\usepackage{hyperref}
 \graphicspath{{/Users/tom/TradeData/data-wrangling/paper/figures/}}
 
 \title{European Trade and the Great Recession}
@@ -16,12 +17,15 @@
 \section{Introduction}
 \label{sec:introduction}
 
+  The trade collapse during the Great Recession was a cause for some alarm.  \cite{eichengreen_orourke:2010} profiled the collapse monthly, noting the eerie similarity to the Great Depression's trade collapse.  Here, I examine the trade collapse with a focus on the member countries of the European Union.
+
 \section{Background Literature}
 \label{sec:background_literature}
-  The Great Recession sparked a mini boom in research on trade collapses.  Several papers are relevant here.
+  The Great Recession sparked a mini boom in research on trade collapses.  Several papers are relevant here.  First, and most directly related to my own research, we have \cite{llt:2010}.  These authors attempted to empirically the trade collapse and test several hypothesis about its causes.  Notably, though, they focused only on U.S. bilateral trade.  My attempt was in a similar spirit but with a focus on countries in the European Union.
 
-  Several notable hypothesis have been offered to explain the large decline in trade during the Great Recession.  The first, discussed in Chor and Mannova (2012) \cite{chor-manova:2012}, posits financing was an important cause of the decline in trade.
+  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; that firms who are more reliant on external financing should have been harder hit when credit supplies tightened.  They find that trade credit was both a statistically significant and important cause.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g. \cite{RePEc:imf:imfwpa:11/16}).
 
+  Another important contribution comes from \cite{eaton-kortum-neiman-romalis:2011}.  They build a general equilibrium model to run counterfactual simulations of the crisis under various exogenous shocks.  They find that the shift in demand away from manufactures was the main driver of the decline in trade.
 \section{Stylized Facts} % (fold)
 \label{sec:stylized_facts}
 
@@ -29,7 +33,7 @@
 
 \section{Trade Wedges} % (fold)
 \label{sec:trade_wedges}
-  Has the decline in trade been abnormally large?  To get a rough answer to this question, we can calculate what Levchnko \emph{et. al.} \cite{llt:2010} call a ``Trade Wedge''.  The ``wedge'' refers to the gap between the observed decline in trade and what would be predicted by a standard model.  The model specifies an import demand relationship as:
+  Has the decline in trade been abnormally large?  To get a rough answer to this question, we can calculate what \cite{llt:2010} call a ``Trade Wedge''.  The ``wedge'' refers to the gap between the observed decline in trade and what would be predicted by a standard model.  The model specifies an import demand relationship as:
   \begin{equation}
       \hat{y}^f = \varepsilon(\hat{P} - \hat{p}^f) + (\hat{C + I})
   \end{equation}
@@ -47,6 +51,11 @@
 \label{sec:hypothesis}
   Unfortunately, I had neither the data nor the time to examine the trade credit hypothesis.  This also means that I had neither the data nor the time to control for the effects of trade credit.  So to the extent that trade credit is an important player in our story my model will be misspecified.
 
+\section{Estimation Strategy} % (fold)
+\label{sec:estimation_strategy}
+  My goal was to estimate regression equations to test the various hypothesis for each country in the sample.  We'll consider each country separately, and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  The independent variables depend on the particular hypothesis being tested.  Controls include the 
+% section estimation_strategy (end)
+
 \section{Empirical Results} % (fold)
 \label{sec:empirical_results}
   Most everything in this section should be tagged with seven levels of asterisks noting the wild misspecification of my model.  But here goes.
@@ -63,7 +72,7 @@
 
 
 
-\bibliographystyle{plain}
+\bibliographystyle{apa}
 \bibliography{citations}
 
 \end{document}
