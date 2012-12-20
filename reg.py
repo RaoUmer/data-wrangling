@@ -3,6 +3,7 @@ from __future__ import division
 import sys
 import datetime as dt
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
@@ -78,7 +79,7 @@ class grandRegression(object):
             self.df_red = sm.add_constant(self.df_red, prepend=True)
 
             self.idx = self.y.index.intersection(self.df_red.dropna().index)
-            self.endog = self.y[self.idx]
+            self.endog = self.y[self.y != np.inf][self.idx]
             self.endog.name = 'pct_change'
             self.exog = self.df_red.ix[self.idx]
 
@@ -97,11 +98,23 @@ class grandRegression(object):
                 'clean.csv', index_col=['geo', 'nace']), self.country_abbvr)
             print('Added labor input to self.exog!')
 
-        def estimate(self, args):
+        def estimate(self, args, winsor=False):
             """Get fitted regression result.  No controls for now.
+            args is a list of column names for the included variables.
+            If winsor, replace outliers with 3 sigma.
             """
-            idx = self.endog.index.intersection()
-            model = sm.OLS(self.endog, self.exog)
+            if winsor:
+                sys.path.append('/Users/tom/TradeData/data-wrangling/')
+                from winsor import winsorize
+                y = winsorize(self.endog)
+                x = winsor(self.exog)
+            else:
+                y = self.endog
+                x = self.exog
+
+            idx = self.endog.index.intersection(self.exog[args].dropna(
+                how='any').index)
+            model = sm.OLS(self.endog[idx], self.exog[args].ix[idx])
             return model.fit()
 
         def filter(self, q=[.9997, .995]):
