@@ -17,21 +17,6 @@ monthly = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/monthly.h5')
 yearly = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/yearly.h5')
 # Most drops in 2008Q2, next most in 2008Q3
 
-m_dict = {
-        1: ['jan', 1],
-        2: ['feb', 1],
-        3: ['mar', 1],
-        4: ['apr', 2],
-        5: ['may', 2],
-        6: ['jun', 2],
-        7: ['jul', 2],
-        8: ['aug', 2],
-        9: ['sep', 2],
-        10: ['oct', 4],
-        11: ['nov', 4],
-        12: ['dec', 4]
-        }
-
 
 def just_8(df):
     """Filters out the aggregates, leaving only 8 digit indicies.
@@ -56,12 +41,17 @@ class grandRegression(object):
             with open('/Users/tom/TradeData/data-wrangling/correspondences/'\
                 'country_abbvr_dict.pkl', 'r') as f:
                 country_abbvr = load(f)
+            self.m_dict = {
+                1: ['jan', 1], 2: ['feb', 1], 3: ['mar', 1], 4: ['apr', 2],
+                5: ['may', 2], 6: ['jun', 2], 7: ['jul', 2], 8: ['aug', 2],
+                9: ['sep', 2], 10: ['oct', 4], 11: ['nov', 4], 12: ['dec', 4]
+                }
             self.country = country
             self.country_name = country_dict[self.country]
             self.country_abbvr = country_abbvr[self.country]
-            self.int_country = int(self.country)  # Wwont work for EU
-            self.month = m_dict[date[1]][0]  # str
-            self.q = m_dict[date[1]][1]
+            self.int_country = int(self.country)  # Wont work for EU
+            self.month = self.m_dict[date[1]][0]  # str
+            self.q = self.m_dict[date[1]][1]
             self.year = date[0]
             self.yearly = 'y' + str(self.year) + '_' + self.country
             self.isodt = dt.datetime.isoformat(dt.datetime(
@@ -92,9 +82,25 @@ class grandRegression(object):
             self.endog.name = 'pct_change'
             self.exog = self.df_red.ix[self.idx]
 
-        def estimate(self):
+        def get_labor(self):
+            """Get a df for labor controls.
+            """
+            sys.path.append('/Users/tom/data-wrangling/Eurostat/labor_input')
+            import cPickle
+            from nace_cn_parse import get_val
+            with open('/Users/tom/Tradedata/data-wrangling/correspondences/'\
+                'cpa-cn/cpa-cn_dict.pkl', 'r') as f:
+                d_cpa_cn = cPickle.load(f)
+
+            self.exog['labor'] = get_val(pd.read_csv('/Users/tom/TradeData/'\
+                'data-wrangling/Eurostat/labor_input/labor_input_00to06_'\
+                'clean.csv', index_col=['geo', 'nace']), self.country_abbvr)
+            print('Added labor input to self.exog!')
+
+        def estimate(self, args):
             """Get fitted regression result.  No controls for now.
             """
+            idx = self.endog.index.intersection()
             model = sm.OLS(self.endog, self.exog)
             return model.fit()
 
