@@ -140,3 +140,5 @@ paper/euro_recession_trade.fls
 *.csv
 *.xml
 paper/figures/trade_wedge_1and5.png
+*.tsv
+*.out
