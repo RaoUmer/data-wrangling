@@ -44,7 +44,7 @@ def nace_cn(idx):
 
     return sorted(np.unique(l2))
 
-with open('cpa-cn_dict.pkl', 'r') as f:
+with open('/Users/tom/Tradedata/data-wrangling/correspondences/cpa-cn/cpa-cn_dict.pkl', 'r') as f:
     d_cpa_cn = cPickle.load(f)
 
 

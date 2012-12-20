@@ -70,6 +70,16 @@ def pct_chng(country, period):
             gr1 = gr1.ix[p1].ix[idx1]
             gr2 = gr2.ix[p2].ix[idx2]
             gr3 = gr3.ix[p3].ix[idx3]
+
+            def fil(x):
+                if x[1] < 1000:
+                    return True
+                else:
+                    return False
+
+            gr1 = gr1[map(fil, gr1.index)]
+            gr2 = gr2[map(fil, gr2.index)]
+            gr3 = gr3[map(fil, gr3.index)]
         # Put in dict and mean to avoid excess na's.
         d = {
             months(period[1])[0]: gr1.groupby(level=['PRODUCT_NC']).sum(),
@@ -80,10 +90,10 @@ def pct_chng(country, period):
 
     df1 = op(period)
     df2 = op([period[0] - 1, period[1]])
-    ind = df1.index.intersection(df2.index)
+    ind = df1[df1 > 0].index.intersection(df2[df2 > 0].index)
     d = {
-        period[0]     : df1[ind],
-        period[0] - 1 : df2[ind]}
+        period[0]: df1[ind],
+        period[0] - 1: df2[ind]}
 
     df = pd.DataFrame(d)
     return (df[period[0]] - df[period[0] - 1]) / df[period[0] - 1]
