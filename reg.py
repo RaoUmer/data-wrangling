@@ -64,7 +64,7 @@ class grandRegression(object):
                 'DECLARANT', 'STAT_REGIME'))
             self.sf = yearly[self.yearly][yearly[self.yearly][
             'STAT_REGIME'] == 4].xs((1, int(str(self.year) + '52')), level=("FLOW", 'PERIOD'))
-            self.y = pct_chng(self.int_country, [self.year, self.q]).dropna().ix[1]
+            self.y = pct_chng(self.int_country, [self.year, self.q]).dropna()
 
             # Indicies
             self.idx8 = just_8(self.df)
