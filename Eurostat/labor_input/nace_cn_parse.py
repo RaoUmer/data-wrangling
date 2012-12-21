@@ -51,7 +51,7 @@ with open('/Users/tom/Tradedata/data-wrangling/correspondences/cpa-cn/cpa-cn_dic
 def get_val(df, ctry):
     """Filling values
     """
-
+    df.columns = ['labor']
     d = df.xs(ctry, level='geo').to_dict()['labor']
     ret = {}
     for prod in d.keys():
