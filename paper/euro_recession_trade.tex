@@ -17,9 +17,9 @@
 \section{Introduction}
 \label{sec:introduction}
 
-  During the Great Recession, \cite{eichengreen_orourke:2010} profiled the collapse using monthly data, drawing eerie parallels to the Great Depression's trade collapse.  The decline in world output was remarkably similar for the first year of each crisis.  Even more alarmingly the decline in world trade during the first year of the Great Recession surpassed the decline during the first year of the Great Depression.
+  During the Great Recession, \cite{eichengreen_orourke:2010} profiled the collapse using monthly data, drawing eerie parallels to the Great Depression's trade collapse.  The decline in world output was remarkably similar in the first year of each crisis.  Even more alarmingly the decline in world trade during the first year of the Great Recession surpassed the decline during the first year of the Great Depression.
 
-  This apparent puzzle of the abnormally large decline in trade, even relative to the large decline in output, quickly spun off a branch of research.  Most of this research has focused either on global trade or trade specific to the United States.  Here, I examine the trade collapse with a focus on the member countries of the European Union.  This focus has an advantage over a U.S. or global focus.  The EU scale allows for detailed analysis at the country level \emph{and} comparison of that analysis across countries. The statistics collected on each member country are standardized, allowing comparisons that would be more difficult or infeasible on a global scale.
+  This apparent puzzle of the abnormally large decline in trade, even relative to the large decline in output, quickly spun off a branch of research.  Most of this research has focused either on global trade or trade specific to the United States.  Here, I examine the trade collapse with a focus on the member countries of the European Union.  This focus has an advantage over a global or U.S. centric view.  The EU scale allows for detailed analysis at the country level \emph{and} comparison of that analysis across countries. The statistics collected on each member country are standardized, allowing comparisons that would be more difficult or infeasible on a global scale.
 
 \section{Background Literature}
 \label{sec:background_literature}
@@ -27,7 +27,7 @@
 
   First, and most directly related to my own research, we have \cite{llt:2010}.  These authors attempted to empirically describe the trade collapse and test several hypothesis about its causes.  Notably, though, they focused only on U.S. bilateral trade.  It served as an important reference for which features of the crisis future models need to match.  My attempt was in a similar spirit but with a focus on countries in the European Union.
 
-  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; firms who are more reliant on external financing should have been harder hit when credit markets froze.  They find that trade credit was both a statistically significant and important cause.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g. \cite{RePEc:imf:imfwpa:11/16}).
+  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; firms who are more reliant on external financing should have been harder hit when credit markets froze.  They find that trade credit was both a statistically significant and important component of the decline in trade.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g. \cite{RePEc:imf:imfwpa:11/16}).
 
   Another important contribution comes from \cite{eaton-kortum-neiman-romalis:2011}.  They build a general equilibrium model to run counterfactual simulations of the crisis under various exogenous shocks.  Their main result was that the shift in demand away from manufactures was the most important driver of the decline in trade.
 
@@ -49,33 +49,40 @@ For this section our sample consists of 30 countries and an aggregate of the EU2
     \caption{Trade Wedges}
   \end{figure}
 
-  As shown in \ref{fig:trade_wedge}, every country in this sample experienced a larger decline in trade than predicted by the model.  Of course, this may say more about our model that about whether the decline in trade was particularly large.  But, as a first-order approximation, it suggests that the decline in trade may be worth looking into further.
-
-\section{Hypothesis}
-\label{sec:hypothesis}
-  Unfortunately, I had neither the data nor the time to examine the trade credit hypothesis.  This also means that I had neither the data nor the time to control for the effects of trade credit.  So to the extent that trade credit is an important player in our story my model will be misspecified.
+  As shown in figure~\ref{fig:trade_wedge}, every country in this sample experienced a larger decline in trade than predicted by the model.  Of course, this may say more about our model that about whether the decline in trade was particularly large.  But, as a first-order approximation, it suggests that the decline in trade may be worth looking into further.
 
 \section{Estimation Strategy} % (fold)
 \label{sec:estimation_strategy}
-  My goal was to estimate regression equations to test the various hypothesis for each country in the sample.  We'll consider each country separately, and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  The independent variables depend on the particular hypothesis being tested.
+  My goal was to estimate regression equations to test the various hypothesis for the cause of the decline.  We'll consider each country separately and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  The independent variables depend on the particular hypothesis being tested.
 
-  Following \cite{llt:2010} I controlled for the size of each sector by computing its value as a share of that country's total imports. I also estimated the labor intensity for each sector.  The data for this calculation came from the \ref{sub:labor_intensity} input table available on Eurostat.  This measurement is done according to the NACNE rev. 2 classification scheme.  Unfortunately, this data is at a much higher level of aggregation than the data for bilateral trade.  It covers around 40 industries compared to over 10,000 products in the bilateral trade data.  I discuss this more in the data appendix.
+  Following \cite{llt:2010} I controlled for the size of each sector by computing its value as a share of that country's total imports. I also estimated the labor intensity for each sector.  The data for this calculation came from the \ref{sub:labor_intensity} input table available on Eurostat.  This measurement is done according to the NACNE rev. 2 classification scheme.  Unfortunately, this data is at a much higher level of aggregation than the data for bilateral trade.  It covers around 40 industries compared to over 10,000 products in the bilateral trade data.  While better than nothing, it's a near certainty that there will still be sizable variations in the labor intensities for various products within each of those industries.  I'm looking for alternative measures to check for robustness.  I discuss this more in the data appendix.
 
-  Finally, I intended to control for the elasticity of substitution between goods.  Following the method of \cite{weinstein-broda:2004} and \cite{feenstra:1994}, I used the bilateral trade data for each country in the sample to generate a set of moment conditions for each good.  Using the generalized method of moments, a consistent estimator of the elasticity of substitution can be found. Sadly, I \emph{still} have been unable to do the estimation.  I plan to pursue this further.
+  Finally, I intended to control for the elasticity of substitution between goods.  Following the method of \cite{weinstein-broda:2004} and \cite{feenstra:1994}, I used the bilateral trade data for each country in the sample to generate a set of moment conditions for each good.  Using the generalized method of moments, a consistent estimator of the elasticity of substitution can be found. Sadly, I \emph{still} have been unable to do the estimation.  I have all the data necessary and in the proper form, all that is left is the GMM estimation (one might say I'm mere moments from the result).  For now, however, the last step has eluded me. I plan to pursue this further, but for now I am missing an important control.
 
-  The variables of interest are related to the various hypotheses.   
+  The variables of interest are related to the various hypotheses for why trade decline more than GDP in the crisis.  Unfortunately, I had neither the data nor the time to examine the trade credit hypothesis of \cite{chor-manova:2012}.  This also means that I had neither the data nor the time to control for the effects of trade credit.  So to the extent that trade credit is an important player in our story my model will be misspecified.
+
+  To estimate the ``composition'' effect, i.e. the shift in demand away from durables and manufactures, I assigned each good a durabable/non-durable value.  Like the labor intensity data, the durables classification is done at much higher level of aggregation than the trade data.
+  
+  Finally, there is the ``vertical linkages'' hypothesis. A large portion of trade is in intermediate goods, the demand for which will be sensitive to domestic final demand. This is related to the research by \cite{alessandria-kaboski:2010} who focus on the auto sector.  To test this I have two measures of downstream intensity: the average value of downstream use and the number of industries for which a product is an input.  The data for this section are from Eurostat's supply-use tables.
 % section estimation_strategy (end)
 
 \section{Empirical Results} % (fold)
 \label{sec:empirical_results}
-  Most everything in this section should be tagged with seven levels of asterisks noting the wild misspecification of my model.  But here goes.
-
+  The ``results'' in the header of this section really should be in quotes.  
   
 \section{Conclusion}
 \label{sec:conclusion}
 
 \section{Data Appendix}
 \label{sec:data_appendix}
+
+\subsection{Comext Trade Data} % (fold)
+\label{sub:comext_trade_data}
+
+\subsection{Supply-Use Tables} % (fold)
+\label{sub:supply_use_tables}
+
+http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2007:155:0003:0006:EN:PDF
 
 \subsection{Labor Intensity} % (fold)
 \label{sub:labor_intensity}

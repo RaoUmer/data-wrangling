@@ -49,3 +49,18 @@ plt.xlabel('Quarter')
 plt.ylabel('Number of Countries')
 
 # How about together? Run max drop for each on join.
+
+#
+gr = df.groupby(axis=0, level='geo')
+fig = plt.figure()
+p = 0
+for ctry in df.index.levels[0]:
+    if ctry == 'EU27':
+        pass
+    else:
+        p += 1
+        ax = fig.add_subplot(6, 5, p)
+        gr.pct_change().ix[ctry].plot()
+
+
+
