@@ -17,19 +17,23 @@
 \section{Introduction}
 \label{sec:introduction}
 
-  The trade collapse during the Great Recession was a cause for some alarm.  \cite{eichengreen_orourke:2010} profiled the collapse monthly, noting the eerie similarity to the Great Depression's trade collapse.  Here, I examine the trade collapse with a focus on the member countries of the European Union.
+  During the Great Recession, \cite{eichengreen_orourke:2010} profiled the collapse using monthly data, drawing eerie parallels to the Great Depression's trade collapse.  The decline in world output was remarkably similar for the first year of each crisis.  Even more alarmingly the decline in world trade during the first year of the Great Recession surpassed the decline during the first year of the Great Depression.
+
+  This apparent puzzle of the abnormally large decline in trade, even relative to the large decline in output, quickly spun off a branch of research.  Most of this research has focused either on global trade or trade specific to the United States.  Here, I examine the trade collapse with a focus on the member countries of the European Union.  This focus has an advantage over a U.S. or global focus.  The EU scale allows for detailed analysis at the country level \emph{and} comparison of that analysis across countries. The statistics collected on each member country are standardized, allowing comparisons that would be more difficult or infeasible on a global scale.
 
 \section{Background Literature}
 \label{sec:background_literature}
-  The Great Recession sparked a mini boom in research on trade collapses.  Several papers are relevant here.  First, and most directly related to my own research, we have \cite{llt:2010}.  These authors attempted to empirically the trade collapse and test several hypothesis about its causes.  Notably, though, they focused only on U.S. bilateral trade.  My attempt was in a similar spirit but with a focus on countries in the European Union.
+  The Great Recession sparked a mini boom in research on trade collapses.  Several papers are relevant here. 
 
-  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; that firms who are more reliant on external financing should have been harder hit when credit supplies tightened.  They find that trade credit was both a statistically significant and important cause.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g. \cite{RePEc:imf:imfwpa:11/16}).
+  First, and most directly related to my own research, we have \cite{llt:2010}.  These authors attempted to empirically describe the trade collapse and test several hypothesis about its causes.  Notably, though, they focused only on U.S. bilateral trade.  It served as an important reference for which features of the crisis future models need to match.  My attempt was in a similar spirit but with a focus on countries in the European Union.
 
-  Another important contribution comes from \cite{eaton-kortum-neiman-romalis:2011}.  They build a general equilibrium model to run counterfactual simulations of the crisis under various exogenous shocks.  They find that the shift in demand away from manufactures was the main driver of the decline in trade.
-\section{Stylized Facts} % (fold)
+  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; firms who are more reliant on external financing should have been harder hit when credit markets froze.  They find that trade credit was both a statistically significant and important cause.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g. \cite{RePEc:imf:imfwpa:11/16}).
+
+  Another important contribution comes from \cite{eaton-kortum-neiman-romalis:2011}.  They build a general equilibrium model to run counterfactual simulations of the crisis under various exogenous shocks.  Their main result was that the shift in demand away from manufactures was the most important driver of the decline in trade.
+
+\section{Stylized Facts}
 \label{sec:stylized_facts}
-
-
+For this section our sample consists of 30 countries and an aggregate of the EU27.  The first set of figures intend to show which quarter of the crisis had the most severe contraction, where severity is the four-quarter percentage decline in exports, imports, or GDP.  It gives a count of the number of countries whose largest percentage decline of a measure occurred in each period.  By this measure, the second quarter of 2008 was the worst.  One note of interest: the decline in imports and exports looks to be more focused with 27 and 22 countries experiencing their largest decline in the fourth quarter of 2008.  Compare those with the 14 countries who shared their largest declines in the same quarter.  This shouldn't be surprising given the volume of trade among countries in the EU.
 
 \section{Trade Wedges} % (fold)
 \label{sec:trade_wedges}
@@ -41,7 +45,7 @@
 
   \begin{figure} \label{fig:trade_wedge}
     \centering
-      \includegraphics[scale=.33]{trade_wedge_1and5.png}
+      \includegraphics[scale=.5]{trade_wedge_1and5.png}
     \caption{Trade Wedges}
   \end{figure}
 
@@ -53,7 +57,13 @@
 
 \section{Estimation Strategy} % (fold)
 \label{sec:estimation_strategy}
-  My goal was to estimate regression equations to test the various hypothesis for each country in the sample.  We'll consider each country separately, and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  The independent variables depend on the particular hypothesis being tested.  Controls include the 
+  My goal was to estimate regression equations to test the various hypothesis for each country in the sample.  We'll consider each country separately, and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  The independent variables depend on the particular hypothesis being tested.
+
+  Following \cite{llt:2010} I controlled for the size of each sector by computing its value as a share of that country's total imports. I also estimated the labor intensity for each sector.  The data for this calculation came from the \ref{sub:labor_intensity} input table available on Eurostat.  This measurement is done according to the NACNE rev. 2 classification scheme.  Unfortunately, this data is at a much higher level of aggregation than the data for bilateral trade.  It covers around 40 industries compared to over 10,000 products in the bilateral trade data.  I discuss this more in the data appendix.
+
+  Finally, I intended to control for the elasticity of substitution between goods.  Following the method of \cite{weinstein-broda:2004} and \cite{feenstra:1994}, I used the bilateral trade data for each country in the sample to generate a set of moment conditions for each good.  Using the generalized method of moments, a consistent estimator of the elasticity of substitution can be found. Sadly, I \emph{still} have been unable to do the estimation.  I plan to pursue this further.
+
+  The variables of interest are related to the various hypotheses.   
 % section estimation_strategy (end)
 
 \section{Empirical Results} % (fold)
@@ -66,6 +76,11 @@
 
 \section{Data Appendix}
 \label{sec:data_appendix}
+
+\subsection{Labor Intensity} % (fold)
+\label{sub:labor_intensity}
+
+Annual data.  NACE rev. 2; \href{http://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=sts_inlb_a&lang=en}{source}
 
 \section{Calculation Appendix}
 \label{sec:calculation_appendix}

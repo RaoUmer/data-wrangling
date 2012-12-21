@@ -103,32 +103,56 @@ class grandRegression(object):
             args is a list of column names for the included variables.
             If winsor, replace outliers with 3 sigma.
             """
-            if winsor:
-                sys.path.append('/Users/tom/TradeData/data-wrangling/')
-                from winsor import winsorize
-                y = winsorize(self.endog)
-                x = winsor(self.exog)
-            else:
-                y = self.endog
-                x = self.exog
+            # if winsor:
+            #     sys.path.append('/Users/tom/TradeData/data-wrangling/')
+            #     from winsor import winsorize
+            #     y = winsorize(self.endog)
+            #     x = winsor(self.exog)
+            # else:
+            #     y = self.endog
+            #     x = self.exog
 
             idx = self.endog.index.intersection(self.exog[args].dropna(
                 how='any').index)
             model = sm.OLS(self.endog[idx], self.exog[args].ix[idx])
             return model.fit()
 
-        def filter(self, q=[.9997, .995]):
+        def my_filter(self, on=['all'], q=.9):
             """Attempt to "deal with" (ignore) outliers.
             q is a list of quantiles.
             """
-            f_idx = self.exog['size'][self.exog['size'] < self.exog[
-                'size'].quantile(.9997)].index
+            d = {}
+            all_columns = [self.endog.name] + self.exog.columns.tolist()
+            if on == ['all']:
+                columns = all_columns
+            else:
+                columns = on
 
-            f_idx = f_idx.intersection(self.endog[
-                self.endog < self.endog.quantile(.995)].index)
+            for col in columns:
+                if col == 'const' or col == 'durable':
+                    print col
+                    d[col] = self.exog[col]
+                elif col == 'pct_change':
+                    d[col] = self.endog[self.endog <
+                        self.endog.quantile(q)]
+                else:
+                    try:
+                        d[col] = self.exog[col][self.exog[col] <
+                            self.exog[col].quantile(q)]
+                    except:
+                        print 'messed up %s' % col
+            for col in set(all_columns) - set(columns):
+                if col == 'pct_change':
+                    d[col] = self.endog
+                else:
+                    d[col] = self.exog[col]
+            df = pd.DataFrame(d)
+            f_idx = df.dropna(how='any').index
+            df = df.ix[f_idx]
+
             self.f_exog = self.exog.ix[f_idx]
             self.f_endog = self.endog[f_idx]
-            self.f_res = sm.OLS(self.f_endog, self.f_exog).fit()
+
 
         def upstream(self, method='res1'):
             """Use to test upstream hypothesis.
