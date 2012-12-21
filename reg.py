@@ -153,7 +153,6 @@ class grandRegression(object):
             self.f_exog = self.exog.ix[f_idx]
             self.f_endog = self.endog[f_idx]
 
-
         def upstream(self, method='res1'):
             """Use to test upstream hypothesis.
             Methods can be res1 or res2.
@@ -167,7 +166,7 @@ class grandRegression(object):
             id2 = self.endog.index
             idx = id1.intersection(id2)  # Note: temporary.  Differs from above
 
-            return df.ix[idx].join(self.endog[idx]).join(self.exog.ix[idx])
+            return df.ix[idx].join(self.endog[idx]).join(self.exog.ix[idx]).dropna()
 
 if __name__ == '__main__':
     c = grandRegression('001', [2008, 6])
