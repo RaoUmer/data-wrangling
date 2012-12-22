@@ -2,6 +2,7 @@ from __future__ import division
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import GrandRegression
 
 df = pd.read_csv('/Users/tom/TradeData/data-wrangling/Eurostat/national-accounts/namq_gdp_c-1/na_accts_clean.csv',
     index_col=['geo', 'quarter'], parse_dates=[0])
@@ -62,5 +63,15 @@ for ctry in df.index.levels[0]:
         ax = fig.add_subplot(6, 5, p)
         gr.pct_change().ix[ctry].plot()
 
+r = grandRegression('004', [2008, 6])x = r.endog
+y = r.endog
 
+x = r.exog['size']
+
+plt.scatter(x, y)
+
+plt.xlabel('Product Size')
+
+plt.ylabel('Percent Change')
+plt.grid()
 
