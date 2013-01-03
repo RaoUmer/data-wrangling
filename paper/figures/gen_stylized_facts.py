@@ -63,7 +63,7 @@ for ctry in df.index.levels[0]:
         ax = fig.add_subplot(6, 5, p)
         gr.pct_change().ix[ctry].plot()
 
-r = grandRegression('004', [2008, 6])x = r.endog
+r = grandRegression('001', [2008, 6])x = r.endog
 y = r.endog
 
 x = r.exog['size']
@@ -74,4 +74,4 @@ plt.xlabel('Product Size')
 
 plt.ylabel('Percent Change')
 plt.grid()
-
+plt.savefig()
