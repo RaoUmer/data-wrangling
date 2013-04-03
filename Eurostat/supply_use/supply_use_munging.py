@@ -1,9 +1,11 @@
+##### REPLACED BY NAIO MUNGE
+
 from __future__ import division
 
 import os
 import pandas as pd
 
-os.chdir('/Volumes/HDD/Users/tom/DataStorage/Eurostat/supply_use_tables/')
+os.chdir('/Users/tom/TradeData/data-wrangling/Eurostat/supply_use/tables')
 df = pd.read_csv('naio_cp15_r2.tsv',
         na_values=[':', ' :', ': ', ': c'], sep=',|s*\t',
         index_col=['unit', 'geo\\time', 't_cols2', 't_rows2'])
@@ -12,6 +14,6 @@ df = pd.read_csv('naio_cp15_r2.tsv',
 # WARNING: Some provisionals stripped.
 
 df.columns = [int(x.strip(' ')) for x in df.columns]
-df.index.names = ['unit', 'geo', 'industry', 'input']
+df.index.names = ['unit', 'geo', 'input', 'industry']
 df = df.astype('float')
 df.to_csv('clean_naio_cp15_r2.csv')

@@ -1,0 +1,170 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage[colorlinks=true, citecolor=blue]{hyperref}
+\graphicspath{{/Users/tom/TradeData/data-wrangling/paper/figures/}}
+
+\title{European Trade and the Great Recession}
+\author{Tom Augspurger}
+\date{\today}
+\begin{document}
+\maketitle
+\begin{abstract}
+  This paper analyzes European Trade in the Great Recession.  It attempts to investigate various explanations for why the collapse in trade was more severe than for overall output.  The hope was to analyze the decline in import demand for each country in the European Union independently and then compare their difference.  Unfortunately, most of my results were inconclusive.
+\end{abstract}
+\section{Introduction}
+\label{sec:introduction}
+
+  During the Great Recession, \cite{eichengreen_orourke:2010} profiled the collapse using monthly data, drawing eerie parallels to the Great Depression's.  The decline in world output was remarkably similar in the first year of each crisis.  Even more alarmingly the decline in world trade during the first year of the Great Recession surpassed the decline during the first year of the Great Depression.
+
+  This apparently large decline in trade, even relative to the large decline in output, quickly spun off a branch of research.  Most of this research has focused either on global trade or U.S. bilateral trade.  Here, I examine the trade collapse with a focus on the member countries of the European Union.  This focus has an advantage over a global or U.S. centric view.  The EU scale allows for detailed analysis at the country level \emph{and} comparison of that analysis across countries. The statistics collected on each member country are standardized, allowing comparisons that would be more difficult or infeasible on a global scale.
+
+\section{Background Literature}
+\label{sec:background_literature}
+  The Great Recession sparked a mini boom in research on trade collapses.  Several papers are relevant here. 
+
+  First, and most directly related to my own research, we have \cite{llt:2010}.  These authors set out to empirically describe the trade collapse and test several hypothesis about its causes.  Notably, though, they focused only on U.S. bilateral trade.  It served as an important reference for which features of the crisis future models need to match.  My attempt was in a similar spirit but with a focus on countries in the European Union.
+
+  One of the hypothesis tested by \cite{llt:2010} is associated with \cite{chor-manova:2012}. They posit trade credit as an important cause of the decline in trade; firms who were more reliant on external financing should have been harder hit when credit markets froze.  They find that trade credit was both a statistically significant and important component of the decline in trade.  This research is not yet settled, however, as others have found that the decline in trade credit was not an important factor (e.g.\ \cite{RePEc:imf:imfwpa:11/16}).
+
+  Another important contribution comes from \cite{eaton-kortum-neiman-romalis:2011}.  They build a general equilibrium model to run counterfactual simulations of the crisis under various exogenous shocks.  Their main result was that the shift in demand away from manufactures was the most important driver of the decline in trade.
+
+\section{Stylized Facts}
+\label{sec:stylized_facts}
+
+  For this section our sample consists of 30 countries and an aggregate of the EU27.  Figure~\ref{fig:declines} shows which quarter of the crisis had the most severe contraction, for the most number of countries.  Severity, here, is the four-quarter percentage decline in exports, imports, or GDP.  It gives a count of the number of countries whose largest percentage decline of a measure occurred in each period.  By this measure, the second quarter of 2008 was the worst.
+
+  \begin{figure}[ht]
+    \centering
+      \includegraphics[scale=.67]{grouped_declines.png}
+    \caption{Maximum Decline}
+    \label{fig:declines}
+  \end{figure}
+
+  One note of interest: the decline in imports and exports looks to be more focused with 27 and 22 countries experiencing their largest decline in the fourth quarter of 2008.  Compare those with the 14 countries who shared their largest declines in the same quarter.  This shouldn't be surprising given the volume of trade among countries in the EU.
+
+  It's difficult to present data on 31 territories in any reasonable amount of space.  I've decided to exclude all the standard time-series charts and tables.  These can easily be obtained by emailing the author.\footnote{thomas-augspurger@uiowa.edu}
+
+\section{Trade Wedges} % (fold)
+\label{sec:trade_wedges}
+  Has the decline in trade been abnormally large?  To get a rough answer to this question, we can calculate what \cite{llt:2010} call a ``Trade Wedge''.  The ``wedge'' refers to the gap between the observed decline in trade and what would be predicted by a standard model.\footnote{See \cite{llt:2010} for a full derivation.}  The model specifies an import demand relationship as:
+  \begin{equation} \label{eq:trade_wedge}
+      \hat{y}^f = \varepsilon(\hat{P} - \hat{p}^f) + (\hat{C + I})
+  \end{equation}
+  where carets indicate log changes, $y$ is the demand for imports, $P$ is the overall price level, $p^f$ is the price level of imports, and $(C + I)$ is consumption plus investment (aggregate demand).  Finally $\varepsilon$ is the elasticity of substitution. I choose an $\varepsilon$ of 1.5, taken from~\cite{llt:2010}. If our simple model is entirely correct, this equation should hold exactly.  The difference between the calculated and predicted values is the trade wedge.  Since we're calculating log changes, $\hat{P}$ and $\hat{p}^f$ are log changes in the deflator for GDP and imports.
+
+  \begin{figure}
+    \centering
+      \includegraphics[scale=.67]{trade_wedge_1and5.png}
+    \caption{Trade Wedges}
+    \label{fig:trade_wedge}
+  \end{figure}
+
+  As shown in figure~\ref{fig:trade_wedge}, every country in this sample experienced a larger decline in trade than predicted by the model.  Of course, this may say more about our model that about whether the decline in trade was particularly large.  But, as a first-order approximation, it suggests that the decline in trade may be worth looking into further.
+
+\section{Estimation Strategy} % (fold)
+\label{sec:estimation_strategy}
+  My goal was to estimate regression equations to test the various hypothesis for the cause of the decline.  We'll consider each country separately and analyze their differences at the end.  For each regression, the dependent variable is the percentage decline in trade (differentiated by good).  Which independent variables are included depends on the particular hypothesis being tested.  I discuss sources and computational methods in section~\ref{sec:data_appendix}, the data appendix.
+
+  Following \cite{llt:2010} I controlled for the size of each sector by computing its value as a share of that country's total imports. I also estimated the labor intensity for each sector.
+
+  Finally, I intended to control for the elasticity of substitution between goods.  Following the method of \cite{weinstein-broda:2004} and \cite{feenstra:1994}, I used the bilateral trade data for each country in the sample to generate a set of moment conditions for each good.  Using the generalized method of moments, a consistent estimator of the elasticity of substitution can be found. Sadly, I \emph{still} have been unable to do the estimation.  I have all the data necessary and in the proper form, all that is left is the GMM estimation (one might say I'm mere moments from the result).  For now, however, the last step has eluded me. I plan to pursue this further, but I am presently missing an important control variable.
+
+  The variables of interest are related to the various hypotheses for why trade decline more than GDP in the crisis.  Unfortunately, I had neither the data nor the time to examine the trade credit hypothesis of \cite{chor-manova:2012}.  This also means that I had neither the data nor the time to control for the effects of trade credit.  So to the extent that trade credit is an important player in our story my model will be misspecified.
+
+  To estimate the ``composition'' effect, i.e.\ the shift in demand away from durables and manufactures, I created a dummy variable for whether a product is durable or not.  Based on previous research, we would expect the decline in trade for the durables to be larger than the decline for non-durables.
+  
+  Finally, there is the ``vertical linkages'' hypothesis. A large portion of trade is in intermediate goods, the demand for which will be sensitive to domestic final demand. This is related to the research by \cite{alessandria-kaboski:2010} who focus on the auto sector.  To test this I have two measures of downstream intensity: the average value of downstream use and the number of industries for which a product is an input.  The data for this section are from Eurostat's supply-use tables.
+
+\section{Empirical Results} % (fold)
+\label{sec:empirical_results}
+  The ``results'' in the header of this section really should be in quotes.  I'm still torturing the data, but as of now I have nothing of note to report.  Consider the sample regression for the percentage change in demand for imports of each product in Germany.  This model includes the variable for durables and controls for size and labor.
+
+  \begin{equation} \label{eq:ex_reg}
+    \mathbf{\gamma}_{GER} = \beta_0 + \beta_1 durable + \beta_2 labor + \beta_3 size + \mathbf{\varepsilon}
+  \end{equation}
+   An OLS regression yields the following coefficient estimates:
+
+  \begin{center} \label{tab:ex_coef}
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+            & coef     & std err \\ \hline
+    const   & -3.1411  & 3.515   \\
+    durable & -0.3678  & 0.341   \\
+    labor   & 0.0353   & 0.033   \\
+    size    & -164.647 & 254.173 \\ \hline
+
+    \end{tabular}
+  \end{center}    
+  
+  None of the variables is significant at the 10\% (or 20\%) significance level. The $R^2$ is 0.002.  These numbers are fairly typical of the other countries.  There are massive problems with outliers in some of the variables, which I am still working through.  For example figure~\ref{fig:outliers} shows a scatter plot of the dependent variable (percent change in imports for each product) against the size variable for France. 
+
+  \begin{figure}[ht]
+    \centering
+      \includegraphics[scale=.5]{france_outliers.png}
+    \caption{Outliers}
+    \label{fig:outliers}
+  \end{figure}
+
+  Why, did the demand for ``meals of sheep and goats'' change by 2000\% in the four quarters leading up to 2008Q2?  Is it an outlier? Yes.  Can I safely throw it out?  Can I justify throwing it out? I'm not sure.  I can, for example, trim of the final decline and improve my results, but I would not want to place any weight at all on any findings from that method.
+  
+  These negative results are not a cause to conclude that the variables were not important to the decline in trade. It instead indicates that my model is poorly specified at the moment.
+
+\section{Conclusion}
+\label{sec:conclusion}
+  Unfortunately my results were too weak to draw any meaningful conclusions on the causes of the trade decline in Europe.  From the trade wedge calculation, we did see that the decline in trade was larger than the simple model suggested, so this problem warrants further research.  I hope to sort out my model's issues, and if I do I'll forward along the results.
+
+\section{Data Appendix}
+\label{sec:data_appendix}
+  I've documented the sources and some of my intermediate calculations here.  I've also put my entire source code repository on GitHub at \href{https://github.com/TomAugspurger/data-wrangling}{https://github.com/TomAugspurger/data-wrangling}.
+\subsection{Comext Trade Data}
+\label{sub:comext_trade_data}
+  The bilateral trade data is from the Comext database via Eurostat.  It contains data on 28 territories: France, Netherlands, Fr Germany, Italy, Utd. Kingdom, Ireland, Denmark, Greece, Portugal, Spain, Belgium, Luxembourg, Sweden, Finland, Austria, Cyprus, Czech Republic, Estonia, Hungary, Lithuania, Latvia, Malta, Poland, Slovenia, Slovakia, Bulgaria, Romania, and aggregate for the EU.  The data are collected at a monthly frequency.  Here's a sample:
+
+  \begin{table}[h]
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}\footnotesize
+    & & & & & Value (1000 Euro) & Quantity (Ton) & Sup Q \\ \hline
+    Flow & Period & Dec. & Product & Partner &  &  &     \\ \hline
+    1 & 2010-09-01 & 1  & 01011010 & 3       & 3741.08 & 1359.2 & 0\\ \hline
+  \end{tabular}
+  \end{table}
+
+  where Flow is 1 for imports, 2 for exports; Dec is the declarant (1 is France); Product is an 8-digit code from the Combined Nomenclature (CN) classification; Partner is the trade partner (3 is Holland); and Sup Q is a supplemental quantity measurement, for example a length or volume.
+
+  The CN classification covers over 8,000 products.  It focuses on goods, and only indirectly picks up services (for example the valued added by architects shows up, but not in its own code).
+
+  These data were used to calculate the response variable, percentage change in import demand.  To do so I first aggregated over the ``Partner'' column, leaving one group for each product.  I then took the average over the three months in the quarter being tested.  I did the same operation on the data for the year prior, and then took the percentage change.  If the product was in the sample for both years it had to be dropped before estimation.
+
+  To calculate the ``size'' control variable, I calculated the total imports for each country, and divided the imports of each product into that total.  This returned an $m_i$ x $1$ vector where $m_i$ is the number of types of products country $i$ imported for that year.
+
+  Finally, I used this database (at the yearly frequency) to (almost) calculate the elasticities of substation. ~\cite{weinstein-broda:2004} and ~\cite{feenstra:1994} detail the process fairly well, so I will not repeat them here.
+\subsection{Durables} % (fold)
+\label{sub:durables}
+  The durables/non-durables classification followed the \href{http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2007:155:0003:0006:EN:PDF}{European Commission's grouping}.  That grouping was under the NACE revision 2 classification, at a much higher level of aggregation that I would have liked. I assigned a value of 1 to durables and 0 to non-durables at the level given by the European Commission, with about 75 sectors. I then had to be broadcast those values to the Combined Nomenclature classification of about 9000 industries.  Presumably the NACE classification should be detailed enough, and the subgroupings of the CN classification similar enough, that I end up with a reasonably accurate picture.
+% subsection durables (end)
+
+\subsection{Supply-Use Tables}
+\label{sub:supply_use_tables}
+
+  The supply-use tables, available on \href{http://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=naio_cp16_r2&lang=en}{Eurostat}, were used to calculate variables to test the downstream hypothesis.  The setup may be easiest to understand visually.  Figure~\ref{fig:use_germany} shows the use table for Germany:\footnote{Note to Ray: I think a 3-d version of this type of graph would be useful for you paper on testing how often the various trade hypothesis are true.}
+
+  \begin{figure}[ht]
+    \centering
+      \includegraphics[scale=.67]{use_germany.png}
+    \caption{Use Table}
+    \label{fig:use_germany}
+  \end{figure}
+
+  Along the x-axis are the various industries included in the data set.  They are classified according to the NACE revision 2 standard.\footnote{The arcana of international economic activity classifications are important but mundane, so I won't bother you with the details.  I'll only note that correspondences can be built between the two schemes, but some information is lost in the translation.}  I've had to thin out the labels to fit them on the plot, but each axis contains about 90 categories.  The emphasis is mainly on manufacturing.  The intersection of the $i^{th}$ and $j^{th}$ column indicates how much of input $i$ is used in industry $j$.  A darker color corresponds to a higher use intensity for that good.
+
+\subsection{Labor Intensity}
+\label{sub:labor_intensity}
+
+  The labor intensity is index was calculated from \href{http://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=sts_inlb_a&lang=en}{Eurostat} as well.  It is annual data and is also classified according to the NACE revision 2 scheme.  This table contains only about 31 industries.  These 31 industries were broadcast up to the 9000 or so for the bilateral trade data.  For this measure especially, many observations had to be dropped in the transfer. As an example, for France I had to go from 7,444 observations without the labor variable to 1,202 observations with the labor variable. While better than nothing, it's a near certainty that there will still be sizable variations in the labor intensities for various products within each of those industries.  I'm looking for alternative measures to check for robustness.
+
+\bibliographystyle{apa}
+\bibliography{citations}
+
+\end{document}

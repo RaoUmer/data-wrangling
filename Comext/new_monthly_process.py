@@ -5,6 +5,18 @@ from year_month_parse import year_month
 
 os.chdir('/Volumes/HDD/Users/tom/DataStorage/Comext/')
 files = [
+        'nc200701',
+        'nc200702',
+        'nc200703',
+        'nc200704',
+        'nc200705',
+        'nc200706',
+        'nc200707',
+        'nc200708',
+        'nc200709',
+        'nc200710',
+        'nc200711',
+        'nc200712',
         'nc200801',
         'nc200802',
         'nc200803',
@@ -43,16 +55,20 @@ files = [
         'nc201012',
 ]
 
-files = [
-        'nc201009',
-        'nc201010',
-        'nc201011',
-        'nc201012',
-        ]
-
-
 monthly = pd.HDFStore('monthly.h5')
 lookup = {
+        'nc200701': 'jan_07',
+        'nc200702': 'feb_07',
+        'nc200703': 'mar_07',
+        'nc200704': 'apr_07',
+        'nc200705': 'may_07',
+        'nc200706': 'jun_07',
+        'nc200707': 'jul_07',
+        'nc200708': 'aug_07',
+        'nc200709': 'sep_07',
+        'nc200710': 'oct_07',
+        'nc200711': 'nov_07',
+        'nc200712': 'dec_07',
         'nc200801': 'jan_08',
         'nc200802': 'feb_08',
         'nc200803': 'mar_08',
@@ -92,8 +108,10 @@ lookup = {
 }
 
 for f in files:
+    print('working on %s') % f
     leaf = lookup[f]
 
     monthly[leaf] = pd.read_csv(f + '.dat', parse_dates=[5],
         date_parser=year_month, index_col=['FLOW', 'PERIOD', 'DECLARANT',
         'PRODUCT_NC', 'PARTNER', 'STAT_REGIME'])
+    monthly.flush()
