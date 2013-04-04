@@ -29,9 +29,9 @@ def sse(x, df=g.dropna()):
 
     Even better: def a func and groupby country and apply!
     """
-    s, w = x
-    t1 = w / ((1 + w) * (s - 1))
-    t2 = (1 - w * (s - 2)) / ((1 + w) * (s - 1))
+    sig, w = x
+    t1 = w / ((1 + w) * (sig - 1))
+    t2 = (1 - w * (sig - 2)) / ((1 + w) * (sig - 1))
     u = df.p ** 2 - t1 * df.s ** 2 - t2 * df.c
     return (u ** 2).sum()  # replace with dot prod and weighting matrix.
 
