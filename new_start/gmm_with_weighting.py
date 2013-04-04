@@ -40,15 +40,14 @@ def sse_w(x, c, p, s, W=None):
 def minimization_w(good, W=None, n_min=4):
     """
     Idea is for good to be an item from a groupby.
+    Changed small samples to return -5 for status code.
     """
+    # print(good.name)
+    res = optimize.minimize(sse_w, x0=[2, 2], method='Nelder-Mead',
+                            args=good.dropna().values.T)
     if len(good) < n_min:
-        return {'status': np.nan, 'nfev': np.nan, 'succes': False,
-                'fun': np.nan, 'x': np.nan, 'message': '', 'nit': np.nan}
-    else:
-        print(good.name)
-        return optimize.minimize(sse_w, x0=[2, 2], method='Nelder-Mead',
-                                 args=good.dropna().values.T)
-
+        res['status'] = -5
+    return res
 
 if __name__ == '__main__':
     from cPickle import load
@@ -56,6 +55,7 @@ if __name__ == '__main__':
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
     gmm = pd.HDFStore(base + 'gmm_store.h5')
+    gmm_results = pd.HDFStore(base + 'gmm_results')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
 
@@ -67,5 +67,11 @@ if __name__ == '__main__':
         res = gr.apply(minimization_w)  # takes a while.  Maybe 5 - 10 min?
         res2 = pd.DataFrame([dict(x) for x in res])
         res2.index = res.index
-        gmm.append('params_' + ctry, res2)
+        res2 = res2.drop('message', axis=1)
+        thetas = pd.DataFrame([[y[0], y[1]] for y in res2.x.values],
+                              index=res2.index, columns=['t1', 't2'])
+        res2 = res2.join(thetas)
+        res2 = res2.drop('x', axis=1)
+        gmm_results.append('params_' + ctry, res2)
+        print('Finshed {} at'.format(ctry))
         print(datetime.utcnow() - t)
