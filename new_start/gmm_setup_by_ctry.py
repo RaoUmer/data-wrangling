@@ -8,6 +8,9 @@ year, partner, product ||
 This file attempts it from the gmm store but not the f (final) leaves.
 Doing it this way to get a sensible index first (every year essentailly)
 and then merge across p, s, and c.
+
+Note to future self:  Adding additional years may be a bit of work.
+You probably would need to reset the index.
 """
 
 import itertools as it
