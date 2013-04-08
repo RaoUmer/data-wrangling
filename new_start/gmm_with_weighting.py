@@ -6,6 +6,8 @@ year, partner, product ||
 
 GMM go!
 """
+from __future__ import division, print_function, unicode_literals
+
 import numpy as np
 import pandas as pd
 from scipy import optimize
@@ -14,7 +16,8 @@ from scipy import dot
 
 def sse_w(x, c, p, s, W=None):
     """
-    minimize this in the GMM.
+    minimize this in the GMM.  Make sure you're
+    estimating the params of interst and not theta...
 
     Parameters
 
@@ -30,24 +33,37 @@ def sse_w(x, c, p, s, W=None):
     """
     if W is None:
         W = np.eye(len(c))
-    sig, w = x
-    t1 = w / ((1 + w) * (sig - 1))
-    t2 = (1 - w * (sig - 2)) / ((1 + w) * (sig - 1))
+    t1, t2 = x
+    # t1 = w / ((1 + w) * (sig - 1))
+    # t2 = (1 - w * (sig - 2)) / ((1 + w) * (sig - 1))
     u = p ** 2 - t1 * s ** 2 - t2 * c
-    return dot(dot(u, W), u)
+    return (1 / len(c)) * dot(dot(u, W), u)
 
 
-def minimization_w(good, W=None, n_min=4):
+def minimization_w(good, x0=[2, 2], W=None, n_min=4, method='Nelder-Mead'):
     """
     Idea is for good to be an item from a groupby.
     Changed small samples to return -5 for status code.
     """
     # print(good.name)
-    res = optimize.minimize(sse_w, x0=[2, 2], method='Nelder-Mead',
+    res = optimize.minimize(sse_w, x0=x0, method=method,
                             args=good.dropna().values.T)
     if len(good) < n_min:
         res['status'] = -5
     return res
+
+
+def _theta_to_interest(t1, t2):
+    """
+    GMM estimates theta1 and theta2, we want sigma and omega.
+    """
+
+
+# def two_step(good):
+#     """
+#     Expects a groupby object.
+#     """
+#     obj = GMM(good, '')
 
 if __name__ == '__main__':
     from cPickle import load
@@ -55,7 +71,7 @@ if __name__ == '__main__':
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
     gmm = pd.HDFStore(base + 'gmm_store.h5')
-    gmm_results = pd.HDFStore(base + 'gmm_results')
+    gmm_results = pd.HDFStore(base + 'gmm_results.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
 
