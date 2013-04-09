@@ -14,9 +14,9 @@ class GMM(object):
         instruments = ['hsat', 'married']
 
         obj = GMM(dta_gmm, endog, exog, instruments)
-        res = obj.fit_exp([-1, 1, .1, .2])
+        res = obj.fit([-1, 1, .1, .2])
     """
-    def __init__(self, data, endog, exog, instruments, form='linear'):
+    def __init__(self, data, endog, exog, instruments=None, form='linear'):
         """
         data: An entire dataframe
         endog: Str. Column name.
@@ -27,16 +27,20 @@ class GMM(object):
         with patsy.
         """
         self.data = data
-        if set.intersection(set(exog), set(instruments)) != set([]):
-            raise ValueError('Don\'t put cols in exog and instruments.')
+        if instruments is None:
+            self.instruments = []
+        else:
+            if set.intersection(set(exog), set(instruments)) != set([]):
+                raise ValueError('Don\'t put cols in exog and instruments.')
+            else:
+                self.instruments = list(instruments)
         self.endog = endog
         self.exog = list(exog)
-        self.instruments = list(instruments)
         self.n_moms = len(self.exog) + len(self.instruments)
         self.n = len(data[endog])
         self.form = form
 
-    def mom_gen_exp(self, theta):
+    def mom_gen(self, theta):
         """
         theta: initial guess
         """
@@ -48,7 +52,7 @@ class GMM(object):
         if self.form == 'exp':
             e = y - np.exp(dot(X, theta))
         else:
-            e = y - np.exp(dot(X, theta))
+            e = y - (dot(X, theta))
 
         m = dot(Z.T, e) / self.n
         # self.m = m
@@ -58,20 +62,22 @@ class GMM(object):
             moments = dot(m.T, m)
         return moments
 
-    def fit_exp(self, x0, maxiter=None):
+    def fit(self, x0, maxiter=None):
         """
         Greene p. 487 for weight matrix.
         """
         x0 = np.array(x0).reshape(len(self.exog), 1)
-        round_one = optimize.fmin(self.mom_gen_exp, x0=x0, maxiter=maxiter)
+        round_one = optimize.fmin(self.mom_gen, x0=x0, maxiter=maxiter)
         ### Now Solve for Optimal W
         # Greene p. 490; Check if this is right.
         # Using White's (1980) estimator.
         round_one = round_one.reshape(len(self.exog), 1)
         y = self.data[self.endog].values
         X = self.data[self.exog].values
-        e = y - np.exp(dot(X, round_one))
-        e
+        if self.form == 'exp':
+            e = y - np.exp(dot(X, round_one))
+        else:
+            e = y - np.exp(dot(X, round_one))
         Z = self.data[self.exog + self.instruments].values
 
         for i, obs in enumerate(Z):
@@ -83,6 +89,6 @@ class GMM(object):
         self.W = inv(W / self.n)
         # round_two implicitly uses W.  Probably a better way.
         # This also caches W forever until explicity removed.
-        round_two = optimize.fmin(self.mom_gen_exp, x0=round_one,
+        round_two = optimize.fmin(self.mom_gen, x0=round_one,
                                   maxiter=maxiter)
         return round_two
