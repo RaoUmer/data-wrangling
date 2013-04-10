@@ -1,4 +1,8 @@
 """
+# TODO: You last run (may) have failed because some of the optimizations
+will  return None.  That makes your dataframe of type ```object```,
+which cannot be appended.
+
 You have a df like:
                           'p', s, c
 year, partner, product ||
@@ -14,6 +18,7 @@ from scipy import optimize
 from scipy import dot
 
 import gmail
+
 
 def sse_w(x, c, p, s, W=None):
     """
@@ -84,14 +89,15 @@ def gen_moms_sse(theta, subgroup, W=None):
 #     return inner_error(x)
 
 
-def gen_params(subgroup, x0):
+def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
     """Currently at year, partner index. subgroup = grp
     """
     try:
-        return optimize.fmin(gen_moms_sse, x0=x0, args=[(subgroup)])
+        return optimize.minimize(gen_moms_sse, x0=x0, args=[(subgroup)],
+                                 method=method, options=options)
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
-        return None
+        return (np.nan, np.nan)
 
 
 if __name__ == '__main__':
@@ -108,7 +114,6 @@ if __name__ == '__main__':
     for ctry in declarants:
         t = datetime.utcnow()
         df = gmm.select('by_ctry_' + ctry)
-        by_product = df.dropna().groupby(level='PRODUCT_NC')
         by_product_partner = df.dropna().groupby(level=['PRODUCT_NC', 'PARTNER'])
         res = {name: gen_params(group, x0=[2, 1])
                for name, group in by_product_partner}
@@ -117,7 +122,13 @@ if __name__ == '__main__':
         res = res.rename(columns={0: 'theta1', 1: 'theta2', 'index': 'tuples'})
         res.index = pd.MultiIndex.from_tuples(res['tuples'], names=['product', 'partner'])
         res = res.drop('tuples', axis=1)
-        gmm_results.append('res_' + ctry, res)
+        try:
+            res = res.astype('float')
+            gmm_results.append('res_' + ctry, res)
+        except TypeError:
+            res.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
+                       'yearly/ctry_{}.csv'.format(ctry))
+
         m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
         try:
             gmail.mail('thomas-augspurger@uiowa.edu', 'Test', m)
