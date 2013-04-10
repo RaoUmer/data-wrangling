@@ -13,6 +13,7 @@ import pandas as pd
 from scipy import optimize
 from scipy import dot
 
+import gmail
 
 def sse_w(x, c, p, s, W=None):
     """
@@ -117,3 +118,8 @@ if __name__ == '__main__':
         res.index = pd.MultiIndex.from_tuples(res['tuples'], names=['product', 'partner'])
         res = res.drop('tuples', axis=1)
         gmm_results.append('res_' + ctry, res)
+        m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
+        try:
+            gmail.mail('thomas-augspurger@uiowa.edu', 'Test', m)
+        except:
+            pass
