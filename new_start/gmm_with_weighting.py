@@ -57,13 +57,41 @@ def _theta_to_interest(t1, t2):
     """
     GMM estimates theta1 and theta2, we want sigma and omega.
     """
+    pass
 
 
-# def two_step(good):
-#     """
-#     Expects a groupby object.
-#     """
-#     obj = GMM(good, '')
+def gen_moms_sse(theta, subgroup, W=None):
+    """
+    ### Rethink:
+        The mean of the mean error is the same as the mean of the errors.
+        i.e. it doesn't matter if I groupby country, find the average error,
+        and pass those errors up (one per country) to be averaged VS.
+        simply taking the average error upfront. Right?
+    FU 1011
+    ### Rethink over.
+    See notes below.  This one finds the errors for a coutry
+    and returns the average.  Generates one moment.
+    """
+    err = ((subgroup.p ** 2 - theta[0] * subgroup.s ** 2 -
+            theta[1] * subgroup.c).values.reshape(1, -1).T)
+    if W is None:
+        W = np.eye(len(err))
+    return dot(dot(err.T, W), err) / len(err)
+
+
+# def t(x, theta=2):
+#     return inner_error(x)
+
+
+def gen_params(subgroup, x0):
+    """Currently at year, partner index. subgroup = grp
+    """
+    try:
+        return optimize.fmin(gen_moms_sse, x0=x0, args=[(subgroup)])
+    except AttributeError:
+        print('Failed On frame {}'.format(subgroup.name))
+        return None
+
 
 if __name__ == '__main__':
     from cPickle import load
@@ -79,15 +107,13 @@ if __name__ == '__main__':
     for ctry in declarants:
         t = datetime.utcnow()
         df = gmm.select('by_ctry_' + ctry)
-        gr = df.groupby(level='PRODUCT_NC')
-        res = gr.apply(minimization_w)  # takes a while.  Maybe 5 - 10 min?
-        res2 = pd.DataFrame([dict(x) for x in res])
-        res2.index = res.index
-        res2 = res2.drop('message', axis=1)
-        thetas = pd.DataFrame([[y[0], y[1]] for y in res2.x.values],
-                              index=res2.index, columns=['t1', 't2'])
-        res2 = res2.join(thetas)
-        res2 = res2.drop('x', axis=1)
-        gmm_results.append('params_' + ctry, res2)
-        print('Finshed {} at'.format(ctry))
-        print(datetime.utcnow() - t)
+        by_product = df.dropna().groupby(level='PRODUCT_NC')
+        by_product_partner = df.dropna().groupby(level=['PRODUCT_NC', 'PARTNER'])
+        res = {name: gen_params(group, x0=[2, 1])
+               for name, group in by_product_partner}
+        res = pd.DataFrame(res).T
+        res.reset_index(inplace=True)
+        res = res.rename(columns={0: 'theta1', 1: 'theta2', 'index': 'tuples'})
+        res.index = pd.MultiIndex.from_tuples(res['tuples'], names=['product', 'partner'])
+        res = res.drop('tuples', axis=1)
+        gmm_results.append('res_' + ctry, res)
