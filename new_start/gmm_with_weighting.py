@@ -18,6 +18,8 @@ from scipy import optimize
 from scipy import dot
 
 import gmail
+from parse_optimize_results import opt_dict_format
+#-----------------------------------------------------------------------------
 
 
 def sse_w(x, c, p, s, W=None):
@@ -44,19 +46,6 @@ def sse_w(x, c, p, s, W=None):
     # t2 = (1 - w * (sig - 2)) / ((1 + w) * (sig - 1))
     u = p ** 2 - t1 * s ** 2 - t2 * c
     return (1 / len(c)) * dot(dot(u, W), u)
-
-
-def minimization_w(good, x0=[2, 2], W=None, n_min=4, method='Nelder-Mead'):
-    """
-    Idea is for good to be an item from a groupby.
-    Changed small samples to return -5 for status code.
-    """
-    # print(good.name)
-    res = optimize.minimize(sse_w, x0=x0, method=method,
-                            args=good.dropna().values.T)
-    if len(good) < n_min:
-        res['status'] = -5
-    return res
 
 
 def _theta_to_interest(t1, t2):
@@ -96,7 +85,7 @@ def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
         return (np.nan, np.nan)
-
+#-----------------------------------------------------------------------------
 
 if __name__ == '__main__':
     from cPickle import load
@@ -107,32 +96,33 @@ if __name__ == '__main__':
     gmm_results = pd.HDFStore(base + 'gmm_results.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
-
     declarants = sorted(country_code.keys())
+
+#-----------------------------------------------------------------------------
+# Main loop.  Optimize to get params for each good, for each declarant.
     for ctry in declarants:
+        print('Working on {}'.format(ctry))
         t = datetime.utcnow()
         try:
             df = gmm.select('by_ctry_' + ctry)
-            by_product_partner = (
-                df.dropna().groupby(level=['PRODUCT_NC', 'PARTNER']))
+            by_product = df.dropna().groupby(level='PRODUCT_NC')
         except KeyError, AssertionError:
             with open('gmm_logging.txt', 'a') as f:
                 f.write('Failed to open or group ctry: {}'.format(ctry))
             continue
-        res = {name: gen_params(group, x0=[2, 1])
-               for name, group in by_product_partner}
 
+        # GMM Estimation.
+        res = {name: gen_params(group, x0=[2, 1])
+               for name, group in by_product}
+
+        # Formatting and IO.
         res = pd.DataFrame(res).T
-        res.reset_index(inplace=True)
-        res = res.rename(columns={0: 'theta1', 1: 'theta2', 'index': 'tuples'})
-        res.index = pd.MultiIndex.from_tuples(res['tuples'], names=['product', 'partner'])
-        res = res.drop('tuples', axis=1)
+        for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
         try:
-            res = res.astype('float')
-            gmm_results.append('res_' + ctry, res)
+            gmm_results.append('res_' + ctry, for_hd5)
         except TypeError:
-            res.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-                       'yearly/ctry_{}.csv'.format(ctry))
+            for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
+                           'yearly/ctry_{}.csv'.format(ctry))
 
         m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
         try:
