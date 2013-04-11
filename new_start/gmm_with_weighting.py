@@ -73,27 +73,25 @@ def gen_moms_sse(theta, subgroup, W=None):
         i.e. it doesn't matter if I groupby country, find the average error,
         and pass those errors up (one per country) to be averaged VS.
         simply taking the average error upfront. Right?
-    FU 1011
+
     ### Rethink over.
     See notes below.  This one finds the errors for a coutry
     and returns the average.  Generates one moment.
     """
-    err = ((subgroup.p ** 2 - theta[0] * subgroup.s ** 2 -
-            theta[1] * subgroup.c).values.reshape(1, -1).T)
+    c, p, s = subgroup
+    p = p ** 2
+    s = s ** 2
+    err = p - theta[0] * s - theta[1] * c  # .reshape(1, -1).T)
     if W is None:
         W = np.eye(len(err))
     return dot(dot(err.T, W), err) / len(err)
-
-
-# def t(x, theta=2):
-#     return inner_error(x)
 
 
 def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
     """Currently at year, partner index. subgroup = grp
     """
     try:
-        return optimize.minimize(gen_moms_sse, x0=x0, args=[(subgroup)],
+        return optimize.minimize(gen_moms_sse, x0=x0, args=[(subgroup.values.T)],
                                  method=method, options=options)
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
@@ -113,10 +111,17 @@ if __name__ == '__main__':
     declarants = sorted(country_code.keys())
     for ctry in declarants:
         t = datetime.utcnow()
-        df = gmm.select('by_ctry_' + ctry)
-        by_product_partner = df.dropna().groupby(level=['PRODUCT_NC', 'PARTNER'])
+        try:
+            df = gmm.select('by_ctry_' + ctry)
+            by_product_partner = (
+                df.dropna().groupby(level=['PRODUCT_NC', 'PARTNER']))
+        except KeyError, AssertionError:
+            with open('gmm_logging.txt', 'a') as f:
+                f.write('Failed to open or group ctry: {}'.format(ctry))
+            continue
         res = {name: gen_params(group, x0=[2, 1])
                for name, group in by_product_partner}
+
         res = pd.DataFrame(res).T
         res.reset_index(inplace=True)
         res = res.rename(columns={0: 'theta1', 1: 'theta2', 'index': 'tuples'})
