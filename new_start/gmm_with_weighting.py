@@ -22,32 +22,6 @@ from parse_optimize_results import opt_dict_format
 #-----------------------------------------------------------------------------
 
 
-def sse_w(x, c, p, s, W=None):
-    """
-    minimize this in the GMM.  Make sure you're
-    estimating the params of interst and not theta...
-
-    Parameters
-
-    * x: array of parameters to be argmined.
-    * c: the cross part from estimation equation.
-    * p: the price part from estimation equation.
-    * s: the share part from estimation equation.
-    * W: weighting matrix.  Default None -> I.
-
-    Returns
-
-    The sum of square errors, possibly weighted by W.
-    """
-    if W is None:
-        W = np.eye(len(c))
-    t1, t2 = x
-    # t1 = w / ((1 + w) * (sig - 1))
-    # t2 = (1 - w * (sig - 2)) / ((1 + w) * (sig - 1))
-    u = p ** 2 - t1 * s ** 2 - t2 * c
-    return (1 / len(c)) * dot(dot(u, W), u)
-
-
 def _theta_to_interest(t1, t2):
     """
     GMM estimates theta1 and theta2, we want sigma and omega.
