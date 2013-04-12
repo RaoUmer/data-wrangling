@@ -13,7 +13,7 @@ import pandas as pd
 from scipy import optimize
 from scipy import dot
 
-import gmail
+# import gmail
 from parse_optimize_results import opt_dict_format
 #-----------------------------------------------------------------------------
 
@@ -55,6 +55,16 @@ def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
         return (np.nan, np.nan)
+
+
+def fit_one(pre):
+    by_product = pre.dropna().groupby(level='PRODUCT_NC')
+    res = {name: gen_params(group, x0=[2, 1]) for name, group in by_product}
+    res = pd.DataFrame(res).T
+    for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
+    return (for_csv, for_hd5)
+
+
 #-----------------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -101,7 +111,7 @@ if __name__ == '__main__':
                 f.write("Missed on {}".format(ctry))
 
         m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
-        try:
-            gmail.mail('thomas-augspurger@uiowa.edu', 'Test', m)
-        except:
-            pass
+        # try:
+        #     gmail.mail('thomas-augspurger@uiowa.edu', 'Test', m)
+        # except:
+        #     pass
