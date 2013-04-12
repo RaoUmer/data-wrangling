@@ -53,17 +53,6 @@ def grabber(pre=None, res=None, ctry=None):
     return {'maxes': rmax, 'mins': rmin}
 
 
-def grab_max(ctry, pre=None, res=None):
-    if pre is None:
-        pre = load_pre(ctry)
-    if res is None:
-        res = load_res(ctry)
-    maxes = res.idxmax()
-    r1 = pre.xs(maxes['t1'], level='PRODUCT_NC')
-    r2 = pre.xs(maxes['t2'], level='PRODUCT_NC')
-    return (r1, r2)
-
-
 def scatter_(ctry):
     df = gmm_res.select('res_' + ctry)
     fig = plt.figure()
@@ -86,9 +75,24 @@ def get_outliers(df, s=3, how='any'):
         raise TypeError('how must be "any" or "all".')
 
 
-def mahalanobis_plot(ctry, df=None):
-    if df is None:
-        df = gmm_res.select('res_' + ctry)
+def get_inliers(df, s=3, how='any'):
+    """
+    Get a subset of df with just inliers.  When how='any', this is the
+    complement to get_outliers with how='all', and vice-versa.
+    """
+    if how == 'any':
+        return df[(np.abs(df) <= df.std()).any(1)]
+    elif how == 'all':
+        return df[(np.abs(df) <= df.std()).all(1)]
+    else:
+        raise TypeError('how must be "any" or "all".')
+
+
+def mahalanobis_plot(ctry=None, df=None):
+    if df and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
+    elif df is None:
+        df = load_res(ctry)
     X = df.values
 
     robust_cov = MinCovDet().fit(X)
