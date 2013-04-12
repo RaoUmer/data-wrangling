@@ -8,8 +8,6 @@ import matplotlib.font_manager
 import matplotlib.pyplot as plt
 from sklearn import svm
 from sklearn.covariance import EmpiricalCovariance, MinCovDet, EllipticEnvelope
-
-import pylab as pl
 #-----------------------------------------------------------------------------
 base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
 with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
@@ -20,6 +18,50 @@ gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                       'gmm_results.h5')
 #-----------------------------------------------------------------------------
 # Helper functions
+
+
+def load_pre(ctry, close=True):
+    gmm = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
+                      'gmm_store.h5')
+    df = gmm.select('by_ctry_' + ctry)
+    if close:
+        gmm.close()
+    return df
+
+
+def load_res(ctry, close=True):
+    gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
+                          'gmm_results.h5')
+    df = gmm_res.select('res_' + ctry)
+    if close:
+        gmm_res.close()
+    return df
+
+
+def grabber(pre=None, res=None, ctry=None):
+    if pre is None:
+        try:
+            pre = load_pre(ctry)
+        except NameError:
+            raise NameError('You Need to give a country code')
+    if res is None:
+        res = load_res(ctry)
+    maxes = res.idxmax()
+    mins = res.idxmin()
+    rmax = [pre.xs(maxes[x], level='PRODUCT_NC') for x in maxes.index]
+    rmin = [pre.xs(mins[x], level='PRODUCT_NC') for x in mins.index]
+    return {'maxes': rmax, 'mins': rmin}
+
+
+def grab_max(ctry, pre=None, res=None):
+    if pre is None:
+        pre = load_pre(ctry)
+    if res is None:
+        res = load_res(ctry)
+    maxes = res.idxmax()
+    r1 = pre.xs(maxes['t1'], level='PRODUCT_NC')
+    r2 = pre.xs(maxes['t2'], level='PRODUCT_NC')
+    return (r1, r2)
 
 
 def scatter_(ctry):
