@@ -14,6 +14,7 @@ from scipy import optimize
 from scipy import dot
 
 # import gmail
+from outliers_after_weighting import pre
 from parse_optimize_results import opt_dict_format
 #-----------------------------------------------------------------------------
 
@@ -57,7 +58,9 @@ def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
         return (np.nan, np.nan)
 
 
-def fit_one(pre):
+def fit_one(pre=None, ctry=None):
+    if pre is None:
+        pre = load_pre(ctry)
     by_product = pre.dropna().groupby(level='PRODUCT_NC')
     res = {name: gen_params(group, x0=[2, 1]) for name, group in by_product}
     res = pd.DataFrame(res).T

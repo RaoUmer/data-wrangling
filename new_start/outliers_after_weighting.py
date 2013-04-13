@@ -39,6 +39,10 @@ def load_res(ctry, close=True):
 
 
 def grabber(pre=None, res=None, ctry=None):
+    """
+    Get the dataframe of price and share who ended up giving
+    the max and min values for theta1 and theta2.
+    """
     if pre is None:
         try:
             pre = load_pre(ctry)
@@ -54,11 +58,14 @@ def grabber(pre=None, res=None, ctry=None):
 
 
 def scatter_(ctry):
-    df = gmm_res.select('res_' + ctry)
+    df = load_res(ctry)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(df.t1, df.t2)
-    ax.set_title(country_code[ctry])
+    try:
+        ax.set_title(country_code[ctry])
+    except:
+        ax.set_title(ctry)
     return ax
 
 
@@ -107,11 +114,6 @@ def mahalanobis_plot(ctry=None, df=None):
     # Show data set
     ax1 = fig.add_subplot(1, 1, 1)
     ax1.scatter(X[:, 0], X[:, 1])
-    # inlier_plot = ax1.scatter(X[:, 0], X[:, 1],
-    #                               color='black', label='inliers')
-    # outlier_plot = ax1.scatter(X[:, 0][-n_outliers:], X[:, 1][-n_outliers:],
-    #                                color='red', label='outliers')
-    # ax1.set_xlim(ax1.get_xlim()[0], 11.)
     ax1.set_title(country_code[ctry])
 
     # Show contours of the distance functions
@@ -136,6 +138,17 @@ def mahalanobis_plot(ctry=None, df=None):
                loc="upper right", borderaxespad=0)
 
     return (fig, ax1, ctry)
+
+
+def hist_(df=None, ctry=None, ncuts=1000):
+    if df is None:
+        df = load_res(ctry)
+    cuts = [np.linspace(df.t1.min(), df.t1.max(), ncuts),
+            np.linspace(df.t1.min(), df.t2.max(), ncuts)]
+
+    cutted = [pd.cut(df.t1, bins=cuts[0]), pd.cut(df.t2, bins=cuts[1])]
+    cutted = [sorted(x) for x in cutted]
+    return [pd.value_counts(x, sort=False).plot(kind='bar') for x in cutted]
 #-----------------------------------------------------------------------------
 # The fun
 g = iter(scatter_(ctry) for ctry in declarants)
