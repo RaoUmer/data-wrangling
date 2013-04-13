@@ -15,13 +15,12 @@ def unit_price(x):
     Calculate the unit price of a variety, given that row of the
     multi-indexed dataframe.
     """
-    try:
+    if x['value'] > 0.0:
         return x['value'] / x['quantity']
-    except ZeroDivisionError:
-        try:
-            return x['value'] / x['sup']
-        except ZeroDivisionError:
-            return np.nan
+    elif x['sup'] > 0.0:
+        return x['value'] / x['sup']
+    else:
+        return np.nan
 
 
 def gen_shares(x, sums):
