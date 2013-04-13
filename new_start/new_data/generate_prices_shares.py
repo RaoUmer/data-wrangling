@@ -54,7 +54,13 @@ if __name__ == '__main__':
     for tup in items:
         name = tup[0].lstrip('/')
         print('Working on {}'.format(name))
+        # Clean up your index.
         df = store.select(name, [pd.Term('flow=1'), pd.Term('stat=4')])
+        df.index = df.index.droplevel(level=['flow', 'stat'])
+        df = df.reset_index
+        df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
+        df = df.set_index(['period', 'declarant', 'good', 'partner'])
+
         df['price'] = df.apply(unit_price, axis=1)
 
         sums = df['value'].groupby(level=('period', 'good')).sum()
