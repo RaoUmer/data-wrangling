@@ -57,7 +57,7 @@ if __name__ == '__main__':
         # Clean up your index.
         df = store.select(name, [pd.Term('flow=1'), pd.Term('stat=4')])
         df.index = df.index.droplevel(level=['flow', 'stat'])
-        df = df.reset_index
+        df = df.reset_index()
         df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
         df = df.set_index(['period', 'declarant', 'good', 'partner'])
 
