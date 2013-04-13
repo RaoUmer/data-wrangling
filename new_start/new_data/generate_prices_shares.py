@@ -15,7 +15,7 @@ def unit_price(x):
     Calculate the unit price of a variety, given that row of the
     multi-indexed dataframe.
     """
-    if x['value'] > 0.0:
+    if x['quantity'] > 0.0:
         return x['value'] / x['quantity']
     elif x['sup'] > 0.0:
         return x['value'] / x['sup']
