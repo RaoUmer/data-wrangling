@@ -73,6 +73,7 @@ for tup in items:
     name = tup[0].lstrip('/')
     print('Working on {}'.format(name))
     df = in_store.select(name)[['price', 'share']]
+    df = np.log(df)
     gr = df.groupby(level='good')
 
     refs = gr.apply(find_reference)
