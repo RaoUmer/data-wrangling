@@ -100,7 +100,7 @@ for tup in items:
                           index=tdiffed.dropna().index)
     for ind, group in gr:
         ctry = ref_dict[ind[-1]]
-        values = group.xs((name[-3:], ind[-1], ctry),
+        values = group.xs((name.split('_')[1], ind[-1], ctry),
                           level=('declarant', 'good', 'partner'))
         values = values.reindex_like(group, method='ffill')
         empty_.ix[values.index] = values
