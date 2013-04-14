@@ -55,7 +55,7 @@ if __name__ == '__main__':
         name = tup[0].lstrip('/')
         print('Working on {}'.format(name))
         # Clean up your index.
-        df = store.select(name, [pd.Term('flow=1'), pd.Term('stat=4')])
+        df = store.select(name)
         df.index = df.index.droplevel(level=['flow', 'stat'])
         df = df.reset_index()
         df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))

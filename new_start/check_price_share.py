@@ -23,4 +23,3 @@ df = df.rename(columns={'FLOW': 'flow',
                         'SUP_QUANTITY': 'sup_quantity'})
 df['period'] = df.period.apply(lambda x: int(str(x)[:4]))
 df = df.set_index(['flow', 'period', 'product', 'partner', 'stat'])
-
