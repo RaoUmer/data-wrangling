@@ -107,9 +107,12 @@ for tup in items:
         empty_.ix[values.index] = values
 
     res = tdiffed - empty_
+    res['c'] = res['price'] * res['share']
+    res['price'] = res['price'] ** 2
+    res['share'] = res['share'] ** 2
     try:
+        out_store.append(name, res)
+        print('Added {} to the store correctly'.format(name))
+    except:
         out_store[name] = res
         print('Added {} to the store'.format(name))
-    except:
-        print('Using csv for {}'.format(name))
-        res.to_csv('ctry_{}.csv'.format(name))
