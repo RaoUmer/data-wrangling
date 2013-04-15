@@ -147,8 +147,6 @@ def mahalanobis_plot(ctry=None, df=None):
 def hist_(df=None, ctry=None, ncuts=1000):
     if df is None:
         df = load_res(ctry)
-    # cuts = [np.linspace(df.t1.min(), df.t1.max(), ncuts),
-            # np.linspace(df.t1.min(), df.t2.max(), ncuts)]
     cuts = np.linspace(min(df.min()), max(df.max()), ncuts)
     cutted = [pd.cut(df.t1, bins=cuts), pd.cut(df.t2, bins=cuts)]
     cutted = [sorted(x) for x in cutted]
@@ -162,11 +160,35 @@ def hist_(df=None, ctry=None, ncuts=1000):
     ticks = ticks[::2]  # Every other.
     labels = labels[::6]
     return ax
+
+
+def hist_2(df=None, ctry=None, ncuts=1000, thin=4):
+    if df is None:
+        df = load_res(ctry)
+    cuts = [np.linspace(df.min()[x], df.max()[x], ncuts) for x in ['t1', 't2']]
+    cutted = [pd.cut(df.t1, bins=cuts[0]), pd.cut(df.t2, bins=cuts[1])]
+    # cutted = [sorted(x) for x in cutted]
+    s1, s2 = [pd.DataFrame(pd.value_counts(x, sort=False)) for x in cutted]
+    fig = plt.figure()
+    ax1 = fig.add_subplot(2, 1, 1)
+    ax2 = fig.add_subplot(2, 1, 2)
+    ax1 = s1.plot(kind='bar', ax=ax1, rot='45')
+    ax2 = s2.plot(kind='bar', ax=ax2, rot='45')
+
+    ticks = [ax1.get_xticks(), ax2.get_xticks()]
+    ticks = [x[::thin] for x in ticks]  # Every other.
+
+    ax1.set_xticks(ticks[0])
+    ax2.set_xticks(ticks[1])
+    return (ax1, ax2)
+    
+
 #-----------------------------------------------------------------------------
 # The fun
-scaters = iter(scatter_(ctry) for ctry in declarants)
+scatters = iter(scatter_(ctry) for ctry in declarants)
 mahalas = iter(mahalanobis_plot(ctry) for ctry in declarants)
 hists = iter(hist_(ctry=country) for country in declarants)
+hists2 = iter(hist_2(ctry=country) for country in declarants)
 outliers = iter(get_outliers(ctry=country) for country in declarants)
 inliers = iter(get_inliers(ctry=country) for country in declarants)
 
