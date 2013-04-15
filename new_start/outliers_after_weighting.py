@@ -61,7 +61,7 @@ def scatter_(ctry):
     df = load_res(ctry)
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.scatter(df.t1, df.t2)
+    ax.scatter(df.t1, df.t2, alpha=.67, marker='.')
     try:
         ax.set_title(country_code[ctry])
     except:
@@ -69,11 +69,13 @@ def scatter_(ctry):
     return ax
 
 
-def get_outliers(df, s=3, how='any'):
+def get_outliers(df=None, ctry=None, s=3, how='any'):
     """
     Find all observations which are at least s (three) sigma for (all)
     or (any) of the features.
     """
+    if df is None:
+        df = load_res(ctry)
     if how == 'any':
         return df[(np.abs(df) > df.std()).any(1)]
     elif how == 'all':
@@ -82,11 +84,13 @@ def get_outliers(df, s=3, how='any'):
         raise TypeError('how must be "any" or "all".')
 
 
-def get_inliers(df, s=3, how='any'):
+def get_inliers(df=None, ctry=None, s=3, how='any'):
     """
     Get a subset of df with just inliers.  When how='any', this is the
     complement to get_outliers with how='all', and vice-versa.
     """
+    if df is None:
+        df = load_res(ctry)
     if how == 'any':
         return df[(np.abs(df) <= df.std()).any(1)]
     elif how == 'all':
@@ -136,23 +140,35 @@ def mahalanobis_plot(ctry=None, df=None):
     ax1.legend([emp_cov_contour.collections[1], robust_contour.collections[1]],
                ['MLE dist', 'robust dist'],
                loc="upper right", borderaxespad=0)
-
+    ax1.grid()
     return (fig, ax1, ctry)
 
 
 def hist_(df=None, ctry=None, ncuts=1000):
     if df is None:
         df = load_res(ctry)
-    cuts = [np.linspace(df.t1.min(), df.t1.max(), ncuts),
-            np.linspace(df.t1.min(), df.t2.max(), ncuts)]
-
-    cutted = [pd.cut(df.t1, bins=cuts[0]), pd.cut(df.t2, bins=cuts[1])]
+    # cuts = [np.linspace(df.t1.min(), df.t1.max(), ncuts),
+            # np.linspace(df.t1.min(), df.t2.max(), ncuts)]
+    cuts = np.linspace(min(df.min()), max(df.max()), ncuts)
+    cutted = [pd.cut(df.t1, bins=cuts), pd.cut(df.t2, bins=cuts)]
     cutted = [sorted(x) for x in cutted]
-    return [pd.value_counts(x, sort=False).plot(kind='bar') for x in cutted]
+    s1, s2 = [pd.DataFrame(pd.value_counts(x, sort=False)) for x in cutted]
+    s1.columns = ['t1']
+    s2.columns = ['t2']
+    joined = s1.join(s2, how='outer', sort=False)
+    ax = joined.plot(kind='bar')
+    ticks = ax.get_xticks()
+    labels = ax.get_xticklabels()
+    ticks = ticks[::2]  # Every other.
+    labels = labels[::6]
+    return ax
 #-----------------------------------------------------------------------------
 # The fun
-g = iter(scatter_(ctry) for ctry in declarants)
-g2 = iter(mahalanobis_plot(ctry) for ctry in declarants)
+scaters = iter(scatter_(ctry) for ctry in declarants)
+mahalas = iter(mahalanobis_plot(ctry) for ctry in declarants)
+hists = iter(hist_(ctry=country) for country in declarants)
+outliers = iter(get_outliers(ctry=country) for country in declarants)
+inliers = iter(get_inliers(ctry=country) for country in declarants)
 
 zipped = izip(g2, declarants)
 for x, ctry in zipped:
