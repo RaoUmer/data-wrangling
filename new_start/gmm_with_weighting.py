@@ -14,7 +14,7 @@ from scipy import optimize
 from scipy import dot
 
 # import gmail
-from outliers_after_weighting import pre
+# from outliers_after_weighting import pre
 from parse_optimize_results import opt_dict_format
 #-----------------------------------------------------------------------------
 
@@ -39,8 +39,8 @@ def gen_moms_sse(theta, subgroup, W=None):
     and returns the average.  Generates one moment.
     """
     c, p, s = subgroup
-    p = p ** 2
-    s = s ** 2
+    # p = p ** 2
+    # s = s ** 2
     err = p - theta[0] * s - theta[1] * c  # .reshape(1, -1).T)
     if W is None:
         W = np.eye(len(err))
@@ -75,25 +75,26 @@ if __name__ == '__main__':
     from datetime import datetime
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-    gmm = pd.HDFStore(base + 'gmm_store.h5')
+    gmm = pd.HDFStore(base + 'for_gmm.h5')
     gmm_results = pd.HDFStore(base + 'gmm_results.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
     declarants = sorted(country_code.keys())
-
+    i = 0
 #-----------------------------------------------------------------------------
 # Main loop.  Optimize to get params for each good, for each declarant.
     for ctry in declarants:
         print('Working on {}'.format(ctry))
         t = datetime.utcnow()
         try:
-            df = gmm.select('by_ctry_' + ctry)
-            by_product = df.dropna().groupby(level='PRODUCT_NC')
+            df = gmm.select('ctry_' + ctry)
+            df = df.dropna()
+            df = df[~(df == np.inf)]
+            by_product = df.groupby(level='good')
         except KeyError, AssertionError:
             with open('gmm_logging.txt', 'a') as f:
                 f.write('Failed to open or group ctry: {}'.format(ctry))
             continue
-
         # GMM Estimation.
         res = {name: gen_params(group, x0=[2, 1])
                for name, group in by_product}
@@ -108,12 +109,15 @@ if __name__ == '__main__':
                 f.write("Missed on {}".format(ctry))
         try:
             for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-                           'yearly/ctry_{}.csv'.format(ctry))
+                           'yearly/new_ctry_{}.csv'.format(ctry))
         except:
             with open(base + 'failed_csv.txt', 'a') as f:
                 f.write("Missed on {}".format(ctry))
 
         m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
+        print(m)
+        i += 1
+        print('About {} done'.format(i / len(declarants)))
         # try:
         #     gmail.mail('thomas-augspurger@uiowa.edu', 'Test', m)
         # except:
