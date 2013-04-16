@@ -57,8 +57,10 @@ def grabber(pre=None, res=None, ctry=None):
     return {'maxes': rmax, 'mins': rmin}
 
 
-def scatter_(ctry):
+def scatter_(ctry, inliers=False, **kwargs):
     df = load_res(ctry)
+    if inliers:
+        df = get_inliers(df=df, **kwargs)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(df.t1, df.t2, alpha=.67, marker='.')
@@ -84,7 +86,7 @@ def get_outliers(df=None, ctry=None, s=3, how='any'):
         raise TypeError('how must be "any" or "all".')
 
 
-def get_inliers(df=None, ctry=None, s=3, how='any'):
+def get_inliers(df=None, ctry=None, s=3, how='all'):
     """
     Get a subset of df with just inliers.  When how='any', this is the
     complement to get_outliers with how='all', and vice-versa.
@@ -99,11 +101,14 @@ def get_inliers(df=None, ctry=None, s=3, how='any'):
         raise TypeError('how must be "any" or "all".')
 
 
-def mahalanobis_plot(ctry=None, df=None):
+def mahalanobis_plot(ctry=None, df=None, inliers=False):
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     elif df is None:
         df = load_res(ctry)
+    if inliers:
+        df = get_inliers(df=df)
+
     X = df.values
 
     robust_cov = MinCovDet().fit(X)
@@ -117,7 +122,7 @@ def mahalanobis_plot(ctry=None, df=None):
 
     # Show data set
     ax1 = fig.add_subplot(1, 1, 1)
-    ax1.scatter(X[:, 0], X[:, 1])
+    ax1.scatter(X[:, 0], X[:, 1], alpha=.5, color='k', marker='.')
     ax1.set_title(country_code[ctry])
 
     # Show contours of the distance functions
@@ -144,9 +149,11 @@ def mahalanobis_plot(ctry=None, df=None):
     return (fig, ax1, ctry)
 
 
-def hist_(df=None, ctry=None, ncuts=1000):
+def hist_(df=None, ctry=None, ncuts=1000, inliers=False):
     if df is None:
         df = load_res(ctry)
+    if inliers:
+        df = get_inliers(df=df)
     cuts = np.linspace(min(df.min()), max(df.max()), ncuts)
     cutted = [pd.cut(df.t1, bins=cuts), pd.cut(df.t2, bins=cuts)]
     cutted = [sorted(x) for x in cutted]
@@ -162,9 +169,11 @@ def hist_(df=None, ctry=None, ncuts=1000):
     return ax
 
 
-def hist_2(df=None, ctry=None, ncuts=1000, thin=4):
+def hist_2(df=None, ctry=None, ncuts=1000, thin=4, inliers=False):
     if df is None:
         df = load_res(ctry)
+    if inliers:
+        df = get_inliers(df=df)
     cuts = [np.linspace(df.min()[x], df.max()[x], ncuts) for x in ['t1', 't2']]
     cutted = [pd.cut(df.t1, bins=cuts[0]), pd.cut(df.t2, bins=cuts[1])]
     # cutted = [sorted(x) for x in cutted]
@@ -181,18 +190,20 @@ def hist_2(df=None, ctry=None, ncuts=1000, thin=4):
     ax1.set_xticks(ticks[0])
     ax2.set_xticks(ticks[1])
     return (ax1, ax2)
-    
+
 
 #-----------------------------------------------------------------------------
 # The fun
 scatters = iter(scatter_(ctry) for ctry in declarants)
-mahalas = iter(mahalanobis_plot(ctry) for ctry in declarants)
+scatters_adj = iter(scatter_(ctry, inliers=True) for ctry in declarants)
+mle = iter(mahalanobis_plot(ctry) for ctry in declarants)
+mle_adj = iter(mahalanobis_plot(ctry, inliers=True) for ctry in declarants)
 hists = iter(hist_(ctry=country) for country in declarants)
 hists2 = iter(hist_2(ctry=country) for country in declarants)
 outliers = iter(get_outliers(ctry=country) for country in declarants)
 inliers = iter(get_inliers(ctry=country) for country in declarants)
 
-zipped = izip(g2, declarants)
+zipped = izip(mle_adj, declarants)
 for x, ctry in zipped:
     plt.savefig('/Users/tom/Desktop/outliers/outlier{}.png'.format(ctry),
                 dpi=400, format='png')
