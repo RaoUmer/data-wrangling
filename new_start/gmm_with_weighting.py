@@ -41,17 +41,26 @@ def gen_moms_sse(theta, subgroup, W=None):
     c, p, s = subgroup
     # p = p ** 2
     # s = s ** 2
-    err = p - theta[0] * s - theta[1] * c  # .reshape(1, -1).T)
     if W is None:
+        # Naiive case.  Doesn't weight, doesn't add that term on p. 583.
+        err = p - theta[0] * s - theta[1] * c  # .reshape(1, -1).T)
         W = np.eye(len(err))
+    else:
+        err = p - theta[0] * s - theta[1] * c
     return dot(dot(err.T, W), err) / len(err)
 
 
-def gen_params(subgroup, x0, method='Nelder-Mead', options={'disp': False}):
+def gen_params(subgroup, x0, method='Nelder-Mead', W=None, country=None,
+               options={'disp': False}):
     """Currently at year, partner index. subgroup = grp
     """
+    if W is not None:
+        # Calculate the Weighting Matrix.  Uses quantity data.
+        with pd.get_store(base + 'by_declarant.h5') as store:
+            weight_data = store.select('ctry_' + country)
     try:
-        return optimize.minimize(gen_moms_sse, x0=x0, args=[(subgroup.values.T)],
+        return optimize.minimize(gen_moms_sse, x0=x0,
+                                 args=[(subgroup.values.T), W],
                                  method=method, options=options)
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
@@ -67,6 +76,9 @@ def fit_one(pre=None, ctry=None):
     for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
     return (for_csv, for_hd5)
 
+
+def gen_weight():
+    pass
 
 #-----------------------------------------------------------------------------
 
@@ -96,7 +108,7 @@ if __name__ == '__main__':
                 f.write('Failed to open or group ctry: {}'.format(ctry))
             continue
         # GMM Estimation.
-        res = {name: gen_params(group, x0=[2, 1])
+        res = {name: gen_params(group, x0=[2, 1], country=ctry, W=None)
                for name, group in by_product}
 
         # Formatting and IO.
