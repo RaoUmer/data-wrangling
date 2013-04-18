@@ -8,6 +8,8 @@ GMM go!
 """
 from __future__ import division, print_function, unicode_literals
 
+import pdb
+
 import numpy as np
 import pandas as pd
 from scipy import optimize
@@ -50,24 +52,51 @@ def gen_moms_sse(theta, subgroup, W=None):
     return dot(dot(err.T, W), err) / len(err)
 
 
-def gen_params(subgroup, x0, method='Nelder-Mead', W=None, country=None,
+def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
                options={'disp': False}):
     """Currently at year, partner index. subgroup = grp
+    Higher level function called by user to estimate parameters via GMM.
+    Pass off to scipy.optimizize.
+
+    Parameters
+    ----------
+    subgroup: A DataFrame from a groupby(level='good')
+    x0: list. Initial guess at parameters for that good.
+    name: str. The good that subgroup is associated with.
+    method: str.  Optimization routine to use. See scipy.optimize.minimize.
+    W: Bool: Whether to solve for the weighting matrix. Default No.
+    country: Necessary if W is True.  Used to lookup data for weighitng matrix.
+    options: Display options to pass to minimize.
+
+    Returns
+    -------
+    Bubbles up results from minimize, except fills in nans where appropriate.
     """
-    if W is not None:
+    subgroup.name = name  # Side-effectual.
+    if W:
+        # pdb.set_trace()
         # Calculate the Weighting Matrix.  Uses quantity data.
-        with pd.get_store(base + 'by_declarant.h5') as store:
-            weight_data = store.select('ctry_' + country)
+        # pdb.set_trace()
+        with pd.get_store(base + 'by_declarant.h5') as q_store:
+            weight_data = q_store.select('ctry_' + country,
+                                         pd.Term('good == {}'.format(subgroup.name)))
+        # Get like indexed and then remove non-intersection
+        # weight_data.index = weight_data.index.droplevel('good')  # TODO: Check this
+        weight_data = weight_data.ix[subgroup.index]
+        W = weight_matrix(subgroup, weight_data)
     try:
         return optimize.minimize(gen_moms_sse, x0=x0,
-                                 args=[(subgroup.values.T), W],
-                                 method=method, options=options)
+                                 args=[(subgroup.values.T), W], method=method,
+                                 options=options)
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
         return (np.nan, np.nan)
 
 
 def fit_one(pre=None, ctry=None):
+    """
+    Similar to gen_params (earlier anyway).  Fits for a single country.
+    """
     if pre is None:
         pre = load_pre(ctry)
     by_product = pre.dropna().groupby(level='PRODUCT_NC')
@@ -77,9 +106,44 @@ def fit_one(pre=None, ctry=None):
     return (for_csv, for_hd5)
 
 
-def gen_weight():
-    pass
+def f(x, T):
+    """
+    Helper for weighting matrix.
 
+    Once you have the groups, this gets the values to pass up as the
+    weighting matrix.  See B&W p. 584.
+
+    ROBUSTNESS CHECK:  We diff with the prior period here.  B&W say nothing
+    about what they do with the initial period.  I just fill in from the 
+    second period.
+
+    Parameters
+    ----------
+    x: The actual quantity data.
+    T: Timespan that good was imported.
+
+    Returns
+    -------
+    array with values for the weighting matrix.
+    """
+    res = T**(3/2) * ((1 / x) + (1 / x.shift())) ** -(1/2)
+    res = res.fillna(method='bfill')
+    return res
+
+
+def weight_matrix(group, weight_data):
+    """
+    Used to generate optimal value to be passed into the optimization.
+    See Broda and Weinstein 2006 p. 584.
+
+    ROBUSTNESS CHECK: Introduce some nans which I fill with the mean.
+    """
+    t0 = group.irow(0).name[0]
+    tn = group.irow(-1).name[0]
+    T = tn - t0 + 1
+    res = weight_data.quantity.groupby(level='partner').apply(f, T)
+    res[pd.isnull(res)] = res.mean()
+    return np.outer(res, res)
 #-----------------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -107,10 +171,16 @@ if __name__ == '__main__':
             with open('gmm_logging.txt', 'a') as f:
                 f.write('Failed to open or group ctry: {}'.format(ctry))
             continue
+        #---------------------------------------------------------------------
         # GMM Estimation.
-        res = {name: gen_params(group, x0=[2, 1], country=ctry, W=None)
+        # Without Weighting
+        # res = {name: gen_params(group, [2, 1], name, country=ctry, W=None)
+        #        for name, group in by_product}
+        #---------------------------------------------------------------------
+        # With Weighting
+        res = {name: gen_params(group, [2, 1], name, country=ctry, W=True, options={'disp':True})
                for name, group in by_product}
-
+        #---------------------------------------------------------------------
         # Formatting and IO.
         res = pd.DataFrame(res).T
         for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
