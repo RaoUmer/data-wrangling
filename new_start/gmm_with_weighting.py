@@ -83,7 +83,8 @@ def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
         # Get like indexed and then remove non-intersection
         # weight_data.index = weight_data.index.droplevel('good')  # TODO: Check this
         weight_data = weight_data.ix[subgroup.index]
-        W = weight_matrix(subgroup, weight_data)
+        diffed = weight_data.quantity.groupby(level='partner').apply(diff_q)
+        W = weight_matrix(subgroup, diffed, weight_data)
     try:
         return optimize.minimize(gen_moms_sse, x0=x0,
                                  args=[(subgroup.values.T), W], method=method,
@@ -91,6 +92,13 @@ def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
         return (np.nan, np.nan)
+
+
+def diff_q(x):
+    """
+    Find 1/q_gct + 1/g_gct-1
+    """
+    return ((1 / x) + (1 / x.shift())).fillna(method='bfill')
 
 
 def fit_one(pre=None, ctry=None):
@@ -106,42 +114,20 @@ def fit_one(pre=None, ctry=None):
     return (for_csv, for_hd5)
 
 
-def f(x, T):
-    """
-    Helper for weighting matrix.
-
-    Once you have the groups, this gets the values to pass up as the
-    weighting matrix.  See B&W p. 584.
-
-    ROBUSTNESS CHECK:  We diff with the prior period here.  B&W say nothing
-    about what they do with the initial period.  I just fill in from the 
-    second period.
-
-    Parameters
-    ----------
-    x: The actual quantity data.
-    T: Timespan that good was imported.
-
-    Returns
-    -------
-    array with values for the weighting matrix.
-    """
-    res = T**(3/2) * ((1 / x) + (1 / x.shift())) ** -(1/2)
-    res = res.fillna(method='bfill')
-    return res
-
-
-def weight_matrix(group, weight_data):
+def weight_matrix(group, diffed, weight_data):
     """
     Used to generate optimal value to be passed into the optimization.
     See Broda and Weinstein 2006 p. 584.
 
     ROBUSTNESS CHECK: Introduce some nans which I fill with the mean.
+    ROBUSTNESS CHECK:  We diff with the prior period here.  B&W say nothing
+    about what they do with the initial period.  I just fill in from the 
+    second period.
     """
     t0 = group.irow(0).name[0]
     tn = group.irow(-1).name[0]
     T = tn - t0 + 1
-    res = weight_data.quantity.groupby(level='partner').apply(f, T)
+    res = T**(3/2) * diffed ** -(1/2)
     res[pd.isnull(res)] = res.mean()
     return np.outer(res, res)
 #-----------------------------------------------------------------------------
@@ -152,7 +138,7 @@ if __name__ == '__main__':
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
     gmm = pd.HDFStore(base + 'for_gmm.h5')
-    gmm_results = pd.HDFStore(base + 'gmm_results.h5')
+    gmm_results = pd.HDFStore(base + 'gmm_results_weighted.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
     declarants = sorted(country_code.keys())
@@ -191,7 +177,7 @@ if __name__ == '__main__':
                 f.write("Missed on {}".format(ctry))
         try:
             for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-                           'yearly/new_ctry_{}.csv'.format(ctry))
+                           'yearly/new_ctry_{}_weighted.csv'.format(ctry))
         except:
             with open(base + 'failed_csv.txt', 'a') as f:
                 f.write("Missed on {}".format(ctry))
