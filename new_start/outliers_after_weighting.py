@@ -57,8 +57,9 @@ def grabber(pre=None, res=None, ctry=None):
     return {'maxes': rmax, 'mins': rmin}
 
 
-def scatter_(ctry, inliers=False, **kwargs):
-    df = load_res(ctry)
+def scatter_(ctry=None, df=None, inliers=False, **kwargs):
+    if df is None:
+        df = load_res(ctry)
     if inliers:
         df = get_inliers(df=df, **kwargs)
     fig = plt.figure()
@@ -108,36 +109,34 @@ def mahalanobis_plot(ctry=None, df=None, inliers=False):
         df = load_res(ctry)
     if inliers:
         df = get_inliers(df=df)
-
     X = df.values
-
     robust_cov = MinCovDet().fit(X)
-
+    #-----------------------------------------------------------------------------
     # compare estimators learnt from the full data set with true parameters
     emp_cov = EmpiricalCovariance().fit(X)
-
+    #-----------------------------------------------------------------------------
     # Display results
     fig = plt.figure()
     fig.subplots_adjust(hspace=-.1, wspace=.4, top=.95, bottom=.05)
-
+    #-----------------------------------------------------------------------------
     # Show data set
     ax1 = fig.add_subplot(1, 1, 1)
     ax1.scatter(X[:, 0], X[:, 1], alpha=.5, color='k', marker='.')
     ax1.set_title(country_code[ctry])
-
+    #-----------------------------------------------------------------------------
     # Show contours of the distance functions
     xx, yy = np.meshgrid(np.linspace(ax1.get_xlim()[0], ax1.get_xlim()[1],
                                      100),
                          np.linspace(ax1.get_ylim()[0], ax1.get_ylim()[1],
                                      100))
     zz = np.c_[xx.ravel(), yy.ravel()]
-
+    #-----------------------------------------------------------------------------
     mahal_emp_cov = emp_cov.mahalanobis(zz)
     mahal_emp_cov = mahal_emp_cov.reshape(xx.shape)
     emp_cov_contour = ax1.contour(xx, yy, np.sqrt(mahal_emp_cov),
                                   cmap=plt.cm.PuBu_r,
                                   linestyles='dashed')
-
+    #-----------------------------------------------------------------------------
     mahal_robust_cov = robust_cov.mahalanobis(zz)
     mahal_robust_cov = mahal_robust_cov.reshape(xx.shape)
     robust_contour = ax1.contour(xx, yy, np.sqrt(mahal_robust_cov),
@@ -183,10 +182,10 @@ def hist_2(df=None, ctry=None, ncuts=1000, thin=4, inliers=False):
     ax2 = fig.add_subplot(2, 1, 2)
     ax1 = s1.plot(kind='bar', ax=ax1, rot='45')
     ax2 = s2.plot(kind='bar', ax=ax2, rot='45')
-
+    #-------------------------------------------------------------------------
     ticks = [ax1.get_xticks(), ax2.get_xticks()]
     ticks = [x[::thin] for x in ticks]  # Every other.
-
+    #-------------------------------------------------------------------------
     ax1.set_xticks(ticks[0])
     ax2.set_xticks(ticks[1])
     return (ax1, ax2)
@@ -213,57 +212,10 @@ for ctry in declarants:
     res = res.drop(get_outliers(res).index)
     mahalanobis_plot(ctry, df=res)
 #-----------------------------------------------------------------------------
-# Assert: NotImplemented!
-# res1 = gmm_res.select('res_001')
-# X = res1.values
+# Finding the outliers:
 
-
-# outliers_fraction = 0.005
-# n_samples = len(X)
-
-
-# # define two outlier detection tools to be compared
-# classifiers = {
-#     "One-Class SVM": svm.OneClassSVM(nu=0.95 * outliers_fraction + 0.05,
-#                                      kernel="rbf", gamma=0.1),
-#     "robust covariance estimator": EllipticEnvelope(contamination=.1)}
-
-# # Compare given classifiers under given settings
-# xl, yl = res1.min().values
-# xh, yh = res1.max().values
-# xx, yy = np.meshgrid(np.linspace(xl, xh, 1000),
-#                      np.linspace(yl, yh, 1000))
-# n_inliers = int((1. - outliers_fraction) * n_samples)
-# n_outliers = int(outliers_fraction * n_samples)
-# # ground_truth = np.ones(n_samples, dtype=int)
-# # ground_truth[-n_outliers:] = 0
-
-# # Fit the problem with varying cluster separation
-
-# # Fit the model with the One-Class SVM
-# fig = plt.figure(figsize=(10, 5))
-# for i, (clf_name, clf) in enumerate(classifiers.iteritems()):
-#     # fit the data and tag outliers
-#     clf.fit(X)
-#     y_pred = clf.decision_function(X).ravel()
-#     threshold = stats.scoreatpercentile(y_pred,
-#                                         100 * outliers_fraction)
-#     y_pred = y_pred > threshold
-#     # n_errors = (y_pred != ground_truth).sum()
-#     # plot the levels lines and the points
-#     Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-#     Z = Z.reshape(xx.shape)
-#     ax = fig.add_subplot(1, 2, i + 1)
-#     ax.set_title("Outlier detection")
-#     ax.contourf(xx, yy, Z, levels=np.linspace(Z.min(), threshold, 7),
-#                 cmap=pl.cm.Blues_r)
-#     a = ax.contour(xx, yy, Z, levels=[threshold],
-#                    linewidths=2, colors='red')
-#     ax.contourf(xx, yy, Z, levels=[threshold, Z.max()],
-#                 colors='orange')
-#     b = ax.scatter(X[:, 0], X[:, 1], c='black', alpha=.75)
-#     ax.axis('tight')
-#     # ax.legend(
-#     #     ['learned decision function', 'true inliers', 'true outliers'],
-#     #     prop=matplotlib.font_manager.FontProperties(size=11))
-
+lens = {}
+for country in declarants:
+    df = get_outliers(ctry=country)
+    lens[country] = len(df)
+    gmm_res.append('round_1_{}'.format(country), df)
