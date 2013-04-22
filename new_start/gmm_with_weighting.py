@@ -28,7 +28,7 @@ def _theta_to_interest(t1, t2):
     pass
 
 
-def gen_moms_sse(theta, subgroup, W=None):
+def gen_moms_sse(theta, subgroup, bias_term, W=None):
     """
     ### Rethink:
         The mean of the mean error is the same as the mean of the errors.
@@ -45,10 +45,10 @@ def gen_moms_sse(theta, subgroup, W=None):
     # s = s ** 2
     if W is None:
         # Naiive case.  Doesn't weight, doesn't add that term on p. 583.
-        err = p - theta[0] * s - theta[1] * c  # .reshape(1, -1).T)
+        err = p - theta[0] * s - theta[1] * c - bias_term
         W = np.eye(len(err))
     else:
-        err = p - theta[0] * s - theta[1] * c
+        err = p - theta[0] * s - theta[1] * c - bias_term
     return dot(dot(err.T, W), err) / len(err)
 
 
@@ -84,11 +84,14 @@ def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
         # weight_data.index = weight_data.index.droplevel('good')  # TODO: Check this
         weight_data = weight_data.ix[subgroup.index]
         diffed = weight_data.quantity.groupby(level='partner').apply(diff_q)
+        bias_term = diffed.mean()  # Need to multiply by estimate of var(ln(error))
         W = weight_matrix(subgroup, diffed, weight_data)
+    else:
+        bias_term = 0
     try:
         return optimize.minimize(gen_moms_sse, x0=x0,
-                                 args=[(subgroup.values.T), W], method=method,
-                                 options=options)
+                                 args=[(subgroup.values.T), bias_term, W],
+                                 method=method, options=options)
     except AttributeError:
         print('Failed On frame {}'.format(subgroup.name))
         return (np.nan, np.nan)
@@ -163,8 +166,9 @@ if __name__ == '__main__':
         #        for name, group in by_product}
         #---------------------------------------------------------------------
         # With Weighting
-        res = {name: gen_params(group, [2, 1], name, country=ctry, W=True, options={'disp':True})
-               for name, group in by_product}
+        res = {name: gen_params(
+            group, [2, 1], name, country=ctry, W=True, options={'disp': True})
+            for name, group in by_product}
         #---------------------------------------------------------------------
         # Formatting and IO.
         res = pd.DataFrame(res).T
