@@ -16,11 +16,18 @@ with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
 
 gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                       'gmm_results.h5')
+
+weighted_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
+                           'gmm_results_weighted.h5')
+
 #-----------------------------------------------------------------------------
 # Helper functions
 
 
 def load_pre(ctry, close=True):
+    """
+    Get a dataframe with the trade data.
+    """
     gmm = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                       'gmm_store.h5')
     df = gmm.select('by_ctry_' + ctry)
@@ -30,6 +37,9 @@ def load_pre(ctry, close=True):
 
 
 def load_res(ctry, close=True):
+    """
+    Get a dataframe with the estimated parameters for that country.
+    """
     gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                           'gmm_results.h5')
     df = gmm_res.select('res_' + ctry)
@@ -38,7 +48,7 @@ def load_res(ctry, close=True):
     return df
 
 
-def grabber(pre=None, res=None, ctry=None):
+def get_extremes(pre=None, res=None, ctry=None):
     """
     Get the dataframe of price and share who ended up giving
     the max and min values for theta1 and theta2.
@@ -58,6 +68,13 @@ def grabber(pre=None, res=None, ctry=None):
 
 
 def scatter_(ctry=None, df=None, inliers=False, **kwargs):
+    """
+    Plot a scatter of the two parameters.  Give either a country code
+    or a dataframe of estimated parameters.  If inliers, the dataframe
+    will filter out the outliers.
+    """
+    if df and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry)
     if inliers:
@@ -72,11 +89,13 @@ def scatter_(ctry=None, df=None, inliers=False, **kwargs):
     return ax
 
 
-def get_outliers(df=None, ctry=None, s=3, how='any'):
+def get_outliers(ctry=None, df=None, s=3, how='any'):
     """
     Find all observations which are at least s (three) sigma for (all)
     or (any) of the features.
     """
+    if df and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry)
     if how == 'any':
@@ -92,6 +111,8 @@ def get_inliers(df=None, ctry=None, s=3, how='all'):
     Get a subset of df with just inliers.  When how='any', this is the
     complement to get_outliers with how='all', and vice-versa.
     """
+    if df and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry)
     if how == 'any':
@@ -103,6 +124,12 @@ def get_inliers(df=None, ctry=None, s=3, how='all'):
 
 
 def mahalanobis_plot(ctry=None, df=None, inliers=False):
+    """
+    See http://scikit-learn.org/0.13/modules/outlier_detection.html#\
+        fitting-an-elliptic-envelop
+
+    for details.
+    """
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     elif df is None:
@@ -148,7 +175,10 @@ def mahalanobis_plot(ctry=None, df=None, inliers=False):
     return (fig, ax1, ctry)
 
 
-def hist_(df=None, ctry=None, ncuts=1000, inliers=False):
+def hist_(ctry=None, df=None, ncuts=1000, inliers=False):
+    """
+    Histogram for a country.  This one is plots t1 and t2 side by side.
+    """
     if df is None:
         df = load_res(ctry)
     if inliers:
@@ -168,7 +198,10 @@ def hist_(df=None, ctry=None, ncuts=1000, inliers=False):
     return ax
 
 
-def hist_2(df=None, ctry=None, ncuts=1000, thin=4, inliers=False):
+def hist_2(ctry=None, df=None, ncuts=1000, thin=4, inliers=False):
+    """
+    Histogram for a country.  This one is plots t1 and t2 on separate subplots.
+    """
     if df is None:
         df = load_res(ctry)
     if inliers:
