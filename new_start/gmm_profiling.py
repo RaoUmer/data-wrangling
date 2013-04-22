@@ -124,7 +124,7 @@ def weight_matrix(group, diffed, weight_data):
 
     ROBUSTNESS CHECK: Introduce some nans which I fill with the mean.
     ROBUSTNESS CHECK:  We diff with the prior period here.  B&W say nothing
-    about what they do with the initial period.  I just fill in from the
+    about what they do with the initial period.  I just fill in from the 
     second period.
     """
     t0 = group.irow(0).name[0]
@@ -147,46 +147,30 @@ if __name__ == '__main__':
     declarants = sorted(country_code.keys())
 #-----------------------------------------------------------------------------
 # Main loop.  Optimize to get params for each good, for each declarant.
-    for i, ctry in enumerate(declarants):
-        print('Working on {}'.format(ctry))
-        t = datetime.utcnow()
-        try:
-            df = gmm.select('ctry_' + ctry)
-            df = df.dropna()
-            df = df[~(df == np.inf)]
-            by_product = df.groupby(level='good')
-        except KeyError, AssertionError:
-            with open('gmm_logging.txt', 'a') as f:
-                f.write('Failed to open or group ctry: {}'.format(ctry))
-            continue
-        #---------------------------------------------------------------------
-        # GMM Estimation.
-        # Without Weighting
-        # res = {name: gen_params(group, [2, 1], name, country=ctry, W=None)
-        #        for name, group in by_product}
-        #---------------------------------------------------------------------
-        # With Weighting
-        res = {name: gen_params(
-            group, [2, 1], name, country=ctry, W=True, options={'disp': False})
-            for name, group in by_product}
-        print('Finshed estimation for {}'.format(ctry))
-        #---------------------------------------------------------------------
-        # Formatting and IO.
-        res = pd.DataFrame(res).T
-        for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
-        try:
-            gmm_results.append('res_' + ctry, for_hd5)
-        except:
-            with open(base + 'failed_h5.txt', 'a') as f:
-                f.write("Missed on {}".format(ctry))
-        # try:
-        #     for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-        #                    'yearly/new_ctry_{}_weighted.csv'.format(ctry))
-        # except:
-        #     with open(base + 'failed_csv.txt', 'a') as f:
-        #         f.write("Missed on {}".format(ctry))
+    ctry = '001'
+    try:
+        df = gmm.select('ctry_' + ctry)
+        df = df.dropna()
+        df = df[~(df == np.inf)]
+        by_product = df.groupby(level='good')
+    except KeyError, AssertionError:
+        with open('gmm_logging.txt', 'a') as f:
+            f.write('Failed to open or group ctry: {}'.format(ctry))
+        pass
+    #---------------------------------------------------------------------
+    # GMM Estimation.
+    # Without Weighting
+    # res = {name: gen_params(group, [2, 1], name, country=ctry, W=None)
+    #        for name, group in by_product}
+    #---------------------------------------------------------------------
 
-        m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
-        print(m)
-        i += 1
-        print('About {} done'.format(i / len(declarants)))
+    g = by_product.groups.iteritems()
+    l1 = df.ix[g.next()[1]]
+    l2 = df.ix[g.next()[1]]
+    l3 = df.ix[g.next()[1]]
+    l4 = df.ix[g.next()[1]]
+    l5 = df.ix[g.next()[1]]
+
+    test = pd.concat([l1, l2, l3, l4, l5])
+    gr = test.groupby(level='good')
+    res = {name: gen_params(group, [2, 1], name, country=ctry, W=None, options={'disp': True})for name, group in gr}

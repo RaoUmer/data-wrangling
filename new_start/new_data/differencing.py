@@ -41,7 +41,7 @@ def find_reference(df):
     year_n = df.irow(-1).name[0]
     for ctry in df.index.levels[-1]:
         tmp = df.xs(ctry, level='partner')
-        if sum(tmp['price'] > 0) == year_n - year_0 + 1:
+        if sum(tmp['price'] > -np.inf) == year_n - year_0 + 1:
             return ctry
             break
         else:
