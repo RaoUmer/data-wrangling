@@ -142,10 +142,9 @@ if __name__ == '__main__':
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
     declarants = sorted(country_code.keys())
-    i = 0
 #-----------------------------------------------------------------------------
 # Main loop.  Optimize to get params for each good, for each declarant.
-    for ctry in declarants:
+    for i, ctry in enumerate(declarants):
         print('Working on {}'.format(ctry))
         t = datetime.utcnow()
         try:
