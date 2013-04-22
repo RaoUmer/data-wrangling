@@ -3,11 +3,8 @@ from itertools import izip
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-import matplotlib.font_manager
 import matplotlib.pyplot as plt
-from sklearn import svm
-from sklearn.covariance import EmpiricalCovariance, MinCovDet, EllipticEnvelope
+from sklearn.covariance import EmpiricalCovariance, MinCovDet
 #-----------------------------------------------------------------------------
 base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
 with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
@@ -28,27 +25,29 @@ def load_pre(ctry, close=True):
     """
     Get a dataframe with the trade data.
     """
-    gmm = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-                      'gmm_store.h5')
+    base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
+    gmm = pd.HDFStore(base + 'gmm_store.h5')
     df = gmm.select('by_ctry_' + ctry)
     if close:
         gmm.close()
     return df
 
 
-def load_res(ctry, close=True):
+def load_res(ctry, weighted=True, close=True):
     """
     Get a dataframe with the estimated parameters for that country.
     """
-    gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-                          'gmm_results.h5')
+    if weighted:
+        gmm_res = pd.HDFStore(base + 'gmm_results_weighted.h5')
+    else:
+        gmm_res = pd.HDFStore(base + 'gmm_results.h5')
     df = gmm_res.select('res_' + ctry)
     if close:
         gmm_res.close()
     return df
 
 
-def get_extremes(pre=None, res=None, ctry=None):
+def get_extremes(pre=None, res=None, ctry=None, weighted=True):
     """
     Get the dataframe of price and share who ended up giving
     the max and min values for theta1 and theta2.
@@ -59,7 +58,7 @@ def get_extremes(pre=None, res=None, ctry=None):
         except NameError:
             raise NameError('You Need to give a country code')
     if res is None:
-        res = load_res(ctry)
+        res = load_res(ctry, weighted=weighted)
     maxes = res.idxmax()
     mins = res.idxmin()
     rmax = [pre.xs(maxes[x], level='PRODUCT_NC') for x in maxes.index]
@@ -67,7 +66,7 @@ def get_extremes(pre=None, res=None, ctry=None):
     return {'maxes': rmax, 'mins': rmin}
 
 
-def scatter_(ctry=None, df=None, inliers=False, **kwargs):
+def scatter_(ctry=None, df=None, inliers=False, weighted=True, **kwargs):
     """
     Plot a scatter of the two parameters.  Give either a country code
     or a dataframe of estimated parameters.  If inliers, the dataframe
@@ -76,7 +75,7 @@ def scatter_(ctry=None, df=None, inliers=False, **kwargs):
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=weighted)
     if inliers:
         df = get_inliers(df=df, **kwargs)
     fig = plt.figure()
@@ -89,7 +88,7 @@ def scatter_(ctry=None, df=None, inliers=False, **kwargs):
     return ax
 
 
-def get_outliers(ctry=None, df=None, s=3, how='any'):
+def get_outliers(ctry=None, df=None, s=3, weighted=True, how='any'):
     """
     Find all observations which are at least s (three) sigma for (all)
     or (any) of the features.
@@ -97,7 +96,7 @@ def get_outliers(ctry=None, df=None, s=3, how='any'):
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=weighted)
     if how == 'any':
         return df[(np.abs(df) > df.std()).any(1)]
     elif how == 'all':
@@ -106,7 +105,7 @@ def get_outliers(ctry=None, df=None, s=3, how='any'):
         raise TypeError('how must be "any" or "all".')
 
 
-def get_inliers(df=None, ctry=None, s=3, how='all'):
+def get_inliers(df=None, ctry=None, s=3, weighted=True, how='all'):
     """
     Get a subset of df with just inliers.  When how='any', this is the
     complement to get_outliers with how='all', and vice-versa.
@@ -114,7 +113,7 @@ def get_inliers(df=None, ctry=None, s=3, how='all'):
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=weighted)
     if how == 'any':
         return df[(np.abs(df) <= df.std()).any(1)]
     elif how == 'all':
@@ -123,7 +122,7 @@ def get_inliers(df=None, ctry=None, s=3, how='all'):
         raise TypeError('how must be "any" or "all".')
 
 
-def mahalanobis_plot(ctry=None, df=None, inliers=False):
+def mahalanobis_plot(ctry=None, df=None, weighted=True, inliers=False):
     """
     See http://scikit-learn.org/0.13/modules/outlier_detection.html#\
         fitting-an-elliptic-envelop
@@ -133,7 +132,7 @@ def mahalanobis_plot(ctry=None, df=None, inliers=False):
     if df and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     elif df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=weighted)
     if inliers:
         df = get_inliers(df=df)
     X = df.values
@@ -175,12 +174,12 @@ def mahalanobis_plot(ctry=None, df=None, inliers=False):
     return (fig, ax1, ctry)
 
 
-def hist_(ctry=None, df=None, ncuts=1000, inliers=False):
+def hist_(ctry=None, df=None, ncuts=1000, weighted=True, inliers=False):
     """
     Histogram for a country.  This one is plots t1 and t2 side by side.
     """
     if df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=True)
     if inliers:
         df = get_inliers(df=df)
     cuts = np.linspace(min(df.min()), max(df.max()), ncuts)
@@ -198,12 +197,12 @@ def hist_(ctry=None, df=None, ncuts=1000, inliers=False):
     return ax
 
 
-def hist_2(ctry=None, df=None, ncuts=1000, thin=4, inliers=False):
+def hist_2(ctry=None, df=None, ncuts=1000, weighted=True, thin=4, inliers=False):
     """
     Histogram for a country.  This one is plots t1 and t2 on separate subplots.
     """
     if df is None:
-        df = load_res(ctry)
+        df = load_res(ctry, weighted=True)
     if inliers:
         df = get_inliers(df=df)
     cuts = [np.linspace(df.min()[x], df.max()[x], ncuts) for x in ['t1', 't2']]
