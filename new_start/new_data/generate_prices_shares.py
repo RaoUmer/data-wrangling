@@ -64,7 +64,11 @@ if __name__ == '__main__':
         # df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
         # df = df.set_index(['period', 'declarant', 'good', 'partner'])
 
-        df['price'] = df.apply(unit_price, axis=1)
+        #----------------------------------------------------------------------
+        # Prices:  If just usinging quantity, do here.
+        # df['price'] = df.apply(unit_price, axis=1)
+        df['price'] = df['value'] / df['quantity']
+        df['price'][df['price'] == np.inf] = np.nan  # zero division
 
         sums = df['value'].groupby(level=('period', 'good')).sum()
         df['share'] = df.apply(gen_shares, axis=1, args=[sums])
