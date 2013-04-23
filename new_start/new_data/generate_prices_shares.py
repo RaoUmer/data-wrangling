@@ -17,8 +17,6 @@ def unit_price(x):
     """
     if x['quantity'] > 0.0:
         return x['value'] / x['quantity']
-    elif x['sup'] > 0.0:
-        return x['value'] / x['sup']
     else:
         return np.nan
 
@@ -42,24 +40,29 @@ def gen_shares(x, sums):
     -------
     That varieties share. Float.
     """
-    year, _, _, _, good, _ = x.name  # apply appends name to each row.
+    year, _, good, _ = x.name  # apply appends name to each row.
     return x['value'] / sums.ix[year, good]
 
 #-----------------------------------------------------------------------------
 if __name__ == '__main__':
-    store = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly'
-                        '/by_declarant.h5')
+    # Commented out lines are from my previous iteration through.
+    # This script has side effects, it modifies the dataframe in place.
+    in_store = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly'
+                           '/by_declarant.h5')
 
-    items = store.iteritems()
+    out_store = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly'
+                            '/filtered_by_declarant.h5')
+
+    items = in_store.iteritems()
     for tup in items:
         name = tup[0].lstrip('/')
         print('Working on {}'.format(name))
+        # >1000 are aggregates.
+        df = in_store.select(name, [pd.Term('partner < 1000')])
         # Clean up your index.
-        df = store.select(name)
-        df.index = df.index.droplevel(level=['flow', 'stat'])
-        df = df.reset_index()
-        df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
-        df = df.set_index(['period', 'declarant', 'good', 'partner'])
+        # df.index = df.index.droplevel(level=['flow', 'stat'])
+        # df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
+        # df = df.set_index(['period', 'declarant', 'good', 'partner'])
 
         df['price'] = df.apply(unit_price, axis=1)
 
@@ -68,8 +71,8 @@ if __name__ == '__main__':
 
         # TODO: Find out if pytables supports appending a column.
         try:
-            store.remove(name)
-            store.append(name, df)
+            out_store.remove(name)
+            out_store.append(name, df)
         except:
             with open('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                       'failures.txt', 'a') as f:
