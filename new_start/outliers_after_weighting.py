@@ -110,7 +110,7 @@ def get_inliers(df=None, ctry=None, s=3, weighted=True, how='all'):
     Get a subset of df with just inliers.  When how='any', this is the
     complement to get_outliers with how='all', and vice-versa.
     """
-    if df and ctry is None:
+    if df is None and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry, weighted=weighted)
@@ -129,7 +129,7 @@ def mahalanobis_plot(ctry=None, df=None, weighted=True, inliers=False):
 
     for details.
     """
-    if df and ctry is None:
+    if df is None and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     elif df is None:
         df = load_res(ctry, weighted=weighted)
