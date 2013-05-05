@@ -1,10 +1,14 @@
 """
+This is step one of the process.
 Taking download from eurostat's Comext bulk download and going to an
 HDF5 store, split by declarant.
 
 Via:
 http://epp.eurostat.ec.europa.eu/NavTree_prod/everybody/
     BulkDownloadListing?sort=1&dir=comext%2F2012S2%2Fdata
+
+I used yealy data from 2000 - 2011.  If additional years are required,
+add them under the files.
 """
 import subprocess
 import os
@@ -12,11 +16,11 @@ import os
 import pandas as pd
 #-----------------------------------------------------------------------------
 # Globals and setup.
-# 'nc200052.7z',
-# 'nc200152.7z',
-# 'nc200252.7z',
-# 'nc200352.7z',
-files = ['nc200452.7z',
+files = ['nc200052.7z',
+         'nc200152.7z',
+         'nc200252.7z',
+         'nc200352.7z',
+         'nc200452.7z',
          'nc200552.7z',
          'nc200652.7z',
          'nc200752.7z',
@@ -32,6 +36,9 @@ by_declarant_store = pd.HDFStore(base + 'by_declarant.h5')
 
 
 def columnizer(x):
+    """
+    Renames columns to be more pythonic.
+    """
     if x == 'PRODUCT_NC' or x == 'PRODUCT':
         return 'good'  # product clashes with DataFrame method.
     else:

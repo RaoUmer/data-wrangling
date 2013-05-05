@@ -63,10 +63,10 @@ def year_diff(df):
 
 #-----------------------------------------------------------------------------
 in_store = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly'
-                       '/by_declarant.h5')
+                       '/filtered_by_declarant.h5')
 
 out_store = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly'
-                        '/for_gmm.h5')
+                        '/filtered_for_gmm.h5')
 #-----------------------------------------------------------------------------
 items = in_store.iteritems()
 for tup in items:

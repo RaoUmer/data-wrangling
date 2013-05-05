@@ -19,6 +19,7 @@ from scipy import dot
 # from outliers_after_weighting import pre
 from parse_optimize_results import opt_dict_format
 #-----------------------------------------------------------------------------
+# Functions for the GMM.
 
 
 def _theta_to_interest(t1, t2):
@@ -140,8 +141,8 @@ if __name__ == '__main__':
     from datetime import datetime
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-    gmm = pd.HDFStore(base + 'for_gmm.h5')
-    gmm_results = pd.HDFStore(base + 'gmm_results_weighted.h5')
+    gmm = pd.HDFStore(base + 'filtered_for_gmm.h5')
+    gmm_results = pd.HDFStore(base + 'filtered_gmm_results_weighted.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
     declarants = sorted(country_code.keys())
@@ -179,6 +180,8 @@ if __name__ == '__main__':
         except:
             with open(base + 'failed_h5.txt', 'a') as f:
                 f.write("Missed on {}".format(ctry))
+            res.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
+                       'yearly/new_ctry_{}_weighted.csv'.format(ctry))
         # try:
         #     for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
         #                    'yearly/new_ctry_{}_weighted.csv'.format(ctry))

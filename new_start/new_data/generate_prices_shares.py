@@ -60,12 +60,12 @@ if __name__ == '__main__':
         # >1000 are aggregates.
         df = in_store.select(name, [pd.Term('partner < 1000')])
         # Clean up your index.
-        # df.index = df.index.droplevel(level=['flow', 'stat'])
-        # df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
-        # df = df.set_index(['period', 'declarant', 'good', 'partner'])
+        df.index = df.index.droplevel(level=['flow', 'stat'])
+        df['period'] = df['period'].apply(lambda x: int(str(x)[:4]))
+        df = df.set_index(['period', 'declarant', 'good', 'partner'])
 
         #----------------------------------------------------------------------
-        # Prices:  If just usinging quantity, do here.
+        # Prices:  If just using quantity, do here.
         # df['price'] = df.apply(unit_price, axis=1)
         df['price'] = df['value'] / df['quantity']
         df['price'][df['price'] == np.inf] = np.nan  # zero division

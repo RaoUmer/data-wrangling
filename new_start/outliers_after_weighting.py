@@ -72,7 +72,7 @@ def scatter_(ctry=None, df=None, inliers=False, weighted=True, **kwargs):
     or a dataframe of estimated parameters.  If inliers, the dataframe
     will filter out the outliers.
     """
-    if df and ctry is None:
+    if df is None and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry, weighted=weighted)
@@ -93,7 +93,7 @@ def get_outliers(ctry=None, df=None, s=3, weighted=True, how='any'):
     Find all observations which are at least s (three) sigma for (all)
     or (any) of the features.
     """
-    if df and ctry is None:
+    if df is None and ctry is None:
         raise ValueError('Either the country or a dataframe must be supplied')
     if df is None:
         df = load_res(ctry, weighted=weighted)
@@ -188,11 +188,11 @@ def hist_(ctry=None, df=None, ncuts=1000, weighted=True, inliers=False):
     s1, s2 = [pd.DataFrame(pd.value_counts(x, sort=False)) for x in cutted]
     s1.columns = ['t1']
     s2.columns = ['t2']
-    joined = s1.join(s2, how='outer', sort=False)
+    joined = s1.join(s2, how='outer', sort=False).fillna(0)
     ax = joined.plot(kind='bar')
     ticks = ax.get_xticks()
     labels = ax.get_xticklabels()
-    ticks = ticks[::2]  # Every other.
+    ticks = ticks[::10]  # Every other.
     labels = labels[::6]
     return ax
 
@@ -223,6 +223,26 @@ def hist_2(ctry=None, df=None, ncuts=1000, weighted=True, thin=4, inliers=False)
     return (ax1, ax2)
 
 
+def get_mid(ind):
+    ind = ind.strip('(]').split(', ')
+    return np.mean([float(x) for x in ind])
+
+
+def density_(df, n=100):
+    x = pd.cut(df.t1, n)
+    y = pd.cut(df.t2, n)
+    x_counts = pd.value_counts(x)
+    y_counts = pd.value_counts(y)
+    x_mid = map(get_mid, x_counts.index)
+    y_mid = map(get_mid, y_counts.index)
+    lower = min(min(x_mid), min(y_mid))
+    upper = max(max(x_mid), max(y_mid))
+    arr = np.linspace(lower, upper, 100)
+    grid = np.meshgrid(arr, arr)
+    x_counts.index = x_mid
+    y_counts.index = y_mid
+    x_counts = x_counts.sort_index()
+    y_counts = y_counts.sort_index()
 #-----------------------------------------------------------------------------
 # The fun
 scatters = iter(scatter_(ctry) for ctry in declarants)

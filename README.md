@@ -1,4 +1,12 @@
-data-wrangling
-==============
+Euro-Area in Recession
+======================
 
-Scripts to extract and nicely format data.
+This repository contains scripts to extract, operate on, and analyze data for my Euro project.
+
+Dependencies
+------------
+
+* Python 2.7
+* pandas
+* statsmodels
+* 7zip
