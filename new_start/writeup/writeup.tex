@@ -1,0 +1,280 @@
+%----------------------------------------------------------------------------------------
+%    PAGE ADJUSTMENTS
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt,a4paper,hidelinks]{article}            % Article 12pt font for a4 paper while hiding links
+\usepackage[margin=1in]{geometry}                          % Required to adjust margins
+
+%----------------------------------------------------------------------------------------
+%    TYPE SETTING PACKAGES
+%----------------------------------------------------------------------------------------
+
+\usepackage[english]{babel}                                % English language/hyphenation 
+\usepackage[utf8x]{inputenc}                               % Accept different input encodings
+\usepackage{amsmath,amsfonts,amsthm,amssymb}               % Math packages to use equations
+\usepackage{siunitx}                                       % Scientific units and numbering
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}    % Set color of text/background
+\linespread{1.2}                                           % Default line spacing size
+\usepackage{microtype}                                     % Improves spacing in the document
+\usepackage{setspace}                                      % Set line spacing dynamically
+\usepackage{tocloft}                                       % List adjustments including ToC
+\DeclareMathOperator*{\argmin}{arg\!\min}
+%----------------------------------------------------------------------------------------
+%    FIGURES
+%----------------------------------------------------------------------------------------
+
+\usepackage{graphicx}                                      % Required for the inclusion of images
+\graphicspath{{./Pictures/}}                               % Specifies picture directory
+\usepackage{float}                                         % Allows putting an [H] in \begin{figure}
+\usepackage{wrapfig}                                       % Allows in-line images
+
+\usepackage{hyperref}                                      % References
+\usepackage{cleveref}                                      % Better References
+%\crefname{lstlisting}{listing}{listings}
+%\Crefname{lstlisting}{Listing}{Listings}
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+
+%----------------------------------------------------------------------------------------
+%    INCLUDE CODE
+%----------------------------------------------------------------------------------------
+
+\usepackage{listings}                                      % Package so code looks pretty
+\lstset{
+language=Python,                                           % Choose the language
+basicstyle=\footnotesize,                                  % The size of the fonts used
+numbers=left,                                              % Where to put the line-numbers
+numberstyle=\footnotesize,                                 % The size of the line-numbers
+stepnumber=1,                                              % The step line-numbers
+numbersep=5pt,                                             % How far the line-numbers are from the code
+backgroundcolor=\color{white},                             % Choose the background color
+showspaces=false,                                          % Show spaces adding partiular underscores
+showstringspaces=false,                                    % Underline spaces within strings
+showtabs=false,                                            % Show tabs within strings adding particular underscores
+frame=single,                                              % Adds a frame around the code
+tabsize=2,                                                 % Sets default tabsize to 2 spaces
+captionpos=b,                                              % Sets the caption-position to bottom
+breaklines=true,                                           % Sets automatic line breaking
+breakatwhitespace=false,                                   % Sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}                                     % If you want to add a comment within your code
+}
+
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
+%----------------------------------------------------------------------------------------
+%    EXTRAS
+%----------------------------------------------------------------------------------------
+
+\usepackage{attachfile}                                    % Attach files to your document
+\usepackage{fancyhdr}                                      % Fancy Header
+\usepackage{natbib}
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%    COMMANDS
+%----------------------------------------------------------------------------------------
+
+\setlength\parindent{0pt}                                  % Removes all indentation from paragraphs
+\renewcommand*\thesection{\arabic{section}}                % Renew section numbers
+\renewcommand{\labelenumi}{\alph{enumi}.}                  % Section ordered numbering
+\let\oldvec\vec                                            % Save the old vector style
+\renewcommand{\vec}[1]{\oldvec{\mathbf{#1}}}               % Set vectors to look like vectors
+
+\renewcommand{\contentsname}{Table of Contents}            % Make ToC actually say ToC
+\addtocontents{toc}{~\hfill\textbf{Page}\par}              % Add 'page' to top of ToC
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}      % Makes dots leading up to page number
+\setcounter{tocdepth}{3}                                   % Depth of ToC
+\setcounter{lofdepth}{3}                                   % Depth of LoF
+
+\pagestyle{fancy}                                          % Fancy page style for headers
+\setlength{\headheight}{15pt}                              % Change header hieght
+\fancyhead[L,LO]{\fontsize{8}{10} \selectfont \firstmark}  % Adds header to left with section name
+\fancyhead[R,RO]{\fontsize{8}{10} \selectfont Right}       % Adds header to right
+\definecolor{grey}{HTML}{cccccc}                           % The next 4 lines modifies the header (color)
+\renewcommand{\headrulewidth}{1px}
+\renewcommand{\headrule}{{\color{grey}%
+\hrule width\headwidth height\headrulewidth%
+\vskip-\headrulewidth}}
+
+\numberwithin{equation}{section}                           % Number equations within sections
+\numberwithin{figure}{section}                             % Number figures within sections
+\numberwithin{table}{section}                              % Number tables within sections
+\numberwithin{lstlisting}{section}                         % Number listings within sections
+
+\renewcommand{\sfdefault}{phv}                             % Change default font
+\renewcommand{\familydefault}{\sfdefault}                  % Use default font everywhere
+\newcommand{\tvect}[2]{%
+  \ensuremath{\Bigl(\negthinspace\begin{smallmatrix}#1\\#2\end{smallmatrix}\Bigr)}}
+
+%----------------------------------------------------------------------------------------
+%    TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\begin{titlepage}
+
+\title{Notes}
+\author{Tom Augspurger}                               % via Seth Miers
+
+\vspace*{\fill}                                            % Center title page vertically
+
+% \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}              % Defines horizontal lines
+
+\center                                                    % Center everything on the page
+
+% \textsc{\LARGE First Heading}\[1.5cm]                % First heading
+% \textsc{\Large Major Heading}\[0.5cm]                % Major heading
+% \textsc{\large Minor Heading}\[0.5cm]                % Minor heading
+
+% \HRule \[0.4cm]
+% { \huge \bfseries Title}\[0.4cm]                     % Title of document
+% \HRule \[1.5cm]
+
+%\begin{minipage}{0.4\textwidth}
+%\begin{flushleft} \large
+%\emph{Author:}\
+%Tom \textsc{Augspurger}                                    % Name
+%\end{flushleft}
+%\end{minipage}
+%~
+%\begin{minipage}{0.4\textwidth}
+%\begin{flushright} \large
+%\emph{Professor:} \
+%Dr. James \textsc{Smith}                                   % Professor's Name
+%\end{flushright}
+%\end{minipage}\[4cm]
+
+% {\large \today}\[3cm]                                     % Date, change the \today to be precise
+
+%\includegraphics{Logo}\[1cm]                             % Include a department/university logo
+
+\vspace*{\fill}                                            % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+% \phantomsection
+
+% \tableofcontents                                           % These two lines are needed to
+% \addcontentsline{toc}{section}{Table of Contents}          % initialize and display TOC
+% \listoffigures                                             % These two lines are needed to
+% \addcontentsline{lof}{section}{List of Figures}            % initialize and display LOF
+% \newpage
+
+%----------------------------------------------------------------------------------------
+%    CONTENT
+%----------------------------------------------------------------------------------------
+
+\section{Data Processing}
+\label{sec:data_processing}
+
+The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
+
+Once downloaded, the files can be processed using three files: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
+
+\section{Theoretical Framework}
+\label{sec:theoretical_framework}
+
+To estimate the trade elasticities, I follow \cite{broda_weinstein_2006_globalization_gains} who in turn follow \cite{feenstra_1994_new_product_varieties}.  The estimation strategy is complicated by the introduction of new varieties.  In standard love-of-variety type utility functions, failure to account for new varieties is a serious omission.  The outline here will be a very rough sketch.  For a more thorough treatment, either \cite{feenstra_1994_new_product_varieties} or \cite{broda_weinstein_2006_globalization_gains} will suffice.
+
+For our purposes, a variety is defined as a particular good defined by the CN8 nomenclature (see \ref{sec:data_processing}), produced in a particular country.  So, for example, Polystyrene produced in Germany is one variety, while Polystyrene produced in France is another.
+
+\subsection{Feenstra Price Index}
+\label{sub:feenstra_price_index}
+
+Here, the goal is to build an aggregate price index that accounts for the increasing varieties available for consumption.  We'll use a three-level utility function that aggregates imported varieties into composite imported goods (one for each good), and a further level that aggregates these composite goods into a single composite imported good.  This composite imported good is then combined with a domestic good in the highest level of the utility function.  That is,
+
+\begin{equation}
+    U_t = (D_t^{(\kappa - 1)/\kappa} + M_t^{(\kappa - 1)/\kappa})^{\kappa/(\kappa - 1)}; \quad \kappa > 1
+\end{equation}
+
+where $M_t$ is the composite imported good and $D_t$ is the domestic good and $\kappa$ the elasticity of substitution between them.  For the next tier,
+
+\begin{equation}
+    M_t = \Big(\sum_{g \in G} M_{gt}^{(\gamma - 1) / \gamma}\Big)^{\gamma/(\gamma - 1)}; \quad \gamma > 1
+\end{equation}
+
+where $M_gt$ is the subutility from consumption of each imported good $g$ at time $t$, and $\gamma$ is the elasticity of substitution among them.  $G$ is the set of all imported goods.
+
+We give $M_gt$ the form
+
+\begin{equation}
+    M_gt = \Big( \sum_{c \in C} d_{gct}^{1 / \sigma_g}(m_{gct})^{(\sigma - 1) / \sigma_g}  \Big) ^ {\sigma / (\sigma_g - 1)};`' \quad \sigma_g > 1 \ \ \forall g \in G
+\end{equation}
+
+where $\sigma_g$ is the elasticity of substitution among varieties of good $g$, assumed to be greater than one.  The subscript $c$ refers to the country of origin for good $g$.  $C$ is the set of all countries and $d_{gct}$ is a taste parameter for goods of type $g$ imported from country $c$.
+
+Given this specification, we can then derive the form of the minimum cost bundle needed to achieve a given utility level.  I skip the derivation here and note that the results are a vector $\mathbf{p}_{gt}$ containing elements $p_{gct}$, the prices of individual varieties, and another vector $\mathbf{x}_{gt}$ containing elements $x_{gct}$, the cost-minimizing quantities for each variety.  From this we get the cost shares (which are used in estimation):
+
+\begin{equation}
+    s_{gct} = \frac{p_{gct}x_{gct}}{\sum_{c \in I_g}p_{gct}x_{gct}}
+\end{equation}
+
+where $I_g$ is an index of varieties consumed at both times $t$ and $t - 1$.
+
+\section{Econometric Methodology}
+\label{sec:econometric_methodology}
+
+We have in hand the cost shares $s_{gct}$ and prices $p_{gct}$. This lets us express the import demand for each variety (differenced over time) as
+
+\begin{equation}\label{eq:import_demand}
+    \Delta \ln{s_{gct}} = \varphi_{gt} - (\sigma_g - 1) \Delta \ln{p_gct} + \varepsilon_{gct}
+\end{equation}
+
+where $\varphi_{gt} = (\sigma_g - 1) \ln{[\phi_{gt}^M (d_t) / \phi_{gt - 1}^M (d_{t - 1})]}$ is a random effect since $d_t$ is random and $\varepsilon_{gct} = \Delta \ln{d_{gct}}$.
+
+Likewise, we can write the export supply equation as:
+
+\begin{equation}\label{eq:export_supply}
+    \Delta \ln{p_{gct}} = \psi_{gt} + \frac{\omega_g}{1 + \omega_g} \Delta \ln{s_{gct} + \delta_{gct}}
+\end{equation}
+
+where $\psi = -\omega_g \Delta \ln{E_gt / (1 + \omega_g)}$, $\omega_g$ is the inverse supply elasticity (constant across countries by assupmtion) and $\delta_t =  \Delta \ln{v_{gct} / (1 + \omega_g)}$ picks up random changes from a technology factor $v_{gct}$.  We assume that $E(\varepsilon_{gct}\delta{gct} = 0$, that is demand and supply errors at the variety level are uncorrelated once good-time specific effects are accounted for.
+
+To aid in estimation, we wish to eliminate $\varphi_{gt}$ and $\psi_{gt}$.  To accomplish this, for each good $g$ choose a reference country $k$ which supplied the good each period.  Then difference the demand and supply equations \ref{eq:import_demand} and \ref{eq:export_supply} relative to country $k$ to get:
+
+\begin{equation}\label{eq:diffed_import_demand}
+    \Delta^k \ln{s_{gct}} = - (\sigma_g - 1) \Delta^k \ln{p_gct} + \varepsilon^k_{gct}
+\end{equation}
+
+\begin{equation}\label{eq:diffed_export_supply}
+    \Delta^k \ln{p_{gct}} = \frac{\omega_g}{1 + \omega_g} \Delta^k \ln{s_{gct}} + \Delta^k_{gct}
+\end{equation}
+
+where $\Delta^k x_{gct} \equiv \Delta x_{gct} - \Delta x_{gkt}$, $\varepsilon^k_{gct} \equiv \varepsilon_{gct} - \varepsilon_{gkt}$ and $\delta^k_{gct} \equiv \delta_{gct} - \delta_{gkt}$.
+Using $E(\varepsilon_{gct}^k \delta^k_{gct} = 0)$, multiply \ref{eq:diffed_import_demand} and \ref{eq:diffed_export_supply} to get:
+
+\begin{equation}
+    (\Delta^k \ln_{pgct})^2 = \theta_1 (\Delta^k \ln s_{gct})^2 + \theta_2 (\Delta^k \ln{p_{gct}} \Delta^k\ln{s_{gct}}) + u_{gct}
+\end{equation}
+
+where
+
+\begin{equation}\label{eq:multiplied}
+    \theta_1 = \frac{\omega_g}{(1 + \omega_g) (\sigma_g - 1)}, \quad \theta_2 = \frac{1 - \omega_g(\sigma_g - 2)}{(1 + \omega_g)(\sigma_g - 1)}
+\end{equation}
+
+and
+
+\begin{equation}
+    u_{gct} = \varepsilon^k_{gct} \delta^k_{gct}.
+\end{equation}
+
+Our parameters of interest $\beta_g \equiv \tvect{\sigma_g}{\omega_g}$ cannot be estimated consistently from \ref{eq:multiplied} since $u_{gct}$ is correlated with the regressands.  However, we can achieve consistency from our assumption that the demand and supply elasticities are constant over varieties of the same good.  With this assumption we get a set of moment conditions for each good $g$:
+
+\begin{equation}
+    G(\beta_g) = E_t(u_{gct}(\beta_g)) = 0 \quad \forall \ c
+\end{equation}
+
+This equation can be estimated using GMM:
+
+\begin{equation}
+    \hat{\beta}_g = \argmin_{\beta \in B} G^*(\beta_g)^{T} W G^*(\beta_g)
+\end{equation}
+
+where $G^*(\beta)$ is the sample equivalent of $G(\beta)$, $W$ is a positive definite weighting matrix, and $B$ is the set of feasible $\beta$, defined by economic theory to be $\sigma_g > 1, \omega_g > 0$.
+\bibliographystyle{apa}
+\bibliography{citations}
+
+
+\end{document}
