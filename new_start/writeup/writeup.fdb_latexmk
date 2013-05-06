@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex writeup"] 1367854028 "writeup.aux" "writeup.bbl" "writeup" 1367854232
+["bibtex writeup"] 1367857041 "writeup.aux" "writeup.bbl" "writeup" 1367857043
   "/Volumes/HDD/usr/local/texlive2012/texmf-dist/bibtex/bst/beebe/apa.bst" 1136766823 23582 e3c8338eb1efb7432441aa8861285f53 ""
   "citations.bib" 1367849122 213894 c1c6e97c96a734bac671ad6b8027f0f8 ""
-  "writeup.aux" 1367854232 2933 55ac5fe434f041f5aac3ee6f02130c64 ""
+  "writeup.aux" 1367857042 3803 2d86723bcb745e94c48f5c637708ccc7 ""
   "writeup.bcf" 0 -1 0 ""
   (generated)
   "writeup.bbl"
   "writeup.blg"
-["pdflatex"] 1367854231 "writeup.tex" "writeup.pdf" "writeup" 1367854232
+["pdflatex"] 1367857041 "writeup.tex" "writeup.pdf" "writeup" 1367857043
   "/Volumes/HDD/usr/local/texlive2012/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/Volumes/HDD/usr/local/texlive2012/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/Volumes/HDD/usr/local/texlive2012/texmf-dist/fonts/enc/dvips/inconsolata/fi4-ec.enc" 1244245552 7358 487386aecbb8989e31341f7851e7d7e2 ""
@@ -173,10 +173,10 @@
   "/Volumes/HDD/usr/local/texlive2012/texmf-var/web2c/pdftex/pdflatex.fmt" 1360601162 3696258 50aaed331fbbe9a9bd4c97eb5ffc5cb0 ""
   "/Volumes/HDD/usr/local/texlive2012/texmf.cnf" 1344955529 491 0294c51cfb2712c4a4e1b080a9d991ce ""
   "/Volumes/HDD/usr/local/texlive2012/texmf/web2c/texmf.cnf" 1336865692 31299 729e216d9b945005c0d4b079c0500bc9 ""
-  "writeup.aux" 1367854232 2933 55ac5fe434f041f5aac3ee6f02130c64 ""
-  "writeup.bbl" 1367854028 562 326ee2d5cc9df9b7c2189f9e30ab82b5 "bibtex writeup"
-  "writeup.out" 1367854232 233 61ccb7af80597bab4b707f855d8c7639 ""
-  "writeup.tex" 1367854230 16360 1456f9fd4f6931807a73a560091d4cf5 ""
+  "writeup.aux" 1367857042 3803 2d86723bcb745e94c48f5c637708ccc7 ""
+  "writeup.bbl" 1367857041 562 326ee2d5cc9df9b7c2189f9e30ab82b5 "bibtex writeup"
+  "writeup.out" 1367857042 397 af370c541246d341af768f2d9c922381 ""
+  "writeup.tex" 1367857039 18443 ed6e0ba616b74992334a1366a68501dc ""
   (generated)
   "writeup.log"
   "writeup.out"

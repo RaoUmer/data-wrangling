@@ -28,7 +28,7 @@
 \usepackage{float}                                         % Allows putting an [H] in \begin{figure}
 \usepackage{wrapfig}                                       % Allows in-line images
 
-\usepackage{hyperref}                                      % References
+\usepackage[colorlinks=true, citecolor=blue]{hyperref}     % References
 \usepackage{cleveref}                                      % Better References
 %\crefname{lstlisting}{listing}{listings}
 %\Crefname{lstlisting}{Listing}{Listings}
@@ -168,7 +168,7 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 \section{Data Processing}
 \label{sec:data_processing}
 
-The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
+The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}{Eurostat}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
 
 Once downloaded, the files can be processed using three files: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
 
@@ -212,7 +212,7 @@ Given this specification, we can then derive the form of the minimum cost bundle
 
 where $I_g$ is an index of varieties consumed at both times $t$ and $t - 1$.
 
-\section{Econometric Methodology}
+\section{Estimation Strategy}
 \label{sec:econometric_methodology}
 
 We have in hand the cost shares $s_{gct}$ and prices $p_{gct}$. This lets us express the import demand for each variety (differenced over time) as
@@ -260,6 +260,10 @@ and
     u_{gct} = \varepsilon^k_{gct} \delta^k_{gct}.
 \end{equation}
 
+\subsection{Econometric Methodology}
+\label{sub:econometric_methodology}
+
+
 Our parameters of interest $\beta_g \equiv \tvect{\sigma_g}{\omega_g}$ cannot be estimated consistently from \ref{eq:multiplied} since $u_{gct}$ is correlated with the regressands.  However, we can achieve consistency from our assumption that the demand and supply elasticities are constant over varieties of the same good.  With this assumption we get a set of moment conditions for each good $g$:
 
 \begin{equation}
@@ -273,8 +277,99 @@ This equation can be estimated using GMM:
 \end{equation}
 
 where $G^*(\beta)$ is the sample equivalent of $G(\beta)$, $W$ is a positive definite weighting matrix, and $B$ is the set of feasible $\beta$, defined by economic theory to be $\sigma_g > 1, \omega_g > 0$.
+
+The choice of weighting matrix is motivated by pragmatism.  There's good reason to worry that unit values calculated on small volumes are less precisely measured than those based on large volumes.  For this reasons we choose $W$ such that:
+
+\begin{equation}
+    W \equiv T^{3/2}\Big(\frac{1}{q_{gct}} + \frac{1}{q_{gct - 1}})^{-1/2}
+\end{equation}
+
+where $T$ is the number of periods in our sample (12 in my case) and $q_{gct}$ is the quantity imported at time $t$, which is known from data.  \cite{broda_weinstein_2006_globalization_gains} also add a term
+
+\begin{equation}
+    \hat{\chi}^2 \frac{1}{T} \sum_t \big(\frac{1}{q_{gct}} + \frac{1}{q_{gct-1}})
+\end{equation}
+
+to the right-hand side of \ref{eq:multiplied}.  Together these should account for our measurement concerns.  See the appendix of \cite{broda_weinstein_2006_globalization_gains} for details.
+
+\section{Estimation Results}
+\label{sec:estimation_results}
+
+Presenting these results proves to be something of a challenge.  My sample includes 27 countries and one aggregate for the EU (see table \ref{tab:declarants}).  
+
+\newpage
 \bibliographystyle{apa}
 \bibliography{citations}
 
+\newpage
 
+\section{Appendix}
+\label{sec:appendix}
+
+\begin{table}\label{tab:declarants}
+    \begin{tabular}{|l|}
+    \hline
+    \textbf{Country}\\
+    \hline
+    \hline
+    Cyprus\\
+    \hline
+    Slovenia\\
+    \hline
+    Portugal\\
+    \hline
+    Spain\\
+    \hline
+    Austria\\
+    \hline
+    Belgium\\
+    \hline
+    Luxembourg\\
+    \hline
+    Lithuania\\
+    \hline
+    Sweden\\
+    \hline
+    Estonia\\
+    \hline
+    Finland\\
+    \hline
+    Czech Republic\\
+    \hline
+    Poland\\
+    \hline
+    Slovakia\\
+    \hline
+    Hungary\\
+    \hline
+    Romania\\
+    \hline
+    Bulgaria\\
+    \hline
+    Netherlands\\
+    \hline
+    France\\
+    \hline
+    Ireland\\
+    \hline
+    Utd. Kingdom\\
+    \hline
+    Italy\\
+    \hline
+    Fr Germany\\
+    \hline
+    EU\\
+    \hline
+    Malta\\
+    \hline
+    Greece\\
+    \hline
+    Denmark\\
+    \hline
+    Latvia\\
+    \hline
+    \end{tabular}
+\end{table}
 \end{document}
+
+
