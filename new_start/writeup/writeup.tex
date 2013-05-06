@@ -2,7 +2,7 @@
 %    PAGE ADJUSTMENTS
 %----------------------------------------------------------------------------------------
 
-\documentclass[12pt,a4paper,hidelinks]{article}            % Article 12pt font for a4 paper while hiding links
+\documentclass[12pt,a4paper]{article}                      % Article 12pt font for a4 paper while hiding links
 \usepackage[margin=1in]{geometry}                          % Required to adjust margins
 
 %----------------------------------------------------------------------------------------
@@ -76,7 +76,6 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 %    COMMANDS
 %----------------------------------------------------------------------------------------
 
-\setlength\parindent{0pt}                                  % Removes all indentation from paragraphs
 \renewcommand*\thesection{\arabic{section}}                % Renew section numbers
 \renewcommand{\labelenumi}{\alph{enumi}.}                  % Section ordered numbering
 \let\oldvec\vec                                            % Save the old vector style
@@ -89,7 +88,7 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 \setcounter{lofdepth}{3}                                   % Depth of LoF
 
 \pagestyle{fancy}                                          % Fancy page style for headers
-\setlength{\headheight}{15pt}                              % Change header hieght
+\setlength{\headheight}{15pt}                              % Change header height
 \fancyhead[L,LO]{\fontsize{8}{10} \selectfont \firstmark}  % Adds header to left with section name
 \fancyhead[R,RO]{\fontsize{8}{10} \selectfont Right}       % Adds header to right
 \definecolor{grey}{HTML}{cccccc}                           % The next 4 lines modifies the header (color)
@@ -164,13 +163,6 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 %----------------------------------------------------------------------------------------
 %    CONTENT
 %----------------------------------------------------------------------------------------
-
-\section{Data Processing}
-\label{sec:data_processing}
-
-The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}{Eurostat}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
-
-Once downloaded, the files can be processed using three files: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
 
 \section{Theoretical Framework}
 \label{sec:theoretical_framework}
@@ -296,6 +288,44 @@ to the right-hand side of \ref{eq:multiplied}.  Together these should account fo
 \label{sec:estimation_results}
 
 Presenting these results proves to be something of a challenge.  My sample includes 27 countries and one aggregate for the EU (see table \ref{tab:declarants}).  
+
+
+\section{Data Description}
+
+The bulk of my data is from the Comext database hosted on \href{http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/}{Eurostat}.  I used data from the years 2000-2011.  Here is a sample:
+
+  \begin{table}[h]\label{tab:sample_row}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}\footnotesize
+    & & & & & Value (1000 Euro) & Quantity (Ton) & Sup Q \\ \hline
+    Flow & Period & Dec. & Product & Partner &  &  &     \\ \hline
+    1 & 2009-01-01 & 1  & 01011010 & 3       & 3741.08 & 1359.2 & 0\\ \hline
+  \end{tabular}
+  \end{table}
+
+\texttt{Flow} refers to the record being an import (1) or export (2).  \texttt{Period} is the year that the record refers to. \texttt{Declarant} is the code for the country doing the importing, France in this case.  \texttt{Product} refers to the 8-digit \hyperref{http://ec.europa.eu/eurostat/ramon/nomenclatures/index.cfm?TargetUrl=LST_NOM_DTL&StrNom=CN_2013&StrLanguageCode=EN&IntPcKey=&StrLayoutCode=HIERARCHIC}{Combined Nomenclature} classification system.  Finally, \texttt{Partner} refers to the country of origin for this record.  This forms a unique index.  The data used for estimation are \texttt{Value} (in thousands of Euros) and \texttt{Quantity} (in tons).  \texttt{Sup Q} is a supplemental quantity value.  There are some items with all zeros in \texttt{Quantity} and nonzero values in \texttt{Sup Q}.  As it stands, these values were dropped from my calculation while in principal they could have been included.  The difficulty comes from some items being measured by \texttt{Quantity} some years and \texttt{Sup Q} in other years.
+
+From these data, we can calculate the cost shares and prices described in \ref{sec:theoretical_framework}, using the methods described in \ref{sec:econometric_methodology}.
+
+\section{Data Processing}
+\label{sec:data_processing}
+
+The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}{Eurostat}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
+
+
+Once downloaded, the files can be processed using three \href{www.python.org}{Python} scripts: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
+
+
+The first script, \texttt{download\_to\_hdf5.py}, takes the gziped files from the Comext Database (one for each year), extracts them using the \texttt{7z} extractor, and writes them to an \texttt{hdf5} datafile.  Some intermediate logic is applied obtain a unique index, split the data by declarant, and write each declarant separately.
+
+
+Next, I calculate the cost shares and prices described in \ref{sec:econometric_methodology}.  The code here is self-explanatory. Note that goods with no values for \texttt{Quantity} were dropped. To save on space I overwrites the database generated by \texttt{download\_to\_hdf5.py}.  This can be avoided by changing the filename written to.
+
+
+Finally, I use the script \texttt{differencing.py} which handles finding a reference country who exported the product each year for each good, and then differencing the prices and cost shares by year and with that reference country's values.  Note that some goods had to be dropped because they did not contain a valid reference country.
+
+
+
+
 
 \newpage
 \bibliographystyle{apa}
