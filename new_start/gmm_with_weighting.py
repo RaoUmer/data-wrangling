@@ -22,11 +22,23 @@ from parse_optimize_results import opt_dict_format
 # Functions for the GMM.
 
 
-def _theta_to_interest(t1, t2):
+def _theta_to_interest(estimated_params):
     """
     GMM estimates theta1 and theta2, we want sigma and omega.
+
+    See Broda and Weinstein's working paper for this derivation.
     """
-    pass
+    t1, t2 = estimated_params
+    if t1 > 0 and t2 > 0:
+        rho = .5 + (.25 - (1 / (4 + t2 / t1))) ** .5
+        sigma = 1 + (1 / t2) * (2 * rho - 1) / (1 - rho)
+    elif t1 > 0 and t2 < 0:
+        rho = .5 - (.25 - (1 / (4 + t2 / t1))) ** .5
+        sigma = 1 + (1 / t2) * (2 * rho - 1) / (1 - rho)
+    elif t1 < 0:
+        rho = np.nan
+        sigma = np.nan
+    return (sigma, rho)
 
 
 def gen_moms_sse(theta, subgroup, bias_term, W=None):
