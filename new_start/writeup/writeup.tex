@@ -314,7 +314,7 @@ The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\
 
 Once downloaded, the files can be processed using three \href{www.python.org}{Python} scripts: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
 
-
+ 
 The first script, \texttt{download\_to\_hdf5.py}, takes the gziped files from the Comext Database (one for each year), extracts them using the \texttt{7z} extractor, and writes them to an \texttt{hdf5} datafile.  Some intermediate logic is applied obtain a unique index, split the data by declarant, and write each declarant separately.
 
 
@@ -323,9 +323,14 @@ Next, I calculate the cost shares and prices described in \ref{sec:econometric_m
 
 Finally, I use the script \texttt{differencing.py} which handles finding a reference country who exported the product each year for each good, and then differencing the prices and cost shares by year and with that reference country's values.  Note that some goods had to be dropped because they did not contain a valid reference country.
 
+\section{Estimation Described}
+\label{sec:estimation_described}
 
+The bulk of the work is done by the script \texttt{gmm\_with\_weighting.py}.  For each declarant in our sample, I split the declarant's import data by good, apply the GMM estimation function, and combine the results into a table containing our two parameters of interest, $\tvect{\sigma_g}{\omega_g}$, for each good.
 
+As the filename suggests, the weighting matrix is also calculated here, as described in \ref{sec:econometric_methodology}.  This involves differencing the quantity data by year.  \cite{broda_weinstein_2006_globalization_gains} do not comment on what should happen to the values from the first observation, so I fill these in the the mean from the other years.
 
+At this step it became clear that the data likely had some massive outliers (or our manipulations had introduced some).  
 
 \newpage
 \bibliographystyle{apa}
