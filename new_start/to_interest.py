@@ -16,10 +16,10 @@ def _theta_to_interest(estimated_params):
     """
     t1, t2 = estimated_params
     if t1 > 0 and t2 > 0:
-        rho = .5 + (.25 - (1 / (4 + t2 / t1))) ** .5
+        rho = .5 + np.sqrt(.25 - (1 / (4 + t2 / t1)))
         sigma = 1 + (1 / t2) * (2 * rho - 1) / (1 - rho)
     elif t1 > 0 and t2 < 0:
-        rho = .5 - (.25 - (1 / (4 + t2 / t1))) ** .5
+        rho = .5 - np.sqrt(.25 - (1 / (4 + t2 / t1)))
         sigma = 1 + (1 / t2) * (2 * rho - 1) / (1 - rho)
     elif t1 < 0:
         rho = np.nan
@@ -31,8 +31,8 @@ if __name__ == '__main__':
     from datetime import datetime
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-    gmm_results = [pd.HDFStore(base + 'gmm_results_weighted.h5'),
-                   pd.HDFStore(base + 'gmm_results.h5')]
+    gmm_results = [pd.HDFStore(base +
+                   'filtered_gmm_res/filtered_gmm_results_weighted.h5')]
 
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
@@ -45,6 +45,7 @@ if __name__ == '__main__':
                 df = store.select('res_' + ctry)
             except KeyError:
                 continue
-            trans = df.apply(_theta_to_interest, axis=1, broadcast=True)
+            trans = df[['t1', 't2']].apply(_theta_to_interest, axis=1,
+                                           broadcast=True)
             store.append('transformed_' + ctry, trans)
             print('Added {}'.format(ctry))
