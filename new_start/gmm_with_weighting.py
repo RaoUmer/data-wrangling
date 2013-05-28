@@ -58,10 +58,10 @@ def gen_moms_sse(theta, subgroup, bias_term, W=None):
     # s = s ** 2
     if W is None:
         # Naiive case.  Doesn't weight, doesn't add that term on p. 583.
-        err = p - theta[0] * s - theta[1] * c
+        err = p - theta[0] * bias_term - theta[1] * s - theta[2] * c
         W = np.eye(len(err))
     else:
-        err = p - theta[0] * s - theta[1] * c - bias_term
+        err = p - theta[0] * bias_term - theta[1] * s - theta[2] * c - bias_term
     return dot(dot(err.T, W), err) / len(err)
 
 
@@ -86,10 +86,9 @@ def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
     Bubbles up results from minimize, except fills in nans where appropriate.
     """
     subgroup.name = name  # Side-effectual.
+    base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
     if W:
-        # pdb.set_trace()
         # Calculate the Weighting Matrix.  Uses quantity data.
-        # pdb.set_trace()
         with pd.get_store(base + 'by_declarant.h5') as q_store:
             weight_data = q_store.select('ctry_' + country,
                                          pd.Term('good == {}'.format(subgroup.name)))
@@ -97,7 +96,7 @@ def gen_params(subgroup, x0, name, method='Nelder-Mead', W=None, country=None,
         # weight_data.index = weight_data.index.droplevel('good')  # TODO: Check this
         weight_data = weight_data.ix[subgroup.index]
         diffed = weight_data.quantity.groupby(level='partner').apply(diff_q)
-        bias_term = diffed.mean()  # Need to multiply by estimate of var(ln(error))
+        bias_term = diffed.mean()  # See Soderbery (2013)
         W = weight_matrix(subgroup, diffed, weight_data)
     else:
         bias_term = 0
@@ -115,19 +114,6 @@ def diff_q(x):
     Find 1/q_gct + 1/g_gct-1
     """
     return ((1 / x) + (1 / x.shift())).fillna(method='bfill')
-
-
-def fit_one(pre=None, ctry=None):
-    """
-    Similar to gen_params (earlier anyway).  Fits for a single country.
-    """
-    if pre is None:
-        pre = load_pre(ctry)
-    by_product = pre.dropna().groupby(level='PRODUCT_NC')
-    res = {name: gen_params(group, x0=[2, 1]) for name, group in by_product}
-    res = pd.DataFrame(res).T
-    for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
-    return (for_csv, for_hd5)
 
 
 def weight_matrix(group, diffed, weight_data):
@@ -154,7 +140,7 @@ if __name__ == '__main__':
 
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
     gmm = pd.HDFStore(base + 'filtered_for_gmm.h5')
-    gmm_results = pd.HDFStore(base + 'filtered_gmm_results_weighted.h5')
+    gmm_results = pd.HDFStore(base + 'filtered_gmm_res/filtered_gmm_results_weighted.h5')
     with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
         country_code = load(declarants)
     declarants = sorted(country_code.keys())
@@ -180,26 +166,21 @@ if __name__ == '__main__':
         #---------------------------------------------------------------------
         # With Weighting
         res = {name: gen_params(
-            group, [2, 1], name, country=ctry, W=True, options={'disp': False})
-            for name, group in by_product}
+            group, [1, 2, 1], name, country=ctry, W=True,
+            options={'disp': False}) for name, group in by_product}
         print('Finshed estimation for {}'.format(ctry))
         #---------------------------------------------------------------------
         # Formatting and IO.
         res = pd.DataFrame(res).T
-        for_csv, for_hd5 = opt_dict_format(res, names=['t1', 't2'])
+        for_csv, for_hd5 = opt_dict_format(res, names=['const', 't1', 't2'])
         try:
+            for_hd5 = for_hd5[['const', 't1', 't2']][for_hd5.success == True]
             gmm_results.append('res_' + ctry, for_hd5)
         except:
             with open(base + 'failed_h5.txt', 'a') as f:
                 f.write("Missed on {}".format(ctry))
-            res.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-                       'yearly/new_ctry_{}_weighted.csv'.format(ctry))
-        # try:
-        #     for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
-        #                    'yearly/new_ctry_{}_weighted.csv'.format(ctry))
-        # except:
-        #     with open(base + 'failed_csv.txt', 'a') as f:
-        #         f.write("Missed on {}".format(ctry))
+        for_csv.to_csv('/Volumes/HDD/Users/tom/DataStorage/Comext/'
+                       'yearly/filtered_gmm_res/filtered_ctry_{}_weighted.csv'.format(ctry))
 
         m = 'Finshed country {0} in {1}'.format(ctry, datetime.utcnow() - t)
         print(m)

@@ -1,5 +1,5 @@
 import cPickle
-from itertools import izip
+import itertools as it
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ gmm_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
                       'gmm_results.h5')
 
 weighted_res = pd.HDFStore('/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-                           'gmm_results_weighted.h5')
+                           '/filtered_gmm_res/filtered_gmm_results_weighted.h5')
 
 #-----------------------------------------------------------------------------
 # Helper functions
@@ -26,8 +26,8 @@ def load_pre(ctry, close=True):
     Get a dataframe with the trade data.
     """
     base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
-    gmm = pd.HDFStore(base + 'gmm_store.h5')
-    df = gmm.select('by_ctry_' + ctry)
+    gmm = pd.HDFStore(base + 'filtered_for_gmm.h5')
+    df = gmm.select('ctry_' + ctry)
     if close:
         gmm.close()
     return df
@@ -38,10 +38,11 @@ def load_res(ctry, weighted=True, close=True):
     Get a dataframe with the estimated parameters for that country.
     """
     if weighted:
-        gmm_res = pd.HDFStore(base + 'gmm_results_weighted.h5')
+        gmm_res = pd.HDFStore(base + 'filtered_gmm_res/'
+                              'filtered_gmm_results_weighted.h5')
     else:
         gmm_res = pd.HDFStore(base + 'gmm_results.h5')
-    df = gmm_res.select('res_' + ctry)
+    df = gmm_res.select('transformed_' + ctry)
     if close:
         gmm_res.close()
     return df
@@ -66,7 +67,8 @@ def get_extremes(pre=None, res=None, ctry=None, weighted=True):
     return {'maxes': rmax, 'mins': rmin}
 
 
-def scatter_(ctry=None, df=None, inliers=False, weighted=True, **kwargs):
+def scatter_(ctry=None, df=None, inliers=False, weighted=True, ax=None,
+             **kwargs):
     """
     Plot a scatter of the two parameters.  Give either a country code
     or a dataframe of estimated parameters.  If inliers, the dataframe
@@ -78,9 +80,10 @@ def scatter_(ctry=None, df=None, inliers=False, weighted=True, **kwargs):
         df = load_res(ctry, weighted=weighted)
     if inliers:
         df = get_inliers(df=df, **kwargs)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.scatter(df.t1, df.t2, alpha=.67, marker='.')
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+    ax.scatter(df.t1, df.t2, alpha=.67, marker='.', **kwargs)
     try:
         ax.set_title(country_code[ctry])
     except:
@@ -115,9 +118,9 @@ def get_inliers(df=None, ctry=None, s=3, weighted=True, how='all'):
     if df is None:
         df = load_res(ctry, weighted=weighted)
     if how == 'any':
-        return df[(np.abs(df) <= df.std()).any(1)]
+        return df[(np.abs(df) <= df.mean() + s * df.std()).any(1)]
     elif how == 'all':
-        return df[(np.abs(df) <= df.std()).all(1)]
+        return df[(np.abs(df) <= df.mean() + s * df.std()).all(1)]
     else:
         raise TypeError('how must be "any" or "all".')
 
@@ -137,32 +140,32 @@ def mahalanobis_plot(ctry=None, df=None, weighted=True, inliers=False):
         df = get_inliers(df=df)
     X = df.values
     robust_cov = MinCovDet().fit(X)
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # compare estimators learnt from the full data set with true parameters
     emp_cov = EmpiricalCovariance().fit(X)
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # Display results
     fig = plt.figure()
     fig.subplots_adjust(hspace=-.1, wspace=.4, top=.95, bottom=.05)
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # Show data set
     ax1 = fig.add_subplot(1, 1, 1)
     ax1.scatter(X[:, 0], X[:, 1], alpha=.5, color='k', marker='.')
     ax1.set_title(country_code[ctry])
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # Show contours of the distance functions
     xx, yy = np.meshgrid(np.linspace(ax1.get_xlim()[0], ax1.get_xlim()[1],
                                      100),
                          np.linspace(ax1.get_ylim()[0], ax1.get_ylim()[1],
                                      100))
     zz = np.c_[xx.ravel(), yy.ravel()]
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     mahal_emp_cov = emp_cov.mahalanobis(zz)
     mahal_emp_cov = mahal_emp_cov.reshape(xx.shape)
     emp_cov_contour = ax1.contour(xx, yy, np.sqrt(mahal_emp_cov),
                                   cmap=plt.cm.PuBu_r,
                                   linestyles='dashed')
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     mahal_robust_cov = robust_cov.mahalanobis(zz)
     mahal_robust_cov = mahal_robust_cov.reshape(xx.shape)
     robust_contour = ax1.contour(xx, yy, np.sqrt(mahal_robust_cov),
@@ -243,9 +246,59 @@ def density_(df, n=100):
     y_counts.index = y_mid
     x_counts = x_counts.sort_index()
     y_counts = y_counts.sort_index()
+
+
+def select_level(level, ctry=None, df=None, inliers=False, weighted=True):
+    """
+    Use this function to get all goods at a particilar level, e.g. 2, 8.
+
+    level: int
+    """
+    if df is None and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
+    elif df is None:
+        df = load_res(ctry, weighted=weighted)
+    return df.ix[df.index.map(lambda x: len(x) == level)]
+
+
+def select_level_index(level, ctry=None, df=None, inliers=False, weighted=True):
+    if df is None and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
+    elif df is None:
+        df = load_res(ctry, weighted=weighted)
+    return np.unique(df.index.map(lambda x: x[:level]))
+
+
+def select_range(level, ctry=None, df=None, inliers=False, weighted=True):
+    """
+    Grab out a specific level at any level of aggregation.
+    e.g. '02' for all items in that section.
+    parameters
+    -level: Str.
+
+    returns
+    -DataFrame. Subset of the original.
+    """
+    if df is None and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
+    elif df is None:
+        df = load_res(ctry, weighted=weighted)
+    return df.ix[df.index.map(lambda x: x.startswith(level))]
+
+
+def most_pre(ctry=None, df=None, n=10):
+    if df is None and ctry is None:
+        raise ValueError('Either the country or a dataframe must be supplied')
+    elif df is None:
+        df = load_pre(ctry).reset_index()
+    df['group'] = df.good.str.slice(stop=2)
+    cts = df.groupby(['group']).count()['price'].copy()
+    cts.sort()
+    return cts[-10:]
+
 #-----------------------------------------------------------------------------
 # The fun
-scatters = iter(scatter_(ctry) for ctry in declarants)
+scatters = iter(scatter_(ctry, weighted=False) for ctry in declarants)
 scatters_adj = iter(scatter_(ctry, inliers=True) for ctry in declarants)
 mle = iter(mahalanobis_plot(ctry) for ctry in declarants)
 mle_adj = iter(mahalanobis_plot(ctry, inliers=True) for ctry in declarants)
@@ -254,7 +307,7 @@ hists2 = iter(hist_2(ctry=country) for country in declarants)
 outliers = iter(get_outliers(ctry=country) for country in declarants)
 inliers = iter(get_inliers(ctry=country) for country in declarants)
 
-zipped = izip(mle_adj, declarants)
+zipped = it.izip(mle_adj, declarants)
 for x, ctry in zipped:
     plt.savefig('/Users/tom/Desktop/outliers/outlier{}.png'.format(ctry),
                 dpi=400, format='png')
@@ -271,3 +324,16 @@ for country in declarants:
     df = get_outliers(ctry=country)
     lens[country] = len(df)
     gmm_res.append('round_1_{}'.format(country), df)
+
+#-----------------------------------------------------------------------------
+# Color by level
+levels = select_level_index(2, ctry='001')
+for country in declarants:
+    df = load_res(ctry=country)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cycle = it.cycle(plt.rcParams['axes.color_cycle'])
+    top = most_pre(ctry=country)
+    for level in top.index.intersection(levels):
+        x = select_range(level, df=df)
+        scatter_(df=x, ax=ax, color=cycle.next(), label=level)

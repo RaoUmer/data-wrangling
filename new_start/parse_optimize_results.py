@@ -24,7 +24,7 @@ def split_arrays(column, names):
     -------
     DataFrame whose columns are the split array from column.
     """
-    list_ = [[x[0], x[1]] for x in column.values]
+    list_ = [[x[0], x[1], x[2]] for x in column.values]
     return pd.DataFrame(list_, columns=names, index=column.index)
 
 
@@ -34,9 +34,14 @@ def add_in_success(store):
     the failed optimiziations in the for_hdf5 store.
     """
     countries = {x.split('_')[1] for x in store.keys()}
-    base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/gmm_res/ctry_'
+    base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/new_ctry_'
     for country in countries:
-        df = pd.read_csv(base + country + '.csv',
-                         index_col=0)[['success', 't1', 't2']]
+        try:
+            df = pd.read_csv(base + country + '.csv',
+                             index_col=0)[['success', 't1', 't2']]
+        except IOError:
+            print('Skipped {}'.format(country))
+            continue
         store.remove('res_' + country)
         store.append('res_' + country, df)
+        print('Finished {}.'.format(country))
