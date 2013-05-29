@@ -35,62 +35,62 @@ hists2 = iter(ctry.hist_2() for ctry in countries)
 #     gmm_res.append('round_1_{}'.format(country), df)
 
 #-----------------------------------------------------------------------------
-# Color by level
 
+if __name__ == '__main__':
+    # Color by level
+    colors = iter(ctry.color_scatter() for ctry in countries)
+    colors_adj = iter(ctry.color_scatter(inliers=True) for ctry in countries)
+    counts2 = (ctry.groupby_level().count() for ctry in countries)
+    means2 = (ctry.groupby_level().mean() for ctry in countries)
+    trunc_hists = iter(ctry.truncated_hist() for ctry in countries)
+    # Summary stats.
+    xs = []
+    for country in declarants:
+        stats_ = Results(country).get_summary()['t1']
+        stats_.name = country_code[country]
+        xs.append(stats_)
 
-colors = iter(ctry.color_scatter() for ctry in countries)
-colors_adj = iter(ctry.color_scatter(inliers=True) for ctry in countries)
-counts2 = (ctry.groupby_level().count() for ctry in countries)
-means2 = (ctry.groupby_level().mean() for ctry in countries)
-trunc_hists = iter(ctry.truncated_hist() for ctry in countries)
+    sums = np.round(pd.concat(xs, axis=1), 2)
+    slices = [slice(*x) for x in [(0, 7), (7, 14), (14, 21), (21, 28)]]
+    for i, slice_ in enumerate(slices):
+        with open('./writeup/summary_stats_{}.txt'.format(i), 'w') as f:
+            (sums[sums.columns[slice_]]).to_latex(buf=f)
+    # or better
+    with open('./writeup/summary_stats.txt', 'w') as f:
+        sums.T.to_latex(buf=f)
 
-xs = []
-for country in declarants:
-    stats_ = Results(country).get_summary()['t1']
-    stats_.name = country_code[country]
-    xs.append(stats_)
+    # as inliers
+    xs = []
+    for country in declarants:
+        stats_ = Results(country).get_summary(inliers=True)['t1']
+        stats_.name = country_code[country]
+        xs.append(stats_)
 
-sums = np.round(pd.concat(xs, axis=1), 2)
-slices = [slice(*x) for x in [(0, 7), (7, 14), (14, 21), (21, 28)]]
-for i, slice_ in enumerate(slices):
-    with open('./writeup/summary_stats_{}.txt'.format(i), 'w') as f:
-        (sums[sums.columns[slice_]]).to_latex(buf=f)
-# or better
-with open('./writeup/summary_stats.txt', 'w') as f:
-    sums.T.to_latex(buf=f)
+    sums = np.round(pd.concat(xs, axis=1), 2)
+    with open('./writeup/summary_stats_inliers.txt', 'w') as f:
+        sums.T.to_latex(buf=f)
 
-# as inliers
-xs = []
-for country in declarants:
-    stats_ = Results(country).get_summary(inliers=True)['t1']
-    stats_.name = country_code[country]
-    xs.append(stats_)
+    # Scatter Plots
+    cls = GroupPlot()
+    fig, grid = cls.make_plot('scatter_')
+    plt.savefig('./writeup/resources/scatter.png', dpi=400)
 
-sums = np.round(pd.concat(xs, axis=1), 2)
-with open('./writeup/summary_stats_inliers.txt', 'w') as f:
-    sums.T.to_latex(buf=f)
+    fig, grid = cls.make_plot('scatter_', inliers=True)
+    plt.savefig('./writeup/resources/inliers_scatter.png', dpi=400)
 
-# Scatter Plots
-cls = GroupPlot()
-fig, grid = cls.make_plot('scatter_')
-plt.savefig('./writeup/resources/scatter.png', dpi=400)
+    fig, grid = cls.make_plot('truncated_hist', inliers=True, tol=.95)
+    plt.savefig('./writeup/resources/histograms.png', dpi=400)
+    #-----------------------------------------------------------------------------
+    # Aggregate at two level and take the mean
+    xs = []
+    for ctry in countries:
+        df = ctry.select_level(2)['t1']
+        df.name = ctry.name
+        xs.append(df)
 
-fig, grid = cls.make_plot('scatter_', inliers=True)
-plt.savefig('./writeup/resources/inliers_scatter.png', dpi=400)
+    means = np.round(pd.concat(xs, axis=1), 2).mean()
 
-fig, grid = cls.make_plot('truncated_hist', inliers=True, tol=.95)
-plt.savefig('./writeup/resources/histograms.png', dpi=400)
-#-----------------------------------------------------------------------------
-# Aggregate at two level and take the mean
-xs = []
-for ctry in countries:
-    df = ctry.select_level(2)['t1']
-    df.name = ctry.name
-    xs.append(df)
-
-means = np.round(pd.concat(xs, axis=1), 2).mean()
-
-diff = sums.ix['mean'] - means
-both = pd.DataFrame({'2-Digit-mean': means, 'Difference': diff})
-with open('./writeup/level_two_means.txt', 'w') as f:
-    both.to_latex(buf=f)
+    diff = sums.ix['mean'] - means
+    both = pd.DataFrame({'2-Digit-mean': means, 'Difference': diff})
+    with open('./writeup/level_two_means.txt', 'w') as f:
+        both.to_latex(buf=f)
