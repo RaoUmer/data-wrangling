@@ -4,6 +4,7 @@
 
 \documentclass[12pt,a4paper]{article}                      % Article 12pt font for a4 paper while hiding links
 \usepackage[margin=1in]{geometry}                          % Required to adjust margins
+\usepackage{booktabs}
 
 %----------------------------------------------------------------------------------------
 %    TYPE SETTING PACKAGES
@@ -18,13 +19,14 @@
 \usepackage{microtype}                                     % Improves spacing in the document
 \usepackage{setspace}                                      % Set line spacing dynamically
 \usepackage{tocloft}                                       % List adjustments including ToC
+\usepackage{pdflscape}
 \DeclareMathOperator*{\argmin}{arg\!\min}
 %----------------------------------------------------------------------------------------
 %    FIGURES
 %----------------------------------------------------------------------------------------
 
 \usepackage{graphicx}                                      % Required for the inclusion of images
-\graphicspath{{./Pictures/}}                               % Specifies picture directory
+\graphicspath{{./resources/}}                              % Specifies picture directory
 \usepackage{float}                                         % Allows putting an [H] in \begin{figure}
 \usepackage{wrapfig}                                       % Allows in-line images
 
@@ -289,22 +291,85 @@ to the right-hand side of \ref{eq:multiplied}.  Together these should account fo
 
 Presenting these results proves to be something of a challenge.  My sample includes 27 countries and one aggregate for the EU (see table \ref{tab:declarants}).  
 
+At this step it became clear that the data likely had some massive outliers (or our manipulations had introduced some).
+This probably shouldn't be too surprising.
+I'm still analyzing the chain from raw data to elasticity estimate, but anecdotally some things stand out:
 
-\section{Data Description}
+For example, France's largest elasticity was for good number 72122011.  The estimated elasticity was 3963.  But this was based off just 12 observations, 5 countries for 2 years and 2 countries for a third year.
+It might be worthwhile to exclude those goods with relatively small samples and rerun the analysis.
 
-The bulk of my data is from the Comext database hosted on \href{http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/}{Eurostat}.  I used data from the years 2000-2011.  Here is a sample:
+The next two tables present some summary statistics for the import elasticities for each of the 28 geographic regions in our sample.  The first contains all the valid estimates, while the second excludes those outside of three standard deviations from the mean.\\
 
-  \begin{table}[h]\label{tab:sample_row}
-  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}\footnotesize
-    & & & & & Value (1000 Euro) & Quantity (Ton) & Sup Q \\ \hline
-    Flow & Period & Dec. & Product & Partner &  &  &     \\ \hline
-    1 & 2009-01-01 & 1  & 01011010 & 3       & 3741.08 & 1359.2 & 0\\ \hline
-  \end{tabular}
-  \end{table}
+\noindent
+\input{summary_stats.txt}\label{tab:summary_stats}
+\newpage
 
-\texttt{Flow} refers to the record being an import (1) or export (2).  \texttt{Period} is the year that the record refers to. \texttt{Declarant} is the code for the country doing the importing, France in this case.  \texttt{Product} refers to the 8-digit \hyperref{http://ec.europa.eu/eurostat/ramon/nomenclatures/index.cfm?TargetUrl=LST_NOM_DTL&StrNom=CN_2013&StrLanguageCode=EN&IntPcKey=&StrLayoutCode=HIERARCHIC}{Combined Nomenclature} classification system.  Finally, \texttt{Partner} refers to the country of origin for this record.  This forms a unique index.  The data used for estimation are \texttt{Value} (in thousands of Euros) and \texttt{Quantity} (in tons).  \texttt{Sup Q} is a supplemental quantity value.  There are some items with all zeros in \texttt{Quantity} and nonzero values in \texttt{Sup Q}.  As it stands, these values were dropped from my calculation while in principal they could have been included.  The difficulty comes from some items being measured by \texttt{Quantity} some years and \texttt{Sup Q} in other years.
+\noindent
+\input{summary_stats_inliers.txt}\label{tab:inlier_summary_stats}
 
-From these data, we can calculate the cost shares and prices described in \ref{sec:theoretical_framework}, using the methods described in \ref{sec:econometric_methodology}.
+\newpage
+
+The next two figures are an attempt to visualize the results.
+Recall that our estimation focused on two parameters, the import demand elasticity and the export supply elasticity: $\tvect{\sigma_g}{\omega_g}$.
+The next graphs plot the results in $\tvect{\sigma_g}{\omega_g}$-space, so our main interest is on the horizontal axis.
+Like above the first is with all valid estimates, while the second removes outliers.
+
+It's not immediately clear what pattern we should expect for these goods.
+I grouped the results by the two-digit level and no clear pattern emerged, so I do not report those results here.
+
+\newgeometry{margin=1cm}
+\begin{landscape}
+\thispagestyle{empty}
+\begin{center}
+\footnotesize 9
+    \includegraphics[scale=.75]{scatter.png}
+\end{center}
+\end{landscape}
+\restoregeometry
+
+
+\newgeometry{margin=1cm}
+\begin{landscape}
+\thispagestyle{empty}
+\begin{center}
+\footnotesize 9
+    \includegraphics[scale=.75]{inliers_scatter.png}
+\end{center}
+\end{landscape}
+\restoregeometry
+
+In the next figure, I plot histograms of the elasticity estimates, again with the outliers removed.
+
+\newgeometry{margin=1cm}
+\begin{landscape}
+\thispagestyle{empty}
+\begin{center}
+\footnotesize 9
+    \includegraphics[scale=.75]{histograms.png}
+\end{center}
+\end{landscape}
+\restoregeometry
+
+On average, the higher the level of aggregation, the lower the estimate of elasticity.
+In this table I aggregated to the two-digit CN level and estimated the elasticity of import demand in the same way.
+The average change from before (disaggregated) to now (aggregated) is negative.\\
+
+\noindent
+\input{level_two_means.txt}\label{tab:two_means}
+
+
+%----------------------------------------------------------------------------------------
+\bibliographystyle{apa}
+\bibliography{citations}
+
+\newpage
+
+\section{Appendix}
+\label{sec:appendix}
+
+
+
+
 
 \section{Data Processing}
 \label{sec:data_processing}
@@ -323,6 +388,22 @@ Next, I calculate the cost shares and prices described in \ref{sec:econometric_m
 
 Finally, I use the script \texttt{differencing.py} which handles finding a reference country who exported the product each year for each good, and then differencing the prices and cost shares by year and with that reference country's values.  Note that some goods had to be dropped because they did not contain a valid reference country.
 
+\section{Data Description}
+
+The bulk of my data is from the Comext database hosted on \href{http://epp.eurostat.ec.europa.eu/portal/page/portal/eurostat/home/}{Eurostat}.  I used data from the years 2000-2011.  Here is a sample:
+
+  \begin{table}[h]\label{tab:sample_row}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}\footnotesize
+    & & & & & Value (1000 Euro) & Quantity (Ton) & Sup Q \\ \hline
+    Flow & Period & Dec. & Product & Partner &  &  &     \\ \hline
+    1 & 2009-01-01 & 1  & 01011010 & 3       & 3741.08 & 1359.2 & 0\\ \hline
+  \end{tabular}
+  \end{table}
+
+\texttt{Flow} refers to the record being an import (1) or export (2).  \texttt{Period} is the year that the record refers to. \texttt{Declarant} is the code for the country doing the importing, France in this case.  \texttt{Product} refers to the 8-digit \hyperref{http://ec.europa.eu/eurostat/ramon/nomenclatures/index.cfm?TargetUrl=LST_NOM_DTL&StrNom=CN_2013&StrLanguageCode=EN&IntPcKey=&StrLayoutCode=HIERARCHIC}{Combined Nomenclature} classification system.  Finally, \texttt{Partner} refers to the country of origin for this record.  This forms a unique index.  The data used for estimation are \texttt{Value} (in thousands of Euros) and \texttt{Quantity} (in tons).  \texttt{Sup Q} is a supplemental quantity value.  There are some items with all zeros in \texttt{Quantity} and nonzero values in \texttt{Sup Q}.  As it stands, these values were dropped from my calculation while in principal they could have been included.  The difficulty comes from some items being measured by \texttt{Quantity} some years and \texttt{Sup Q} in other years.
+
+From these data, we can calculate the cost shares and prices described in \ref{sec:theoretical_framework}, using the methods described in \ref{sec:econometric_methodology}.
+
 \section{Estimation Described}
 \label{sec:estimation_described}
 
@@ -330,81 +411,6 @@ The bulk of the work is done by the script \texttt{gmm\_with\_weighting.py}.  Fo
 
 As the filename suggests, the weighting matrix is also calculated here, as described in \ref{sec:econometric_methodology}.  This involves differencing the quantity data by year.  \cite{broda_weinstein_2006_globalization_gains} do not comment on what should happen to the values from the first observation, so I fill these in the the mean from the other years.
 
-At this step it became clear that the data likely had some massive outliers (or our manipulations had introduced some).  
-
-\newpage
-\bibliographystyle{apa}
-\bibliography{citations}
-
-\newpage
-
-\section{Appendix}
-\label{sec:appendix}
-
-\begin{table}\label{tab:declarants}
-    \begin{tabular}{|l|}
-    \hline
-    \textbf{Country}\\
-    \hline
-    \hline
-    Cyprus\\
-    \hline
-    Slovenia\\
-    \hline
-    Portugal\\
-    \hline
-    Spain\\
-    \hline
-    Austria\\
-    \hline
-    Belgium\\
-    \hline
-    Luxembourg\\
-    \hline
-    Lithuania\\
-    \hline
-    Sweden\\
-    \hline
-    Estonia\\
-    \hline
-    Finland\\
-    \hline
-    Czech Republic\\
-    \hline
-    Poland\\
-    \hline
-    Slovakia\\
-    \hline
-    Hungary\\
-    \hline
-    Romania\\
-    \hline
-    Bulgaria\\
-    \hline
-    Netherlands\\
-    \hline
-    France\\
-    \hline
-    Ireland\\
-    \hline
-    Utd. Kingdom\\
-    \hline
-    Italy\\
-    \hline
-    Fr Germany\\
-    \hline
-    EU\\
-    \hline
-    Malta\\
-    \hline
-    Greece\\
-    \hline
-    Denmark\\
-    \hline
-    Latvia\\
-    \hline
-    \end{tabular}
-\end{table}
 \end{document}
 
 

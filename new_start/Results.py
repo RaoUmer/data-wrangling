@@ -1,8 +1,11 @@
+import ipdb
+import cPickle
 import itertools as it
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from sklearn.covariance import EmpiricalCovariance, MinCovDet
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
@@ -95,8 +98,8 @@ class Results(object):
         pre = self.load_pre()
         maxes = df.idxmax()
         mins = df.idxmin()
-        rmax = [pre.xs(maxes[x], level='PRODUCT_NC') for x in maxes.index]
-        rmin = [pre.xs(mins[x], level='PRODUCT_NC') for x in mins.index]
+        rmax = [pre.xs(maxes[x], level='good') for x in maxes.index]
+        rmin = [pre.xs(mins[x], level='good') for x in mins.index]
         return {'maxes': rmax, 'mins': rmin}
 
     def scatter_(self, df=None, inliers=False, ax=None, **kwargs):
@@ -106,14 +109,10 @@ class Results(object):
         will filter out the outliers.
         """
         ctry = self.country
-        if inliers and df is None:
+        if inliers:
             df = self.get_inliers()
-        elif inliers and df is not None:
-            raise NotImplemented()
-        elif df is None:
-            df = self.df
         else:
-            df = df
+            df = self.df
         if ax is None:
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -322,16 +321,85 @@ class Results(object):
         return cts[-10:]
 
     def color_scatter(self, n_levels=2, n_cats=10, inliers=False):
-        if inliers:
-            df = self.get_inliers()
-        else:
-            df = self.df
         fig = plt.figure()
         ax = fig.add_subplot(111)
         cycle = it.cycle(plt.rcParams['axes.color_cycle'])
         top = self.most_pre(n=n_cats)
+        ipdb.set_trace()
         for level in top.index.intersection(self.select_level_index(
                                             n_levels, inliers=inliers)):
             x = self.select_range(level)
-            ax = self.scatter_(df=x, ax=ax, color=cycle.next(), label=level)
+            ax = self.scatter_(df=x, ax=ax, inliers=inliers, label=level,
+                               color=cycle.next())
         return ax
+
+    def get_summary(self, inliers=False):
+        if inliers:
+            df = self.get_inliers()
+        else:
+            df = self.df
+        return df.describe()
+
+    def groupby_level(self, n=2, inliers=False):
+        """
+        Group your data (possibly adjusted for inliners) by a specific
+        level of aggregation, e.g. 2.
+
+        Retuerns a groupby object.
+        """
+        levels = self.select_level_index(n, inliers=inliers)
+        levels = pd.DataFrame(levels, index=levels)
+        if inliers:
+            df = self.get_inliers()
+        else:
+            df = self.df
+        levels = levels.reindex_axis(self.df.index, method='ffill')
+        return df.groupby(levels[0])
+
+    def truncated_hist(self, ax=None, tol=0.9975, bins=100, cols=None, **kwargs):
+        """
+        Data are skewed (left?) massively.
+        
+        BUG: Passing a list of cols makes pandas take over the axes handling.
+        """
+        if cols is None:
+            cols = 't1'
+        df = self.df[cols]
+        df = df[df < df.quantile(tol)]
+        if ax is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+        ax = df.hist(bins=bins, ax=ax)
+        ax.set_title(self.name)
+        return ax
+
+
+class GroupPlot(object):
+    def __init__(self, n_subplots=28):
+        self.n_subplots = n_subplots
+        base = '/Volumes/HDD/Users/tom/DataStorage/Comext/yearly/'
+        with open(base + 'declarants_no_002_dict.pkl', 'r') as declarants:
+            self.country_code = cPickle.load(declarants)
+            self.declarants = sorted(self.country_code.keys())
+        self.results_store = {ctry: Results(ctry) for ctry in self.declarants}
+
+    def make_plot(self, func, inliers=False, **kwargs):
+        fig = plt.figure(figsize=(16, 9))
+        grid = gridspec.GridSpec(4, self.n_subplots / 4)
+        grid.update(hspace=0.5, wspace=0.7)
+        for i, ctry in enumerate(self.results_store):
+            res = self.results_store[ctry]
+            row = int(np.floor(i / 7))
+            ax = plt.subplot(grid[row, i - 7 * row])
+            ax = getattr(res, func)(ax=ax, inliers=inliers, **kwargs)
+            # ax = res.scatter_(ax=ax, inliers=inliers)
+            ax.set_title(res.name, size=8)
+            ax.grid(False)
+            for i, tic in enumerate(
+                    it.chain(ax.get_yticklabels(), ax.get_xticklabels())):
+                tic.set_size(8)
+                if i % 2 == 0:
+                    tic.set_alpha(0)
+            # ipdb.set_trace()
+            print('added {}'.format(ctry))
+        return fig, grid
