@@ -113,46 +113,46 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\begin{titlepage}
+% \begin{titlepage}
 
-\title{Notes}
+\title{Notes on Euro-area Elasticities}
 \author{Tom Augspurger}                               % via Seth Miers
 
-\vspace*{\fill}                                            % Center title page vertically
+% \vspace*{\fill}                                            % Center title page vertically
 
-% \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}              % Defines horizontal lines
+% % \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}              % Defines horizontal lines
 
-\center                                                    % Center everything on the page
+% \center                                                    % Center everything on the page
 
-% \textsc{\LARGE First Heading}\[1.5cm]                % First heading
-% \textsc{\Large Major Heading}\[0.5cm]                % Major heading
-% \textsc{\large Minor Heading}\[0.5cm]                % Minor heading
+% % \textsc{\LARGE First Heading}\[1.5cm]                % First heading
+% % \textsc{\Large Major Heading}\[0.5cm]                % Major heading
+% % \textsc{\large Minor Heading}\[0.5cm]                % Minor heading
 
-% \HRule \[0.4cm]
-% { \huge \bfseries Title}\[0.4cm]                     % Title of document
-% \HRule \[1.5cm]
+% % \HRule \[0.4cm]
+% % { \huge \bfseries Title}\[0.4cm]                     % Title of document
+% % \HRule \[1.5cm]
 
-%\begin{minipage}{0.4\textwidth}
-%\begin{flushleft} \large
-%\emph{Author:}\
-%Tom \textsc{Augspurger}                                    % Name
-%\end{flushleft}
-%\end{minipage}
-%~
-%\begin{minipage}{0.4\textwidth}
-%\begin{flushright} \large
-%\emph{Professor:} \
-%Dr. James \textsc{Smith}                                   % Professor's Name
-%\end{flushright}
-%\end{minipage}\[4cm]
+% %\begin{minipage}{0.4\textwidth}
+% %\begin{flushleft} \large
+% %\emph{Author:}\
+% %Tom \textsc{Augspurger}                                    % Name
+% %\end{flushleft}
+% %\end{minipage}
+% %~
+% %\begin{minipage}{0.4\textwidth}
+% %\begin{flushright} \large
+% %\emph{Professor:} \
+% %Dr. James \textsc{Smith}                                   % Professor's Name
+% %\end{flushright}
+% %\end{minipage}\[4cm]
 
-% {\large \today}\[3cm]                                     % Date, change the \today to be precise
+% % {\large \today}\[3cm]                                     % Date, change the \today to be precise
 
-%\includegraphics{Logo}\[1cm]                             % Include a department/university logo
+% %\includegraphics{Logo}\[1cm]                             % Include a department/university logo
 
-\vspace*{\fill}                                            % Fill the rest of the page with whitespace
+% \vspace*{\fill}                                            % Fill the rest of the page with whitespace
 
-\end{titlepage}
+% \end{titlepage}
 
 % \phantomsection
 
@@ -168,10 +168,14 @@ escapeinside={\%*}{*)}                                     % If you want to add 
 
 \section{Theoretical Framework}
 \label{sec:theoretical_framework}
+In this project, I estimate the import demand elasticities for 28 geographic areas in the European Union.
+To estimate the trade elasticities, I follow \cite{broda_weinstein_2006_globalization_gains} who in turn follow \cite{feenstra_1994_new_product_varieties}.
+The estimation strategy is complicated by the introduction of new varieties.
+In standard love-of-variety type utility functions, failure to account for new varieties is a serious omission.
+The method used here accounts for this bias.
+The outline here will be a very rough sketch.  For a more thorough treatment, either \cite{feenstra_1994_new_product_varieties} or \cite{broda_weinstein_2006_globalization_gains} will suffice.
 
-To estimate the trade elasticities, I follow \cite{broda_weinstein_2006_globalization_gains} who in turn follow \cite{feenstra_1994_new_product_varieties}.  The estimation strategy is complicated by the introduction of new varieties.  In standard love-of-variety type utility functions, failure to account for new varieties is a serious omission.  The outline here will be a very rough sketch.  For a more thorough treatment, either \cite{feenstra_1994_new_product_varieties} or \cite{broda_weinstein_2006_globalization_gains} will suffice.
-
-For our purposes, a variety is defined as a particular good defined by the CN8 nomenclature (see \ref{sec:data_processing}), produced in a particular country.  So, for example, Polystyrene produced in Germany is one variety, while Polystyrene produced in France is another.
+For our purposes, a variety is defined as a particular good, produced in a particular country. Goods are defined by the CN8 nomenclature (see \ref{sec:data_processing}) So, for example, Polystyrene produced in Germany is one variety, while Polystyrene produced in France is another.
 
 \subsection{Feenstra Price Index}
 \label{sub:feenstra_price_index}
@@ -258,7 +262,7 @@ and
 \label{sub:econometric_methodology}
 
 
-Our parameters of interest $\beta_g \equiv \tvect{\sigma_g}{\omega_g}$ cannot be estimated consistently from \ref{eq:multiplied} since $u_{gct}$ is correlated with the regressands.  However, we can achieve consistency from our assumption that the demand and supply elasticities are constant over varieties of the same good.  With this assumption we get a set of moment conditions for each good $g$:
+Our parameters of interest, $\beta_g \equiv \tvect{\sigma_g}{\omega_g}$, cannot be estimated consistently from \ref{eq:multiplied} since $u_{gct}$ is correlated with the regressands.  However, we can achieve consistency from our assumption that the demand and supply elasticities are constant over varieties of the same good.  With this assumption we get a set of moment conditions for each good $g$:
 
 \begin{equation}
     G(\beta_g) = E_t(u_{gct}(\beta_g)) = 0 \quad \forall \ c
@@ -289,13 +293,13 @@ to the right-hand side of \ref{eq:multiplied}.  Together these should account fo
 \section{Estimation Results}
 \label{sec:estimation_results}
 
-Presenting these results proves to be something of a challenge.  My sample includes 27 countries and one aggregate for the EU (see table \ref{tab:declarants}).  
+Presenting these results proves to be something of a challenge.  My sample includes 27 countries and one aggregate for the EU.  
 
 At this step it became clear that the data likely had some massive outliers (or our manipulations had introduced some).
 This probably shouldn't be too surprising.
 I'm still analyzing the chain from raw data to elasticity estimate, but anecdotally some things stand out:
 
-For example, France's largest elasticity was for good number 72122011.  The estimated elasticity was 3963.  But this was based off just 12 observations, 5 countries for 2 years and 2 countries for a third year.
+For example, France's largest elasticity was for good number 72122011, a subset of flat-rolled iron and steel.  The estimated elasticity was 3963.  But this was based off just 12 observations, 5 countries for 2 years and 2 countries for a third year.
 It might be worthwhile to exclude those goods with relatively small samples and rerun the analysis.
 
 The next two tables present some summary statistics for the import elasticities for each of the 28 geographic regions in our sample.  The first contains all the valid estimates, while the second excludes those outside of three standard deviations from the mean.\\
@@ -314,7 +318,8 @@ Recall that our estimation focused on two parameters, the import demand elastici
 The next graphs plot the results in $\tvect{\sigma_g}{\omega_g}$-space, so our main interest is on the horizontal axis.
 Like above the first is with all valid estimates, while the second removes outliers.
 
-It's not immediately clear what pattern we should expect for these goods.
+It's not immediately clear what pattern we should expect for these goods;
+however, these plots are useful for showing the effect of outliers on the shape of the results.
 I grouped the results by the two-digit level and no clear pattern emerged, so I do not report those results here.
 
 \newgeometry{margin=1cm}
@@ -374,7 +379,9 @@ The average change from before (disaggregated) to now (aggregated) is negative.\
 \section{Data Processing}
 \label{sec:data_processing}
 
-The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}{Eurostat}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.  I describe the data further elsewhere.
+The raw data can be accessed via \href{http://epp.eurostat.ec.europa.eu/NavTree\_prod/everybody/BulkDownloadListing?sort=1\&dir=comext%2F2012S2%2Fdata}{Eurostat}.  This page contains links to files annual COMEXT trade data from 1988 to 2011.
+All other files can be accessed from my \href{https://github.com/TomAugspurger/data-wrangling/tree/master/new_start}{Github repository}.
+I describe the data further elsewhere.
 
 
 Once downloaded, the files can be processed using three \href{www.python.org}{Python} scripts: \texttt{download\_to\_hdf5.py}, \texttt{differencing.py}, and \texttt{generate\_prices\_shares.py}.
